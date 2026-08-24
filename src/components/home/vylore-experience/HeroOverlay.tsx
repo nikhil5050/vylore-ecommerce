@@ -23,7 +23,7 @@ export function HeroOverlay({ innerRef }: HeroOverlayProps) {
         <div className="flex items-center gap-3 border border-charcoal/10 bg-ivory/70 px-3 py-2.5 backdrop-blur-sm">
           <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-champagne" />
           <p className="eyebrow text-[10px] leading-snug text-charcoal/80">
-            Sterling Silver &amp; Leaf-Branch Motif
+            18K Gold &amp; Emerald-Cut Diamonds
           </p>
         </div>
       </div>
@@ -32,15 +32,15 @@ export function HeroOverlay({ innerRef }: HeroOverlayProps) {
       {/* <div className="hero-callout absolute bottom-[16%] left-4 hidden items-center gap-3 sm:left-8 sm:flex lg:bottom-[20%]">
         <div className="relative h-14 w-14 overflow-hidden rounded-full border border-charcoal/10 bg-white shadow-sm">
           <Image
-            src="/ring.png"
-            alt="Vylore silver leaf-branch ring detail"
+            src="/animationimg.png"
+            alt="Vylore diamond bangle detail"
             fill
             sizes="56px"
-            className="object-cover"
+            className="object-cover mix-blend-multiply"
           />
         </div>
         <p className="eyebrow max-w-[130px] text-[10px] leading-snug text-charcoal/70">
-          Velora / 01 — Leaf-Branch Ring
+          Velora / 01 — Diamond Bangle
         </p>
       </div> */}
 
@@ -50,16 +50,16 @@ export function HeroOverlay({ innerRef }: HeroOverlayProps) {
         <div className="flex items-center gap-2.5 border border-charcoal/10 bg-ivory/80 px-3 py-2 backdrop-blur-sm sm:hidden">
           <div className="relative h-6 w-6 shrink-0 overflow-hidden rounded-full bg-white">
             <Image
-              src="/ring.png"
-              alt="Vylore silver leaf-branch ring detail"
+              src="/animationimg.png"
+              alt="Vylore diamond bangle detail"
               fill
               sizes="24px"
-              className="object-cover"
+              className="object-cover mix-blend-multiply"
             />
           </div>
           <span className="h-1 w-1 shrink-0 rounded-full bg-champagne" />
           <p className="eyebrow text-[9px] leading-snug text-charcoal/80">
-            Sterling Silver &amp; Leaf-Branch Motif
+            18K Gold &amp; Emerald-Cut Diamonds
           </p>
         </div>
 
