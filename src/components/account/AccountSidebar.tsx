@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/auth.store";
 import { cn } from "@/utils/cn";
 
 const links = [
@@ -14,6 +15,8 @@ const links = [
 
 export function AccountSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const logout = useAuthStore((state) => state.logout);
 
   return (
     <nav className="flex gap-2 overflow-x-auto border-b border-silver/30 pb-4 lg:w-48 lg:shrink-0 lg:flex-col lg:gap-1 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-6">
@@ -32,6 +35,16 @@ export function AccountSidebar() {
           </Link>
         );
       })}
+      <button
+        type="button"
+        onClick={() => {
+          logout();
+          router.push("/");
+        }}
+        className="eyebrow shrink-0 whitespace-nowrap px-3 py-2 text-left text-xs text-muted transition-colors hover:text-burgundy"
+      >
+        Log Out
+      </button>
     </nav>
   );
 }

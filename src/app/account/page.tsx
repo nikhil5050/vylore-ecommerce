@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { useAddressStore } from "@/store/address.store";
+import { useAuthStore } from "@/store/auth.store";
 import { useOrderStore } from "@/store/order.store";
 import { useWishlistStore } from "@/store/wishlist.store";
 
 export default function AccountDashboardPage() {
+  const user = useAuthStore((state) => state.user);
   const orderCount = useOrderStore((state) => state.orders.length);
   const wishlistCount = useWishlistStore((state) => state.items.length);
   const addressCount = useAddressStore((state) => state.addresses.length);
@@ -20,7 +22,8 @@ export default function AccountDashboardPage() {
   return (
     <div>
       <p className="max-w-md text-sm text-muted">
-        Manage your orders, saved addresses, and details from one place.
+        {user ? `Welcome back, ${user.first_name}.` : ""} Manage your orders, saved addresses, and details from one
+        place.
       </p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-3">

@@ -1,41 +1,26 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
-import { useProfileStore } from "@/store/profile.store";
+import { useAuthStore } from "@/store/auth.store";
 
+// Read-only: the backend doesn't expose a profile-update endpoint yet
+// (only GET /auth/me), so there is nothing to save here — this simply
+// reflects the account used to sign in.
 export default function ProfilePage() {
-  const profile = useProfileStore((state) => state.profile);
-  const setProfile = useProfileStore((state) => state.setProfile);
-  const [saved, setSaved] = useState(false);
+  const user = useAuthStore((state) => state.user);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    setProfile({
-      fullName: String(data.get("fullName") ?? ""),
-      email: String(data.get("email") ?? ""),
-      phone: String(data.get("phone") ?? ""),
-    });
-    setSaved(true);
-    window.setTimeout(() => setSaved(false), 2000);
-  }
+  if (!user) return null;
 
   return (
     <div className="max-w-md">
-      <p className="text-sm text-muted">
-        These details are stored on this device only, ready to prefill checkout once an account backend exists.
-      </p>
+      <p className="text-sm text-muted">Your account details.</p>
 
-      <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
-        <Field label="Full Name" name="fullName" required autoComplete="name" defaultValue={profile?.fullName} />
-        <Field label="Email" name="email" type="email" required autoComplete="email" defaultValue={profile?.email} />
-        <Field label="Phone" name="phone" type="tel" required autoComplete="tel" defaultValue={profile?.phone} />
-        <Button type="submit" variant="primary" size="md" className="mt-2 w-fit">
-          {saved ? "Saved" : "Save Changes"}
-        </Button>
-      </form>
+      <div className="mt-6 flex flex-col gap-4">
+        <Field label="First Name" name="first_name" value={user.first_name} readOnly disabled />
+        <Field label="Last Name" name="last_name" value={user.last_name} readOnly disabled />
+        <Field label="Email" name="email" value={user.email} readOnly disabled />
+        <Field label="Phone" name="phone" value={user.phone ?? ""} readOnly disabled />
+      </div>
     </div>
   );
 }
