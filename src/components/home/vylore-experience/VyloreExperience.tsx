@@ -116,8 +116,8 @@ function StaticExperience() {
           <FadeIn>
             <div className="relative aspect-[3/4] overflow-hidden bg-white">
               <Image
-                src="/animationimg1.png"
-                alt="Velora diamond bangle, 18k gold and emerald-cut diamonds"
+                src="/ring.png"
+                alt="Velora sterling silver open ring with leaf-branch motif"
                 fill
                 sizes="(min-width: 1024px) 40vw, 90vw"
                 className="object-contain"

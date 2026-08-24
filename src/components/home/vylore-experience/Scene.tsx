@@ -3,7 +3,7 @@
 import { Canvas } from "@react-three/fiber";
 import { ContactShadows, Environment } from "@react-three/drei";
 import { Suspense } from "react";
-import { BangleModel } from "./BangleModel";
+import { RingModel } from "./RingModel";
 import type { SceneState } from "./types";
 
 interface SceneProps {
@@ -21,12 +21,12 @@ export function Scene({ sceneState, reducedMotion, isDesktop }: SceneProps) {
       className="!absolute !inset-0"
     >
       <ambientLight intensity={0.5} />
-      <directionalLight position={[4, 5, 6]} intensity={2.2} color="#fff6e6" />
-      <directionalLight position={[-5, -2, 3]} intensity={1.1} color="#cfe0ff" />
-      <spotLight position={[0, 4, 2]} angle={0.5} penumbra={1} intensity={1.4} color="#ffffff" />
+      <directionalLight position={[4, 5, 6]} intensity={2.2} color="#ffffff" />
+      <directionalLight position={[-5, -2, 3]} intensity={1.2} color="#e8edf5" />
+      <spotLight position={[0, 4, 2]} angle={0.5} penumbra={1} intensity={1.6} color="#ffffff" />
 
       <Suspense fallback={null}>
-        <BangleModel sceneState={sceneState} reducedMotion={reducedMotion} isDesktop={isDesktop} />
+        <RingModel sceneState={sceneState} reducedMotion={reducedMotion} isDesktop={isDesktop} />
         <Environment preset="studio" environmentIntensity={1.1} />
         {isDesktop && (
           <ContactShadows

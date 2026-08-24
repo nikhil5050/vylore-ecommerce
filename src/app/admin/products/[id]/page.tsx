@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { ProductForm } from "@/components/admin/ProductForm";
-import { getProduct } from "@/lib/admin/api";
+import { getProduct, getProducts } from "@/lib/admin/api";
+
+export async function generateStaticParams() {
+  const products = await getProducts();
+  return products.map((product) => ({ id: product.id }));
+}
 
 export async function generateMetadata({ params }: PageProps<"/admin/products/[id]">): Promise<Metadata> {
   const { id } = await params;

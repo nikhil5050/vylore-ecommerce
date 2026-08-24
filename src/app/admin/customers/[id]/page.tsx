@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CustomerDetail } from "@/components/admin/CustomerDetail";
-import { getCustomer } from "@/lib/admin/api";
+import { getCustomer, getCustomers } from "@/lib/admin/api";
 import { mockOrders, mockPayments } from "@/lib/admin/mock";
+
+export async function generateStaticParams() {
+  const customers = await getCustomers();
+  return customers.map((customer) => ({ id: customer.id }));
+}
 
 export async function generateMetadata({ params }: PageProps<"/admin/customers/[id]">): Promise<Metadata> {
   const { id } = await params;

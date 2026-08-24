@@ -9,6 +9,7 @@ import { Testimonials } from "@/components/home/Testimonials";
 import { TrustSection } from "@/components/home/TrustSection";
 import { VyloreExperience } from "@/components/home/vylore-experience/VyloreExperience";
 
+
 export default function Home() {
   return (
     <main className="flex flex-1 flex-col">

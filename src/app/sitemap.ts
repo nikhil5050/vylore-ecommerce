@@ -4,6 +4,8 @@ import { getCategories } from "@/services/category.service";
 import { getFeaturedCollections } from "@/services/collection.service";
 import { getAllProducts } from "@/services/product.service";
 
+export const dynamic = "force-static";
+
 const staticPaths = ["", "/shop", "/collections", "/about", "/contact", "/faq", "/track-order"];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

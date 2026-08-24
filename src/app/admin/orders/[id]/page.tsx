@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { OrderDetail } from "@/components/admin/OrderDetail";
-import { getOrder } from "@/lib/admin/api";
+import { getOrder, getOrders } from "@/lib/admin/api";
+
+export async function generateStaticParams() {
+  const orders = await getOrders();
+  return orders.map((order) => ({ id: order.id }));
+}
 
 export async function generateMetadata({ params }: PageProps<"/admin/orders/[id]">): Promise<Metadata> {
   const { id } = await params;

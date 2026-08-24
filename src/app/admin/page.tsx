@@ -15,7 +15,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-2xl font-semibold text-foreground sm:text-3xl">Good Morning, Admin</h1>
+        <h1 className="font-serif text-2xl font-semibold text-foreground sm:text-3xl">hii, Admin</h1>
         <p className="mt-1 text-sm text-muted-foreground">Here&apos;s what&apos;s happening with Vylore today.</p>
       </div>
 
