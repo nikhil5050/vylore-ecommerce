@@ -29,7 +29,9 @@ const Scene = dynamic(() => import("./Scene").then((mod) => mod.Scene), {
 /**
  * Hero -> About scroll experience: a sticky stage holds the 3D canvas while
  * GSAP ScrollTrigger drives a shared progress ref (0 = hero, 1 = about) that
- * the R3F model reads imperatively in useFrame, plus a text-layer timeline.
+ * the R3F bracelet billboard reads imperatively in useFrame, plus a
+ * text-layer timeline (hero copy + background wordmark fade/parallax out,
+ * About content fades and staggers in).
  */
 export function VyloreExperience() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -44,29 +46,51 @@ export function VyloreExperience() {
     if (reducedMotion) return;
 
     const ctx = gsap.context(() => {
-      gsap
-        .timeline({
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top top",
-            end: "bottom bottom",
-            scrub: 1,
-            onUpdate: (self) => {
-              sceneState.current.progress = self.progress;
-            },
+      const timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 1,
+          onUpdate: (self) => {
+            sceneState.current.progress = self.progress;
           },
-        })
+        },
+      });
+
+      timeline
         .to(
-          [heroRef.current, wordmarkRef.current],
+          heroRef.current,
           { autoAlpha: 0, y: -50, filter: "blur(8px)", ease: "power1.in", duration: 0.4 },
+          0
+        )
+        .to(
+          wordmarkRef.current,
+          { autoAlpha: 0, x: "-5vw", y: -30, filter: "blur(6px)", ease: "power1.in", duration: 0.45 },
           0
         )
         .fromTo(
           aboutRef.current,
-          { autoAlpha: 0, y: 40 },
-          { autoAlpha: 1, y: 0, ease: "power2.out", duration: 0.45 },
+          { autoAlpha: 0 },
+          { autoAlpha: 1, ease: "power1.out", duration: 0.3 },
           0.55
         );
+
+      if (aboutRef.current) {
+        timeline.fromTo(
+          aboutRef.current.querySelectorAll(".about-stagger-item"),
+          { autoAlpha: 0, x: 80, filter: "blur(8px)" },
+          {
+            autoAlpha: 1,
+            x: 0,
+            filter: "blur(0px)",
+            ease: "power3.out",
+            duration: 1,
+            stagger: 0.12,
+          },
+          0.58
+        );
+      }
     }, containerRef);
 
     return () => ctx.revert();
@@ -77,10 +101,7 @@ export function VyloreExperience() {
   }
 
   return (
-    <section
-      ref={containerRef}
-      className="relative h-[200dvh] w-full bg-ivory lg:h-[220dvh]"
-    >
+    <section ref={containerRef} className="relative h-[200dvh] w-full bg-ivory lg:h-[220dvh]">
       <div className="sticky top-0 h-dvh w-full overflow-hidden">
         <BackgroundWordmark innerRef={wordmarkRef} />
         <Scene sceneState={sceneState} reducedMotion={false} isDesktop={isDesktop} />
@@ -114,10 +135,10 @@ function StaticExperience() {
       <section className="py-16 lg:py-[120px]">
         <Container className="grid items-center gap-10 lg:grid-cols-2 lg:gap-20">
           <FadeIn>
-            <div className="relative aspect-[3/4] overflow-hidden bg-white">
+            <div className="relative aspect-[4/3] overflow-hidden bg-white">
               <Image
-                src="/animationimg1.png"
-                alt="Velora diamond bangle, 18k gold and emerald-cut diamonds"
+                src="/images/jewellery/vylore-bracelet-v2.png"
+                alt="Vylore silver diamond bracelet"
                 fill
                 sizes="(min-width: 1024px) 40vw, 90vw"
                 className="object-contain"
