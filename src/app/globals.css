@@ -1,0 +1,224 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* --- Brand palette (source of truth) --- */
+  --maroon: #680307; /* Deep Maroon — primary brand, CTAs, major accents */
+  --maroon-dark: #4d0004; /* darker maroon for hover/pressed + dark sections */
+  --cherry: #810201; /* Cherry Red — hover states, active indicators, sale tags, campaign emphasis */
+  --obsidian: #181916; /* Midnight Obsidian — primary dark text, dark-mode sections */
+  --moonlight: #edebde; /* soft elegant light background */
+  --white: #ffffff; /* clean card backgrounds, high-contrast spacing */
+  --silver: #bfc1c4;
+  --muted: #6b6b6b;
+
+  /* --- Legacy aliases: kept so existing bg- and text- utilities across the
+     codebase repaint with the new palette without touching every component. --- */
+  --burgundy: var(--maroon);
+  --burgundy-dark: var(--maroon-dark);
+  --champagne: var(--cherry);
+  --ivory: var(--white);
+  --charcoal: var(--obsidian);
+
+  --background: var(--white);
+  --foreground: var(--obsidian);
+}
+
+@theme inline {
+  /* Brand-named tokens */
+  --color-maroon: var(--maroon);
+  --color-maroon-dark: var(--maroon-dark);
+  --color-cherry: var(--cherry);
+  --color-obsidian: var(--obsidian);
+  --color-moonlight: var(--moonlight);
+  --color-white: var(--white);
+  --color-silver: var(--silver);
+  --color-muted: var(--muted);
+
+  /* Legacy-named tokens (same values, kept for existing class usage) */
+  --color-burgundy: var(--burgundy);
+  --color-burgundy-dark: var(--burgundy-dark);
+  --color-champagne: var(--champagne);
+  --color-ivory: var(--ivory);
+  --color-charcoal: var(--charcoal);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* Display headings (H1–H3, collection names, campaign statements) */
+  --font-serif: var(--font-display);
+  /* Body copy, UI, buttons, nav */
+  --font-sans: var(--font-body);
+
+  --container-vylore: 1440px;
+
+  /* shadcn/ui primitive tokens — values only ever set inside .admin-shell
+     (see bottom of file). Storefront components never use these classes,
+     so wiring them here is safe and keeps the admin kit on stock shadcn
+     conventions (bg-card, border-border, bg-primary, etc). */
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Sane branded default; components with their own focus-visible ring (e.g. Button) override this. */
+:focus-visible {
+  outline: 2px solid var(--burgundy);
+  outline-offset: 2px;
+}
+
+::selection {
+  background-color: var(--champagne);
+  color: var(--charcoal);
+}
+
+@layer utilities {
+  .eyebrow {
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .category-slider-viewport {
+    overflow: hidden;
+  }
+
+  .category-slider-copy {
+    display: none;
+  }
+
+  @media (max-width: 767px) {
+    .category-slider-track {
+      width: max-content;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      animation: category-slider 24s linear infinite;
+    }
+
+    .category-slider-copy {
+      display: flex;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .category-slider-track {
+      animation: none;
+    }
+  }
+
+  @keyframes category-slider {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Admin dashboard theme
+   Scoped to .admin-shell (wraps the whole /admin route tree) so these
+   shadcn/ui tokens never leak onto the storefront. Palette per the
+   Vylore Admin Dashboard brand spec: burgundy primary, warm-white
+   surface, soft-gray secondary, fine neutral borders.
+--------------------------------------------------------------------- */
+.admin-shell {
+  --background: #faf9f6;
+  --foreground: #171717;
+  --card: #ffffff;
+  --card-foreground: #171717;
+  --popover: #ffffff;
+  --popover-foreground: #171717;
+  --primary: #810201;
+  --primary-foreground: #faf9f6;
+  --secondary: #f3f3f1;
+  --secondary-foreground: #171717;
+  --muted: #f3f3f1;
+  --muted-foreground: #6b6b6b;
+  --accent: #f3f3f1;
+  --accent-foreground: #810201;
+  --destructive: #b91c1c;
+  --destructive-foreground: #ffffff;
+  --success: #2e7d32;
+  --success-foreground: #ffffff;
+  --warning: #b45309;
+  --warning-foreground: #ffffff;
+  --border: #e5e5e5;
+  --input: #e5e5e5;
+  --ring: #810201;
+  --radius: 0.625rem;
+  --chart-1: #810201;
+  --chart-2: #a8433f;
+  --chart-3: #c97b6f;
+  --chart-4: #d9a99e;
+  --chart-5: #171717;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #171717;
+  --sidebar-primary: #810201;
+  --sidebar-primary-foreground: #faf9f6;
+  --sidebar-accent: #f3f3f1;
+  --sidebar-accent-foreground: #810201;
+  --sidebar-border: #e5e5e5;
+  --sidebar-ring: #810201;
+
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+.admin-shell * {
+  border-color: var(--border);
+}
