@@ -1,13 +1,5 @@
-import OrderDetailClient from "./OrderDetailClient";
+"use client";
 
-<<<<<<< HEAD
-export function generateStaticParams(): { id: string }[] {
-  return [{ id: "placeholder" }];
-}
-
-export default function OrderDetailPage({ params }: PageProps<"/account/orders/[id]">) {
-  return <OrderDetailClient params={params} />;
-=======
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
 import { OrderTimeline } from "@/components/order/OrderTimeline";
@@ -97,5 +89,4 @@ export default function OrderDetailPage({ params }: PageProps<"/account/orders/[
       </div>
     </div>
   );
->>>>>>> cef400b8bee0f185fc879ed78fbbe6c6ad89960c
 }
