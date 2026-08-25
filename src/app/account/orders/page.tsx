@@ -1,13 +1,25 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { useOrderStore } from "@/store/order.store";
+import { listOrders } from "@/services/order.service";
+import type { Order } from "@/types/order";
 import { formatPrice } from "@/utils/formatPrice";
 
+function formatStatus(status: string): string {
+  return status.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 export default function OrdersPage() {
-  const orders = useOrderStore((state) => state.orders);
+  const [orders, setOrders] = useState<Order[] | undefined>(undefined);
+
+  useEffect(() => {
+    listOrders().then(setOrders);
+  }, []);
+
+  if (orders === undefined) return null;
 
   if (orders.length === 0) {
     return (
@@ -32,9 +44,9 @@ export default function OrdersPage() {
           className="flex flex-col gap-2 py-5 transition-colors hover:bg-white sm:flex-row sm:items-center sm:justify-between"
         >
           <div>
-            <p className="text-sm text-charcoal">{order.id}</p>
+            <p className="text-sm text-charcoal">{order.orderNumber}</p>
             <p className="text-xs text-muted">
-              {new Date(order.placedAt).toLocaleDateString("en-IN", {
+              {new Date(order.createdAt).toLocaleDateString("en-IN", {
                 day: "numeric",
                 month: "short",
                 year: "numeric",
@@ -44,7 +56,7 @@ export default function OrdersPage() {
             </p>
           </div>
           <div className="flex items-center gap-6">
-            <span className="eyebrow text-xs text-charcoal">Processing</span>
+            <span className="eyebrow text-xs text-charcoal">{formatStatus(order.orderStatus)}</span>
             <span className="text-sm text-charcoal">{formatPrice(order.total)}</span>
           </div>
         </Link>

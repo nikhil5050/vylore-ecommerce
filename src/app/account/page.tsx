@@ -1,22 +1,28 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/Card";
-import { useAddressStore } from "@/store/address.store";
+import { listAddresses } from "@/services/address.service";
+import { listOrders } from "@/services/order.service";
 import { useAuthStore } from "@/store/auth.store";
-import { useOrderStore } from "@/store/order.store";
 import { useWishlistStore } from "@/store/wishlist.store";
 
 export default function AccountDashboardPage() {
   const user = useAuthStore((state) => state.user);
-  const orderCount = useOrderStore((state) => state.orders.length);
   const wishlistCount = useWishlistStore((state) => state.items.length);
-  const addressCount = useAddressStore((state) => state.addresses.length);
+  const [orderCount, setOrderCount] = useState<number | undefined>(undefined);
+  const [addressCount, setAddressCount] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    listOrders().then((orders) => setOrderCount(orders.length));
+    listAddresses().then((addresses) => setAddressCount(addresses.length));
+  }, []);
 
   const stats = [
-    { label: "Orders", value: orderCount, href: "/account/orders" },
+    { label: "Orders", value: orderCount ?? "–", href: "/account/orders" },
     { label: "Wishlist", value: wishlistCount, href: "/account/wishlist" },
-    { label: "Saved Addresses", value: addressCount, href: "/account/addresses" },
+    { label: "Saved Addresses", value: addressCount ?? "–", href: "/account/addresses" },
   ];
 
   return (

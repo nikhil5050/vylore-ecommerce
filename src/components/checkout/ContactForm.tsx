@@ -2,28 +2,29 @@
 
 import type { FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
-import { Field } from "@/components/ui/Field";
-import type { ContactInfo } from "./types";
+import { useAuthStore } from "@/store/auth.store";
 
 interface ContactFormProps {
-  defaultValue?: ContactInfo;
-  onSubmit: (value: ContactInfo) => void;
+  onSubmit: () => void;
 }
 
-export function ContactForm({ defaultValue, onSubmit }: ContactFormProps) {
+// Nothing to collect here anymore — delivery phone lives on the shipping
+// address (matching the backend's Address.phone), and order emails go to the
+// signed-in account's email. This step just confirms who's ordering.
+export function ContactForm({ onSubmit }: ContactFormProps) {
+  const user = useAuthStore((state) => state.user);
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    onSubmit({
-      email: String(data.get("email") ?? ""),
-      phone: String(data.get("phone") ?? ""),
-    });
+    onSubmit();
   }
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <Field label="Email" name="email" type="email" required autoComplete="email" defaultValue={defaultValue?.email} />
-      <Field label="Phone" name="phone" type="tel" required autoComplete="tel" defaultValue={defaultValue?.phone} />
+      <div>
+        <p className="eyebrow text-[11px] text-muted">Signed in as</p>
+        <p className="mt-1 text-sm text-charcoal">{user?.email}</p>
+      </div>
       <Button type="submit" variant="primary" size="md" className="mt-2 w-fit">
         Continue to Shipping
       </Button>

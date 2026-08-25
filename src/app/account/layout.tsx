@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { AccountSidebar } from "@/components/account/AccountSidebar";
-import { RequireAuth } from "@/components/account/RequireAuth";
+import { RequireAuth } from "@/components/auth/RequireAuth";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Container } from "@/components/ui/Container";
 import { buildMetadata } from "@/utils/metadata";

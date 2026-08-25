@@ -1,16 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { use } from "react";
+import { use, useEffect, useState } from "react";
 import { OrderTimeline } from "@/components/order/OrderTimeline";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { useOrderStore } from "@/store/order.store";
+import { getOrder } from "@/services/order.service";
+import type { Order } from "@/types/order";
 import { formatPrice } from "@/utils/formatPrice";
 
 export default function OrderDetailPage({ params }: PageProps<"/account/orders/[id]">) {
   const { id } = use(params);
-  const order = useOrderStore((state) => state.orders.find((o) => o.id === id));
+  const [order, setOrder] = useState<Order | null | undefined>(undefined);
+
+  useEffect(() => {
+    const orderId = Number(id);
+    Promise.resolve(Number.isFinite(orderId) ? getOrder(orderId) : undefined).then((result) =>
+      setOrder(result ?? null),
+    );
+  }, [id]);
+
+  if (order === undefined) return null;
 
   if (!order) {
     return (
@@ -30,10 +40,10 @@ export default function OrderDetailPage({ params }: PageProps<"/account/orders/[
     <div>
       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="font-serif text-2xl text-charcoal">{order.id}</h2>
+          <h2 className="font-serif text-2xl text-charcoal">{order.orderNumber}</h2>
           <p className="text-sm text-muted">
             Placed on{" "}
-            {new Date(order.placedAt).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
+            {new Date(order.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
           </p>
         </div>
         <Link href="/account/orders" className="eyebrow text-xs text-burgundy">
@@ -42,22 +52,17 @@ export default function OrderDetailPage({ params }: PageProps<"/account/orders/[
       </div>
 
       <div className="mt-8">
-        <OrderTimeline />
+        <OrderTimeline status={order.orderStatus} />
       </div>
 
       <div className="mt-8 divide-y divide-silver/20 border-y border-silver/30">
         {order.items.map((item) => (
-          <div key={`${item.productId}-${item.size ?? ""}`} className="flex items-center justify-between gap-3 py-4">
+          <div key={item.id} className="flex items-center justify-between gap-3 py-4">
             <div className="min-w-0">
-              <Link href={`/product/${item.slug}`} className="text-sm text-charcoal transition-colors hover:text-burgundy">
-                {item.name}
-              </Link>
-              <p className="text-xs text-muted">
-                Qty {item.quantity}
-                {item.size && ` · Size ${item.size}`}
-              </p>
+              <p className="text-sm text-charcoal">{item.productName}</p>
+              <p className="text-xs text-muted">Qty {item.quantity}</p>
             </div>
-            <span className="shrink-0 text-sm text-charcoal">{formatPrice(item.price * item.quantity)}</span>
+            <span className="shrink-0 text-sm text-charcoal">{formatPrice(item.total)}</span>
           </div>
         ))}
       </div>
@@ -70,17 +75,16 @@ export default function OrderDetailPage({ params }: PageProps<"/account/orders/[
       <div className="mt-8 grid gap-8 sm:grid-cols-2">
         <div>
           <p className="eyebrow text-xs text-muted">Shipping Address</p>
-          <p className="mt-2 text-sm text-charcoal">{order.shippingAddress.fullName}</p>
+          <p className="mt-2 text-sm text-charcoal">{order.shippingRecipientName}</p>
           <p className="text-sm text-muted">
-            {order.shippingAddress.line1}
-            {order.shippingAddress.line2 ? `, ${order.shippingAddress.line2}` : ""}, {order.shippingAddress.city},{" "}
-            {order.shippingAddress.state} {order.shippingAddress.postalCode}
+            {order.shippingAddressLine1}
+            {order.shippingAddressLine2 ? `, ${order.shippingAddressLine2}` : ""}, {order.shippingCity},{" "}
+            {order.shippingState} {order.shippingPostalCode}
           </p>
         </div>
         <div>
           <p className="eyebrow text-xs text-muted">Payment</p>
-          <p className="mt-2 text-sm text-charcoal">PayU</p>
-          <p className="text-xs text-muted">Not processed — prototype checkout.</p>
+          <p className="mt-2 text-sm text-charcoal capitalize">{order.paymentStatus}</p>
         </div>
       </div>
     </div>

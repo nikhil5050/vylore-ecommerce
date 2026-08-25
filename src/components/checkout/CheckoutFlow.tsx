@@ -1,15 +1,15 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { RequireAuth } from "@/components/auth/RequireAuth";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { createOrder } from "@/services/order.service";
+import { ApiError } from "@/lib/api";
 import type { PaymentMethod } from "@/services/payment.service";
+import { placeOrder } from "@/services/checkout.service";
 import type { DeliveryOption } from "@/services/shipping.service";
 import { useCartStore } from "@/store/cart.store";
-import { useOrderStore } from "@/store/order.store";
 import type { ShippingAddress } from "@/types/order";
 import { AddressForm } from "./AddressForm";
 import { CheckoutStep } from "./CheckoutStep";
@@ -18,7 +18,6 @@ import { DeliveryForm } from "./DeliveryForm";
 import { OrderSummary } from "./OrderSummary";
 import { PaymentMethodForm } from "./PaymentMethodForm";
 import { ReviewStep } from "./ReviewStep";
-import type { ContactInfo } from "./types";
 
 interface CheckoutFlowProps {
   deliveryOptions: DeliveryOption[];
@@ -27,51 +26,43 @@ interface CheckoutFlowProps {
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
-export function CheckoutFlow({ deliveryOptions, paymentMethods }: CheckoutFlowProps) {
-  const router = useRouter();
+export function CheckoutFlow(props: CheckoutFlowProps) {
+  return (
+    <RequireAuth>
+      <CheckoutFlowInner {...props} />
+    </RequireAuth>
+  );
+}
+
+function CheckoutFlowInner({ deliveryOptions, paymentMethods }: CheckoutFlowProps) {
   const lines = useCartStore((state) => state.lines);
-  const clearCart = useCartStore((state) => state.clear);
-  const addOrder = useOrderStore((state) => state.addOrder);
 
   const [step, setStep] = useState<Step>(1);
-  const [contact, setContact] = useState<ContactInfo | undefined>(undefined);
+  const [contactConfirmed, setContactConfirmed] = useState(false);
   const [address, setAddress] = useState<ShippingAddress | undefined>(undefined);
   const [deliveryOptionId, setDeliveryOptionId] = useState<string | undefined>(undefined);
   const [paymentMethodId, setPaymentMethodId] = useState<string | undefined>(undefined);
   const [placing, setPlacing] = useState(false);
-  const [orderPlaced, setOrderPlaced] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const total = lines.reduce((sum, line) => sum + line.product.price * line.quantity, 0);
 
   async function handlePlaceOrder() {
-    if (!contact || !address || !deliveryOptionId || !paymentMethodId) return;
+    if (!address || !deliveryOptionId || !paymentMethodId) return;
     setPlacing(true);
+    setError(null);
 
-    const order = await createOrder({
-      items: lines.map((line) => ({
-        productId: line.product.id,
-        name: line.product.name,
-        slug: line.product.slug,
-        price: line.product.price,
-        quantity: line.quantity,
-        size: line.size,
-      })),
-      subtotal: total,
-      total,
-      email: contact.email,
-      phone: contact.phone,
-      shippingAddress: address,
-      deliveryOptionId,
-      paymentMethodId,
-    });
-
-    addOrder(order);
-    setOrderPlaced(true);
-    clearCart();
-    router.push("/order-confirmation");
+    try {
+      // On success this navigates the browser away to PayU — it never
+      // resolves normally, so there's nothing to do after awaiting it.
+      await placeOrder(lines, address);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Something went wrong placing your order. Please try again.");
+      setPlacing(false);
+    }
   }
 
-  if (lines.length === 0 && !orderPlaced) {
+  if (lines.length === 0) {
     return (
       <main className="flex flex-1 flex-col">
         <Container className="py-16 lg:py-24">
@@ -102,20 +93,12 @@ export function CheckoutFlow({ deliveryOptions, paymentMethods }: CheckoutFlowPr
             <CheckoutStep
               index={1}
               title="Contact Information"
-              status={step === 1 ? "active" : contact ? "complete" : "upcoming"}
+              status={step === 1 ? "active" : contactConfirmed ? "complete" : "upcoming"}
               onEdit={() => setStep(1)}
-              summary={
-                contact && (
-                  <p>
-                    {contact.email} · {contact.phone}
-                  </p>
-                )
-              }
             >
               <ContactForm
-                defaultValue={contact}
-                onSubmit={(value) => {
-                  setContact(value);
+                onSubmit={() => {
+                  setContactConfirmed(true);
                   setStep(2);
                 }}
               />
@@ -178,14 +161,14 @@ export function CheckoutFlow({ deliveryOptions, paymentMethods }: CheckoutFlowPr
             </CheckoutStep>
 
             <CheckoutStep index={5} title="Review Order" status={step === 5 ? "active" : "upcoming"}>
-              {contact && address && selectedDelivery && selectedPayment && (
+              {contactConfirmed && address && selectedDelivery && selectedPayment && (
                 <ReviewStep
-                  contact={contact}
                   address={address}
                   deliveryOption={selectedDelivery}
                   paymentMethod={selectedPayment}
                   onPlaceOrder={handlePlaceOrder}
                   placing={placing}
+                  error={error}
                 />
               )}
             </CheckoutStep>
