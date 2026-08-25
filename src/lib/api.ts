@@ -3,7 +3,7 @@
 // store/auth.store.ts, which itself calls into this module) — the auth token
 // is read directly from the same localStorage key auth.store.ts persists to.
 
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1").replace(/\/$/, "");
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL ?? "https://api.vylore.in/api/v1").replace(/\/$/, "");
 const AUTH_STORAGE_KEY = "vylore-auth";
 
 // FastAPI's `detail` field is either a plain string (most HTTPExceptions raised

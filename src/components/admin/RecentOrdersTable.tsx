@@ -22,7 +22,7 @@ export function RecentOrdersTable({ orders }: { orders: AdminOrder[] }) {
     <Card>
       <CardHeader className="flex-row items-center justify-between gap-4 border-b pb-4">
         <CardTitle className="text-base">Recent Orders</CardTitle>
-        <Button variant="outline" size="sm" render={<Link href="/admin/orders" />}>
+        <Button variant="outline" size="sm" nativeButton={false} render={<Link href="/admin/orders" />}>
           View all
         </Button>
       </CardHeader>

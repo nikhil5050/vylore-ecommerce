@@ -63,7 +63,7 @@ function TestimonialFormDialog({
         if (next) setForm(testimonial ?? emptyTestimonial);
       }}
     >
-      <DialogTrigger render={<span />}>{trigger}</DialogTrigger>
+      <DialogTrigger nativeButton={false} render={<span />}>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{testimonial ? "Edit Testimonial" : "Add Testimonial"}</DialogTitle>

@@ -127,10 +127,10 @@ export function AdminHeader({ mobileNavOpen, onMobileNavOpenChange, onOpenMobile
         ))}
       </nav>
 
-      <div className="relative ml-auto hidden max-w-xs flex-1 items-center sm:flex md:ml-0">
+      {/* <div className="relative ml-auto hidden max-w-xs flex-1 items-center sm:flex md:ml-0">
         <Search className="pointer-events-none absolute left-3 h-4 w-4 text-muted-foreground" />
         <Input placeholder="Search orders, products, customers…" className="h-9 pl-9" />
-      </div>
+      </div> */}
 
       <div className="ml-auto flex items-center gap-1.5 sm:ml-0">
         <DropdownMenu>

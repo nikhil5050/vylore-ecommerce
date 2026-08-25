@@ -1,5 +1,6 @@
 export interface ShippingAddress {
   fullName: string;
+  phone: string;
   line1: string;
   line2?: string;
   city: string;
@@ -9,25 +10,47 @@ export interface ShippingAddress {
 }
 
 export interface OrderItem {
-  productId: string;
-  name: string;
-  slug: string;
-  price: number;
+  id: number;
+  productId: number | null;
+  variantId: number | null;
+  productName: string;
+  sku: string;
+  unitPrice: number;
   quantity: number;
-  size?: string;
+  total: number;
 }
+
+export type OrderStatus =
+  | "pending_payment"
+  | "payment_failed"
+  | "paid"
+  | "processing"
+  | "shipped"
+  | "out_for_delivery"
+  | "delivered"
+  | "cancelled"
+  | "refund_pending"
+  | "refunded";
 
 export interface Order {
-  id: string;
-  items: OrderItem[];
+  id: number;
+  orderNumber: string;
   subtotal: number;
+  discount: number;
+  tax: number;
+  shippingFee: number;
   total: number;
-  email: string;
-  phone: string;
-  shippingAddress: ShippingAddress;
-  deliveryOptionId: string;
-  paymentMethodId: string;
-  placedAt: string;
+  paymentStatus: "pending" | "paid" | "failed";
+  orderStatus: OrderStatus;
+  shippingStatus: string;
+  shippingRecipientName: string;
+  shippingPhone: string;
+  shippingAddressLine1: string;
+  shippingAddressLine2: string | null;
+  shippingCity: string;
+  shippingState: string;
+  shippingPostalCode: string;
+  shippingCountry: string;
+  items: OrderItem[];
+  createdAt: string;
 }
-
-export type CreateOrderInput = Omit<Order, "id" | "placedAt">;

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Container } from "@/components/ui/Container";
@@ -20,7 +21,9 @@ export default function LoginPage() {
         <h1 className="mt-4 font-serif text-4xl text-charcoal sm:text-5xl">Sign In</h1>
 
         <div className="mt-10 max-w-md">
-          <LoginForm />
+          <Suspense fallback={null}>
+            <LoginForm />
+          </Suspense>
           <p className="mt-6 text-sm text-muted">
             New to Vylore?{" "}
             <Link href="/register" className="text-burgundy transition-colors hover:text-burgundy-dark">

@@ -1,26 +1,28 @@
 import { Button } from "@/components/ui/Button";
 import type { PaymentMethod } from "@/services/payment.service";
 import type { DeliveryOption } from "@/services/shipping.service";
+import { useAuthStore } from "@/store/auth.store";
 import type { ShippingAddress } from "@/types/order";
-import type { ContactInfo } from "./types";
 
 interface ReviewStepProps {
-  contact: ContactInfo;
   address: ShippingAddress;
   deliveryOption: DeliveryOption;
   paymentMethod: PaymentMethod;
   onPlaceOrder: () => void;
   placing: boolean;
+  error?: string | null;
 }
 
-export function ReviewStep({ contact, address, deliveryOption, paymentMethod, onPlaceOrder, placing }: ReviewStepProps) {
+export function ReviewStep({ address, deliveryOption, paymentMethod, onPlaceOrder, placing, error }: ReviewStepProps) {
+  const email = useAuthStore((state) => state.user?.email);
+
   return (
     <div className="flex flex-col gap-6">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <p className="eyebrow text-xs text-muted">Contact</p>
-          <p className="mt-1 text-sm text-charcoal">{contact.email}</p>
-          <p className="text-sm text-charcoal">{contact.phone}</p>
+          <p className="mt-1 text-sm text-charcoal">{email}</p>
+          <p className="text-sm text-charcoal">{address.phone}</p>
         </div>
         <div>
           <p className="eyebrow text-xs text-muted">Shipping Address</p>
@@ -44,9 +46,10 @@ export function ReviewStep({ contact, address, deliveryOption, paymentMethod, on
       </div>
 
       <p className="border-t border-silver/30 pt-4 text-xs text-muted">
-        This checkout is a frontend prototype. Payment processing via PayU will be enabled once backend
-        integration is complete — placing an order now will not charge you.
+        You&apos;ll be redirected to PayU&apos;s secure checkout to complete payment.
       </p>
+
+      {error && <p className="text-sm text-burgundy">{error}</p>}
 
       <Button variant="primary" size="lg" onClick={onPlaceOrder} disabled={placing} className="w-fit">
         {placing ? "Placing Order…" : "Place Order"}

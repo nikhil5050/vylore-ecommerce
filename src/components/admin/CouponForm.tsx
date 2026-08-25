@@ -100,7 +100,7 @@ export function CouponForm({ coupon, trigger, onSaved }: CouponFormProps) {
         if (next) reset(toFormValues(coupon));
       }}
     >
-      <DialogTrigger render={<span />}>{trigger}</DialogTrigger>
+      <DialogTrigger nativeButton={false} render={<span />}>{trigger}</DialogTrigger>
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{isEdit ? "Edit Coupon" : "Add Coupon"}</DialogTitle>

@@ -1,25 +1,48 @@
 "use client";
 
-import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { RequireAuth } from "@/components/auth/RequireAuth";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { useOrderStore } from "@/store/order.store";
+import { getOrderByNumber } from "@/services/order.service";
+import type { Order } from "@/types/order";
 import { formatPrice } from "@/utils/formatPrice";
 
 export default function OrderConfirmationPage() {
-  const order = useOrderStore((state) => state.orders[0]);
+  return (
+    <RequireAuth>
+      <Suspense fallback={null}>
+        <OrderConfirmationContent />
+      </Suspense>
+    </RequireAuth>
+  );
+}
+
+function OrderConfirmationContent() {
+  const searchParams = useSearchParams();
+  const orderNumber = searchParams.get("order_number");
+  const [order, setOrder] = useState<Order | null | undefined>(undefined); // undefined = loading
+
+  useEffect(() => {
+    Promise.resolve(orderNumber ? getOrderByNumber(orderNumber) : undefined).then((result) =>
+      setOrder(result ?? null),
+    );
+  }, [orderNumber]);
+
+  if (order === undefined) return null;
 
   if (!order) {
     return (
       <main className="flex flex-1 flex-col py-16 lg:py-24">
         <Container>
           <EmptyState
-            title="No recent order found"
-            description="Place an order to see your confirmation here."
+            title="No order found"
+            description="We couldn't find that order. If you just paid, it may take a moment to confirm."
             action={
-              <Button href="/shop" variant="primary" size="md">
-                Continue Shopping
+              <Button href="/account/orders" variant="primary" size="md">
+                View Your Orders
               </Button>
             }
           />
@@ -34,22 +57,17 @@ export default function OrderConfirmationPage() {
         <p className="eyebrow text-xs text-muted">Order Received</p>
         <h1 className="mt-4 font-serif text-4xl text-charcoal sm:text-5xl">Thank You.</h1>
         <p className="mt-3 text-base text-muted">
-          Your order reference is <span className="text-charcoal">{order.id}</span>.
+          Your order reference is <span className="text-charcoal">{order.orderNumber}</span>.
         </p>
 
         <div className="mt-10 divide-y divide-silver/20 border-y border-silver/30">
           {order.items.map((item) => (
-            <div key={`${item.productId}-${item.size ?? ""}`} className="flex items-center justify-between gap-3 py-4">
+            <div key={item.id} className="flex items-center justify-between gap-3 py-4">
               <div className="min-w-0">
-                <Link href={`/product/${item.slug}`} className="text-sm text-charcoal transition-colors hover:text-burgundy">
-                  {item.name}
-                </Link>
-                <p className="text-xs text-muted">
-                  Qty {item.quantity}
-                  {item.size && ` · Size ${item.size}`}
-                </p>
+                <p className="text-sm text-charcoal">{item.productName}</p>
+                <p className="text-xs text-muted">Qty {item.quantity}</p>
               </div>
-              <span className="shrink-0 text-sm text-charcoal">{formatPrice(item.price * item.quantity)}</span>
+              <span className="shrink-0 text-sm text-charcoal">{formatPrice(item.total)}</span>
             </div>
           ))}
         </div>
@@ -61,20 +79,15 @@ export default function OrderConfirmationPage() {
 
         <div className="mt-8">
           <p className="eyebrow text-xs text-muted">Shipping To</p>
-          <p className="mt-2 text-sm text-charcoal">{order.shippingAddress.fullName}</p>
+          <p className="mt-2 text-sm text-charcoal">{order.shippingRecipientName}</p>
           <p className="text-sm text-muted">
-            {order.shippingAddress.line1}
-            {order.shippingAddress.line2 ? `, ${order.shippingAddress.line2}` : ""}, {order.shippingAddress.city},{" "}
-            {order.shippingAddress.state} {order.shippingAddress.postalCode}
+            {order.shippingAddressLine1}
+            {order.shippingAddressLine2 ? `, ${order.shippingAddressLine2}` : ""}, {order.shippingCity},{" "}
+            {order.shippingState} {order.shippingPostalCode}
           </p>
         </div>
 
-        <p className="mt-10 border-t border-silver/30 pt-6 text-xs text-muted">
-          This checkout is a frontend prototype. Payment processing via PayU will be enabled once backend
-          integration is complete — no payment was taken for this order.
-        </p>
-
-        <Button href="/shop" variant="secondary" size="md" className="mt-8">
+        <Button href="/shop" variant="secondary" size="md" className="mt-10">
           Continue Shopping
         </Button>
       </Container>

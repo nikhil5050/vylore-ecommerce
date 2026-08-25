@@ -61,7 +61,7 @@ export function OrderDetail({ order: initialOrder }: { order: AdminOrder }) {
           <p className="mt-1 text-sm text-muted-foreground">Placed on {formatAdminDate(order.placedAt)}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Button variant="outline" size="sm" render={<Link href="/admin/shipping/tracking" />}>
+          <Button variant="outline" size="sm" nativeButton={false} render={<Link href="/admin/shipping/tracking" />}>
             <Truck className="h-4 w-4" /> Track shipment
           </Button>
           <Button variant="outline" size="sm" onClick={() => toast.success("Invoice downloaded.")}>

@@ -52,6 +52,7 @@ export function ShipmentTable({ shipments }: { shipments: Shipment[] }) {
                 <Button
                   variant="ghost"
                   size="sm"
+                  nativeButton={false}
                   render={<Link href={`/admin/shipping/tracking?awb=${shipment.awb}`} />}
                 >
                   <Eye className="h-4 w-4" /> Track

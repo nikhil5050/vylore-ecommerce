@@ -41,7 +41,7 @@ function ContentRow({ block, onSave }: { block: ContentBlock; onSave: (block: Co
         <StatusBadge status={block.status} tone={contentStatusTone[block.status] ?? "neutral"} />
         <span className="hidden text-xs text-muted-foreground sm:inline">Order {block.order}</span>
         {meta.href ? (
-          <Button variant="outline" size="sm" render={<Link href={meta.href} />} className="gap-1.5">
+          <Button variant="outline" size="sm" nativeButton={false} render={<Link href={meta.href} />} className="gap-1.5">
             Edit <ExternalLink className="h-3.5 w-3.5" />
           </Button>
         ) : (

@@ -17,6 +17,7 @@ export function AddressForm({ defaultValue, submitLabel = "Continue to Delivery"
     const data = new FormData(event.currentTarget);
     onSubmit({
       fullName: String(data.get("fullName") ?? ""),
+      phone: String(data.get("phone") ?? ""),
       line1: String(data.get("line1") ?? ""),
       line2: String(data.get("line2") ?? "") || undefined,
       city: String(data.get("city") ?? ""),
@@ -29,6 +30,7 @@ export function AddressForm({ defaultValue, submitLabel = "Continue to Delivery"
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <Field label="Full Name" name="fullName" required autoComplete="name" defaultValue={defaultValue?.fullName} />
+      <Field label="Phone" name="phone" type="tel" required autoComplete="tel" defaultValue={defaultValue?.phone} />
       <Field
         label="Address Line 1"
         name="line1"

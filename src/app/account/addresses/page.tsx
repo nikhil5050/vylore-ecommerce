@@ -1,18 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AddressForm } from "@/components/checkout/AddressForm";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { useAddressStore } from "@/store/address.store";
+import { createAddress, deleteAddress, listAddresses, setDefaultAddress, type SavedAddress } from "@/services/address.service";
 
 export default function AddressesPage() {
-  const addresses = useAddressStore((state) => state.addresses);
-  const addAddress = useAddressStore((state) => state.addAddress);
-  const removeAddress = useAddressStore((state) => state.removeAddress);
-  const setDefault = useAddressStore((state) => state.setDefault);
+  const [addresses, setAddresses] = useState<SavedAddress[] | undefined>(undefined);
   const [showForm, setShowForm] = useState(false);
+
+  useEffect(() => {
+    listAddresses().then(setAddresses);
+  }, []);
+
+  if (addresses === undefined) return null;
 
   return (
     <div>
@@ -37,13 +40,23 @@ export default function AddressesPage() {
               </div>
               <div className="mt-4 flex gap-4">
                 {!address.isDefault && (
-                  <button type="button" onClick={() => setDefault(address.id)} className="eyebrow text-xs text-burgundy">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await setDefaultAddress(address.id);
+                      setAddresses(await listAddresses());
+                    }}
+                    className="eyebrow text-xs text-burgundy"
+                  >
                     Set as Default
                   </button>
                 )}
                 <button
                   type="button"
-                  onClick={() => removeAddress(address.id)}
+                  onClick={async () => {
+                    await deleteAddress(address.id);
+                    setAddresses(await listAddresses());
+                  }}
                   className="eyebrow text-xs text-muted transition-colors hover:text-burgundy"
                 >
                   Remove
@@ -59,8 +72,9 @@ export default function AddressesPage() {
           <div className="max-w-md">
             <AddressForm
               submitLabel="Save Address"
-              onSubmit={(address) => {
-                addAddress(address);
+              onSubmit={async (address) => {
+                await createAddress(address);
+                setAddresses(await listAddresses());
                 setShowForm(false);
               }}
             />

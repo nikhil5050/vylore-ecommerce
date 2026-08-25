@@ -77,7 +77,7 @@ function ArticleFormDialog({
         if (next) setForm(article ?? emptyArticle);
       }}
     >
-      <DialogTrigger render={<span />}>{trigger}</DialogTrigger>
+      <DialogTrigger nativeButton={false} render={<span />}>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{article ? "Edit Article" : "New Article"}</DialogTitle>

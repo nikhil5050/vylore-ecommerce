@@ -10,7 +10,6 @@ import {
   Truck,
   Megaphone,
   BarChart3,
-  FileText,
   Settings,
 } from "lucide-react";
 
@@ -115,9 +114,9 @@ export const adminNav: AdminNavSection[] = [
         icon: Megaphone,
         children: [
           { label: "Offer Banners", href: "/admin/offers/banners" },
-          { label: "Coupons", href: "/admin/offers/coupons" },
-          { label: "Product Offers", href: "/admin/offers/product-offers" },
-          { label: "Festival Offers", href: "/admin/offers/festival-offers" },
+          // { label: "Coupons", href: "/admin/offers/coupons" },
+          // { label: "Product Offers", href: "/admin/offers/product-offers" },
+          // { label: "Festival Offers", href: "/admin/offers/festival-offers" },
         ],
       },
       {
@@ -129,19 +128,6 @@ export const adminNav: AdminNavSection[] = [
           { label: "Product Analytics", href: "/admin/analytics/products" },
           { label: "Customer Analytics", href: "/admin/analytics/customers" },
           { label: "Revenue Analytics", href: "/admin/analytics/revenue" },
-        ],
-      },
-      {
-        label: "Content",
-        href: "/admin/content/homepage",
-        icon: FileText,
-        children: [
-          { label: "Homepage", href: "/admin/content/homepage" },
-          { label: "Hero Section", href: "/admin/content/hero" },
-          { label: "Offer Banner", href: "/admin/content/banner" },
-          { label: "Featured Products", href: "/admin/content/featured-products" },
-          { label: "Testimonials", href: "/admin/content/testimonials" },
-          { label: "Blog / Articles", href: "/admin/content/blog" },
         ],
       },
       {
