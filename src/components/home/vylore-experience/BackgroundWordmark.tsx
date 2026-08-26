@@ -17,7 +17,7 @@ export function BackgroundWordmark({ innerRef }: BackgroundWordmarkProps) {
     <div
       ref={innerRef}
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 z-0 flex select-none flex-col items-center justify-center gap-8 overflow-hidden px-8 py-12 sm:items-stretch sm:justify-between sm:gap-0 md:px-16 md:py-20"
+      className="pointer-events-none absolute inset-0 z-[15] flex select-none flex-col items-center justify-center gap-8 overflow-hidden px-8 py-12 sm:items-stretch sm:justify-between sm:gap-0 md:px-16 md:py-20"
     >
       {/* VYLORE — top-left on desktop, centered on mobile */}
       <div
@@ -56,7 +56,11 @@ export function BackgroundWordmark({ innerRef }: BackgroundWordmarkProps) {
           }}
         >
           <img
+<<<<<<< HEAD
             src="https://vylore.in/public/ring%20(2).png"
+=======
+            src="/ring.png"
+>>>>>>> 2529d67dcc45c5c8cb07fa0aa3d20350bd57066d
             alt=""
             className="
   absolute
@@ -77,7 +81,7 @@ export function BackgroundWordmark({ innerRef }: BackgroundWordmarkProps) {
         </span>
       </div>
 
-      {/* JEWELLERY — bottom-right on desktop, centered on mobile */}
+      {/* JEWELLERS — bottom-left on desktop, centered on mobile */}
       <span
         className="
           font-serif
@@ -86,13 +90,13 @@ export function BackgroundWordmark({ innerRef }: BackgroundWordmarkProps) {
           leading-none
           tracking-tight
           text-charcoal
-          sm:self-end
+          sm:self-start
         "
         style={{
           fontSize: "clamp(2.75rem, 15vw, 10rem)",
         }}
       >
-        JEWELLERY
+        JEWELLERS
       </span>
     </div>
   );
