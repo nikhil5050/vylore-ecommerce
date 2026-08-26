@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { use, useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { OrderTimeline } from "@/components/order/OrderTimeline";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -9,18 +10,28 @@ import { getOrder } from "@/services/order.service";
 import type { Order } from "@/types/order";
 import { formatPrice } from "@/utils/formatPrice";
 
-export default function OrderDetailPage({ params }: PageProps<"/account/orders/[id]">) {
-  const { id } = use(params);
+export default function OrderDetailPage() {
+  return (
+    <Suspense fallback={null}>
+      <OrderDetailContent />
+    </Suspense>
+  );
+}
+
+function OrderDetailContent() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
   const [order, setOrder] = useState<Order | null | undefined>(undefined);
 
   useEffect(() => {
+    if (!id) return;
     const orderId = Number(id);
     Promise.resolve(Number.isFinite(orderId) ? getOrder(orderId) : undefined).then((result) =>
       setOrder(result ?? null),
     );
   }, [id]);
 
-  if (order === undefined) return null;
+  if (order === undefined && id) return null;
 
   if (!order) {
     return (

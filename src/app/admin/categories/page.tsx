@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Plus, Search, SquarePen, Trash2 } from "lucide-react";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
-import { ImagePlaceholder } from "@/components/admin/ImagePlaceholder";
+import { SafeImage } from "@/components/admin/SafeImage";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
 import { Button } from "@/components/admin/ui/button";
@@ -64,12 +64,7 @@ export default function CategoriesPage() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((category) => (
             <Card key={category.id} className="overflow-hidden py-0">
-              {category.imageUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={`${category.imageUrl}?tr=w-400`} alt="" className="h-32 w-full object-cover" />
-              ) : (
-                <ImagePlaceholder className="h-32 w-full" />
-              )}
+              <SafeImage src={category.imageUrl} transform="w-400" className="h-32 w-full object-cover" />
               <div className="space-y-2 p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div>
@@ -81,7 +76,7 @@ export default function CategoriesPage() {
                 <p className="line-clamp-2 text-sm text-muted-foreground">{category.description || "No description yet."}</p>
                 <div className="flex items-center justify-end gap-1 pt-1">
                   <Link
-                    href={`/admin/categories/${category.id}`}
+                    href={`/admin/categories/edit?id=${category.id}`}
                     className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
                     aria-label="Edit category"
                   >

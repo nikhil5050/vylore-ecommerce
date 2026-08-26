@@ -1,5 +1,5 @@
 import { Star } from "lucide-react";
-import { ImagePlaceholder } from "@/components/admin/ImagePlaceholder";
+import { SafeImage } from "@/components/admin/SafeImage";
 import { formatPrice } from "@/utils/formatPrice";
 import type { ProductFormValues } from "@/lib/admin/validations/product";
 import type { ProductImage } from "@/types/admin";
@@ -23,12 +23,7 @@ export function ProductPreview({ values, images, categoryName }: ProductPreviewP
       <div className="grid grid-cols-4 gap-1.5">
         {(sorted.length > 0 ? sorted : [{ id: "placeholder", url: "" }]).slice(0, 4).map((image, index) => (
           <div key={image.id} className={index === 0 ? "col-span-4 aspect-square overflow-hidden rounded-lg" : "aspect-square overflow-hidden rounded-md"}>
-            {image.url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={`${image.url}?tr=w-600`} alt="" className="h-full w-full object-cover" />
-            ) : (
-              <ImagePlaceholder className="h-full w-full" />
-            )}
+            <SafeImage src={image.url} transform="w-600" className="h-full w-full object-cover" />
           </div>
         ))}
       </div>

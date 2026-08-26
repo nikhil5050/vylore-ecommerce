@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/admin/ui/dropdown-menu";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
-import { ImagePlaceholder } from "@/components/admin/ImagePlaceholder";
+import { SafeImage } from "@/components/admin/SafeImage";
 import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
 import { stockStatusTone } from "@/lib/admin/status";
 import { formatAdminDate } from "@/lib/admin/format";
@@ -114,13 +114,12 @@ export function ProductTable({ products: initialProducts, categories = [] }: Pro
               {filtered.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell>
-                    <Link href={`/admin/products/${product.id}`} className="flex items-center gap-2.5">
-                      {product.imageUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={`${product.imageUrl}?tr=w-72`} alt="" className="h-9 w-9 shrink-0 rounded-md object-cover" />
-                      ) : (
-                        <ImagePlaceholder className="h-9 w-9 shrink-0 rounded-md" />
-                      )}
+                    <Link href={`/admin/products/edit?id=${product.id}`} className="flex items-center gap-2.5">
+                      <SafeImage
+                        src={product.imageUrl}
+                        transform="w-72"
+                        className="h-9 w-9 shrink-0 rounded-md object-cover"
+                      />
                       <span className="font-medium text-foreground hover:text-primary hover:underline">{product.name}</span>
                     </Link>
                   </TableCell>
@@ -157,10 +156,10 @@ export function ProductTable({ products: initialProducts, categories = [] }: Pro
                           <MoreHorizontal className="h-4 w-4" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem render={<Link href={`/admin/products/${product.id}`} />}>
+                          <DropdownMenuItem render={<Link href={`/admin/products/edit?id=${product.id}`} />}>
                             <Eye className="h-4 w-4" /> View
                           </DropdownMenuItem>
-                          <DropdownMenuItem render={<Link href={`/admin/products/${product.id}`} />}>
+                          <DropdownMenuItem render={<Link href={`/admin/products/edit?id=${product.id}`} />}>
                             <Pencil className="h-4 w-4" /> Edit
                           </DropdownMenuItem>
                         </DropdownMenuContent>

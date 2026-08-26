@@ -121,12 +121,22 @@ export function toListItem(product: Product): ProductListItem {
   };
 }
 
-// Covers the whole catalogue for an MVP-scale store in one request; revisit if
-// the catalogue grows past the backend's page_size cap (100).
+// Pages through the whole catalogue at the backend's max page_size (100) —
+// exhausts every page rather than assuming the catalogue fits in one request.
 async function fetchAllBackendProducts(): Promise<BackendProduct[]> {
-  const query = new URLSearchParams({ page: "1", page_size: "100" });
-  const result = await apiFetch<BackendProductList>(`/admin/products?${query.toString()}`);
-  return result.items;
+  const pageSize = 100;
+  const all: BackendProduct[] = [];
+  let page = 1;
+
+  while (true) {
+    const query = new URLSearchParams({ page: String(page), page_size: String(pageSize) });
+    const result = await apiFetch<BackendProductList>(`/admin/products?${query.toString()}`);
+    all.push(...result.items);
+    if (result.items.length < pageSize || all.length >= result.total) break;
+    page += 1;
+  }
+
+  return all;
 }
 
 export async function getAdminProducts(): Promise<Product[]> {

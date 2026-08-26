@@ -110,12 +110,24 @@ interface BackendCustomerListItem {
 }
 
 // Order rows don't embed the customer's name/email, only user_id — join
-// against the admin customer list (capped at 100, same MVP-scale assumption
-// as the rest of the admin catalogue) rather than fetching per order.
+// against the admin customer list rather than fetching per order.
 async function fetchCustomerContacts(): Promise<Map<string, CustomerContact>> {
-  const result = await apiFetch<{ items: BackendCustomerListItem[] }>("/admin/customers?page_size=100");
+  const pageSize = 100;
+  const all: BackendCustomerListItem[] = [];
+  let page = 1;
+
+  while (true) {
+    const query = new URLSearchParams({ page: String(page), page_size: String(pageSize) });
+    const result = await apiFetch<{ items: BackendCustomerListItem[]; total: number }>(
+      `/admin/customers?${query.toString()}`,
+    );
+    all.push(...result.items);
+    if (result.items.length < pageSize || all.length >= result.total) break;
+    page += 1;
+  }
+
   return new Map(
-    result.items.map((c) => [
+    all.map((c) => [
       String(c.id),
       { name: `${c.first_name} ${c.last_name}`.trim(), email: c.email, phone: c.phone ?? "—" },
     ]),

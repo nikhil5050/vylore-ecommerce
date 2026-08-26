@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { PlaceholderImage } from "@/components/ui/PlaceholderImage";
+import { ProductThumbnail } from "@/components/ui/ProductThumbnail";
 import { useCartStore, type CartLine } from "@/store/cart.store";
 import { cn } from "@/utils/cn";
 import { formatPrice } from "@/utils/formatPrice";
@@ -21,7 +21,7 @@ export function CartLineItem({ line, compact = false }: CartLineItemProps) {
         href={`/product/${line.product.slug}`}
         className={cn("shrink-0 overflow-hidden", compact ? "h-20 w-16" : "h-32 w-24")}
       >
-        <PlaceholderImage />
+        <ProductThumbnail src={line.product.images?.[0]?.url} alt={line.product.name} transform="w-200" />
       </Link>
 
       <div className="flex flex-1 flex-col justify-between">

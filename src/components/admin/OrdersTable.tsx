@@ -116,7 +116,7 @@ export function OrdersTable({ orders, hideStatusFilter, compact }: OrdersTablePr
             {filtered.map((order) => (
               <TableRow key={order.id}>
                 <TableCell className="font-medium text-foreground">
-                  <Link href={`/admin/orders/${order.id}`} className="hover:text-primary hover:underline">
+                  <Link href={`/admin/orders/view?id=${order.id}`} className="hover:text-primary hover:underline">
                     #{order.orderNumber}
                   </Link>
                 </TableCell>
@@ -141,7 +141,7 @@ export function OrdersTable({ orders, hideStatusFilter, compact }: OrdersTablePr
                 </TableCell>
                 <TableCell className="text-right">
                   <Link
-                    href={`/admin/orders/${order.id}`}
+                    href={`/admin/orders/view?id=${order.id}`}
                     className="ml-auto flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
                     aria-label={`View order ${order.orderNumber}`}
                   >

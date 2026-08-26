@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { GripVertical, ImagePlus, Loader2, Star, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { ImagePlaceholder } from "@/components/admin/ImagePlaceholder";
+import { SafeImage } from "@/components/admin/SafeImage";
 import { uploadProductImage } from "@/services/admin/media.service";
 import { addProductImage, deleteProductImage, reorderProductImages } from "@/lib/admin/api";
 import type { ProductImage } from "@/types/admin";
@@ -156,12 +156,7 @@ export function ProductImageUploader({ images, onChange, productId, folderId }: 
                   draggedId === image.id && "opacity-50",
                 )}
               >
-                {image.url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={`${image.url}?tr=w-300`} alt={image.altText ?? ""} className="h-full w-full object-cover" />
-                ) : (
-                  <ImagePlaceholder className="h-full w-full" />
-                )}
+                <SafeImage src={image.url} alt={image.altText} transform="w-300" className="h-full w-full object-cover" />
 
                 <span className="absolute left-1.5 top-1.5 flex h-5 w-5 cursor-grab items-center justify-center rounded bg-background/80 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100">
                   <GripVertical className="h-3.5 w-3.5" />

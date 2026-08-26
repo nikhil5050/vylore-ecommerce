@@ -78,7 +78,7 @@ export function CustomerTable({ customers }: { customers: Customer[] }) {
             {filtered.map((customer) => (
               <TableRow key={customer.id}>
                 <TableCell>
-                  <Link href={`/admin/customers/${customer.id}`} className="flex items-center gap-2.5 hover:text-primary">
+                  <Link href={`/admin/customers/view?id=${customer.id}`} className="flex items-center gap-2.5 hover:text-primary">
                     <Avatar size="sm">
                       <AvatarFallback>{initials(customer.name)}</AvatarFallback>
                     </Avatar>
@@ -95,7 +95,7 @@ export function CustomerTable({ customers }: { customers: Customer[] }) {
                 </TableCell>
                 <TableCell className="text-right">
                   <Link
-                    href={`/admin/customers/${customer.id}`}
+                    href={`/admin/customers/view?id=${customer.id}`}
                     className="ml-auto flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
                     aria-label={`View ${customer.name}`}
                   >

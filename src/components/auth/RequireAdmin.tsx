@@ -1,33 +1,48 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect, type ReactNode } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useSyncExternalStore, type ReactNode } from "react";
 import { useAuthStore } from "@/store/auth.store";
-import { RequireAuth } from "./RequireAuth";
 
-// Layered on RequireAuth: that handles "must be signed in", this adds
-// "must be an admin". Split in two so the plain sign-in check/hydration-wait
-// logic isn't duplicated.
-export function RequireAdmin({ children }: { children: ReactNode }) {
-  return (
-    <RequireAuth>
-      <AdminRoleGate>{children}</AdminRoleGate>
-    </RequireAuth>
+// See RequireAuth for why hydration has to be tracked explicitly rather than
+// just reading `token` on first render.
+function useHasHydrated() {
+  return useSyncExternalStore(
+    (callback) => useAuthStore.persist.onFinishHydration(callback),
+    () => useAuthStore.persist.hasHydrated(),
+    () => false,
   );
 }
 
-function AdminRoleGate({ children }: { children: ReactNode }) {
+export function RequireAdmin({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const token = useAuthStore((state) => state.token);
   const user = useAuthStore((state) => state.user);
-  const isAdmin = user?.role === "admin";
+  const hydrated = useHasHydrated();
 
   useEffect(() => {
-    if (user && !isAdmin) {
-      router.replace("/");
+    if (hydrated && !token) {
+      router.replace(`/login?next=${encodeURIComponent(pathname)}`);
     }
-  }, [user, isAdmin, router]);
+  }, [hydrated, token, pathname, router]);
 
-  if (!isAdmin) return null;
+  if (!hydrated || !token) return null;
+
+  if (user && user.role !== "admin") {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-background px-6 text-center">
+        <p className="font-serif text-2xl font-semibold text-foreground">Access denied</p>
+        <p className="max-w-sm text-sm text-muted-foreground">
+          {user.email} doesn&apos;t have admin access. Sign in with an admin account to continue.
+        </p>
+        <Link href="/" className="mt-2 text-sm font-medium text-primary hover:underline">
+          Back to the storefront
+        </Link>
+      </div>
+    );
+  }
 
   return <>{children}</>;
 }

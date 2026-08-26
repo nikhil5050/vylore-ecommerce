@@ -4,8 +4,10 @@ import type { Product } from "@/types/product";
 
 interface BackendProductImage {
   id: number;
-  image_url: string;
-  sort_order: number;
+  media_asset_id: number;
+  url: string;
+  position: number;
+  is_primary: boolean;
   alt_text: string | null;
 }
 
@@ -55,6 +57,9 @@ async function mapProduct(product: BackendProduct): Promise<Product> {
     price: product.base_price,
     compareAtPrice: product.compare_at_price ?? undefined,
     description: product.description ?? "",
+    images: [...product.images]
+      .sort((a, b) => a.position - b.position)
+      .map((image) => ({ url: image.url, altText: image.alt_text ?? undefined })),
     inStock,
     // No backend field yet for these — real product content (story, metal,
     // purity, weight, size options, marketing badges, collection curation)
@@ -63,13 +68,23 @@ async function mapProduct(product: BackendProduct): Promise<Product> {
   };
 }
 
-// Covers the whole catalog for an MVP-scale store in one request; revisit if
-// the catalog grows past the backend's page_size cap (100).
+// Pages through the whole catalog at the backend's max page_size (100) —
+// exhausts every page rather than assuming the catalog fits in one request.
 async function fetchAllBackendProducts(categoryId?: number): Promise<BackendProduct[]> {
-  const query = new URLSearchParams({ page: "1", page_size: "100" });
-  if (categoryId !== undefined) query.set("category_id", String(categoryId));
-  const result = await apiFetch<BackendProductList>(`/products?${query.toString()}`, { auth: false });
-  return result.items;
+  const pageSize = 100;
+  const all: BackendProduct[] = [];
+  let page = 1;
+
+  while (true) {
+    const query = new URLSearchParams({ page: String(page), page_size: String(pageSize) });
+    if (categoryId !== undefined) query.set("category_id", String(categoryId));
+    const result = await apiFetch<BackendProductList>(`/products?${query.toString()}`, { auth: false });
+    all.push(...result.items);
+    if (result.items.length < pageSize || all.length >= result.total) break;
+    page += 1;
+  }
+
+  return all;
 }
 
 export async function getAllProducts(): Promise<Product[]> {

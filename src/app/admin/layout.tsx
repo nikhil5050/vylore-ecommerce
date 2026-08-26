@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { AdminShell } from "@/components/admin/AdminShell";
-import { Toaster } from "@/components/admin/ui/sonner";
 import { RequireAdmin } from "@/components/auth/RequireAdmin";
+import { Toaster } from "@/components/admin/ui/sonner";
 
 export const metadata: Metadata = {
   title: {

@@ -97,7 +97,7 @@ export function ProductForm({ product, categories }: { product?: Product; catego
           })),
         });
         toast.success("Product created successfully.");
-        router.push(`/admin/products/${created.id}`);
+        router.push(`/admin/products/edit?id=${created.id}`);
       }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Couldn't save the product.");

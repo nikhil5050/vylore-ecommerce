@@ -1,5 +1,10 @@
 export type ProductBadge = "NEW" | "BESTSELLER" | "SIGNATURE" | "LIMITED";
 
+export interface ProductImage {
+  url: string;
+  altText?: string;
+}
+
 export interface Product {
   id: string;
   slug: string;
@@ -9,6 +14,7 @@ export interface Product {
   price: number;
   compareAtPrice?: number;
   description: string;
+  images: ProductImage[];
   story?: string;
   metal?: string;
   // purity/weight are left unset until confirmed product data exists — the PDP

@@ -36,8 +36,8 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
 
   const related = await getRelatedProducts(product);
 
-  // No real photography or reviews exist yet, so image/aggregateRating are
-  // intentionally omitted rather than fabricated.
+  // No real reviews exist yet, so aggregateRating is intentionally omitted
+  // rather than fabricated.
   const productJsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -45,6 +45,7 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
     description: product.description,
     sku: product.id,
     category: product.category,
+    ...(product.images.length > 0 ? { image: product.images.map((image) => image.url) } : {}),
     brand: { "@type": "Brand", name: siteConfig.name },
     offers: {
       "@type": "Offer",
@@ -107,7 +108,7 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }} />
       <Container>
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
-          <ProductGallery productName={product.name} />
+          <ProductGallery productName={product.name} images={product.images} />
           <ProductInfo product={product} />
         </div>
 

@@ -40,7 +40,7 @@ export default function OrdersPage() {
       {orders.map((order) => (
         <Link
           key={order.id}
-          href={`/account/orders/${order.id}`}
+          href={`/account/orders/view?id=${order.id}`}
           className="flex flex-col gap-2 py-5 transition-colors hover:bg-white sm:flex-row sm:items-center sm:justify-between"
         >
           <div>

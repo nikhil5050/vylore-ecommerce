@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PlaceholderImage } from "@/components/ui/PlaceholderImage";
+import { ProductThumbnail } from "@/components/ui/ProductThumbnail";
 import type { Product } from "@/types/product";
 import { formatPrice } from "@/utils/formatPrice";
 import { WishlistButton } from "./WishlistButton";
@@ -9,7 +9,12 @@ export function ProductCard({ product }: { product: Product }) {
     <div className="group">
       <div className="relative aspect-[4/5] overflow-hidden">
         <Link href={`/product/${product.slug}`} className="block h-full w-full">
-          <PlaceholderImage className="transition-transform duration-500 group-hover:scale-[1.03]" />
+          <ProductThumbnail
+            src={product.images?.[0]?.url}
+            alt={product.images?.[0]?.altText ?? product.name}
+            transform="w-500"
+            className="transition-transform duration-500 group-hover:scale-[1.03]"
+          />
         </Link>
 
         {product.badge && (

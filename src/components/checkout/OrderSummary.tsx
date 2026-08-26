@@ -1,4 +1,4 @@
-import { PlaceholderImage } from "@/components/ui/PlaceholderImage";
+import { ProductThumbnail } from "@/components/ui/ProductThumbnail";
 import type { CartLine } from "@/store/cart.store";
 import { formatPrice } from "@/utils/formatPrice";
 
@@ -11,7 +11,7 @@ export function OrderSummary({ lines, total }: { lines: CartLine[]; total: numbe
         {lines.map((line) => (
           <div key={`${line.product.id}-${line.size ?? ""}`} className="flex gap-3 py-3">
             <div className="h-16 w-12 shrink-0 overflow-hidden">
-              <PlaceholderImage />
+              <ProductThumbnail src={line.product.images?.[0]?.url} alt={line.product.name} transform="w-100" />
             </div>
             <div className="flex flex-1 items-center justify-between gap-3">
               <div className="min-w-0">

@@ -70,9 +70,29 @@ function mapAddress(address: BackendAddress): CustomerAddress {
   };
 }
 
+// Pages through every customer at the backend's max page_size (100) —
+// exhausts every page rather than assuming they all fit in one request.
+async function fetchAllCustomers(): Promise<BackendCustomerListItem[]> {
+  const pageSize = 100;
+  const all: BackendCustomerListItem[] = [];
+  let page = 1;
+
+  while (true) {
+    const query = new URLSearchParams({ page: String(page), page_size: String(pageSize) });
+    const result = await apiFetch<{ items: BackendCustomerListItem[]; total: number }>(
+      `/admin/customers?${query.toString()}`,
+    );
+    all.push(...result.items);
+    if (result.items.length < pageSize || all.length >= result.total) break;
+    page += 1;
+  }
+
+  return all;
+}
+
 export async function getAdminCustomers(): Promise<Customer[]> {
-  const result = await apiFetch<{ items: BackendCustomerListItem[] }>("/admin/customers?page_size=100");
-  return result.items.map(mapCustomer);
+  const items = await fetchAllCustomers();
+  return items.map(mapCustomer);
 }
 
 export async function getAdminCustomer(id: string): Promise<{ customer: Customer; orders: AdminOrder[] } | undefined> {
