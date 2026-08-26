@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { ApiError } from "@/lib/api";
+import { ApiError, setUnauthorizedHandler } from "@/lib/api";
 import { loginCustomer, registerCustomer } from "@/services/auth.service";
 import type { AuthUser, LoginInput, RegisterInput } from "@/types/auth";
 
@@ -53,3 +53,8 @@ export const useAuthStore = create<AuthState>()(
     { name: "vylore-auth", partialize: (state) => ({ token: state.token, user: state.user }) },
   ),
 );
+
+// A stored token that the backend rejects (expired/invalid) clears the
+// session here so RequireAuth redirects to /login instead of every guarded
+// page crashing on an unhandled 401.
+setUnauthorizedHandler(() => useAuthStore.getState().logout());

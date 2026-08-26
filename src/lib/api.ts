@@ -47,6 +47,16 @@ function getStoredToken(): string | null {
   }
 }
 
+// Set by auth.store.ts (outside any component, at module scope) so that an
+// expired/invalid stored token can clear the Zustand session and let
+// RequireAuth redirect to /login — without this module importing the store
+// directly, which would create the import cycle noted above.
+let unauthorizedHandler: (() => void) | null = null;
+
+export function setUnauthorizedHandler(handler: () => void) {
+  unauthorizedHandler = handler;
+}
+
 interface ApiFetchOptions {
   method?: "GET" | "POST" | "PATCH" | "DELETE";
   body?: unknown;
@@ -76,6 +86,18 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
   }
 
   const response = await fetch(`${API_BASE_URL}${path}`, { method, headers, body: requestBody });
+
+  // A previously-valid stored token expired or was revoked server-side. This is
+  // distinct from an `auth: false` endpoint (e.g. /auth/login) returning 401 for
+  // bad credentials — that must still surface as a normal ApiError so the login
+  // form can show it. Here there's nothing useful for the calling page to do
+  // with the error, so clear the session and never resolve — RequireAuth reacts
+  // to the cleared token and redirects to /login, and the caller's .then()
+  // simply never fires instead of crashing as an unhandled rejection.
+  if (auth && response.status === 401) {
+    unauthorizedHandler?.();
+    return new Promise<T>(() => {});
+  }
 
   if (response.status === 204) return undefined as T;
 
