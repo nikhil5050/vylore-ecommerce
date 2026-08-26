@@ -1,19 +1,15 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { ApiError } from "@/lib/api";
-import { useAuthStore } from "@/store/auth.store";
+import { requestPasswordReset } from "@/services/auth.service";
 
-export function LoginForm() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const login = useAuthStore((state) => state.login);
+export function ForgotPasswordForm() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -22,8 +18,11 @@ export function LoginForm() {
 
     const data = new FormData(event.currentTarget);
     try {
-      await login({ email: String(data.get("email")), password: String(data.get("password")) });
-      router.push(searchParams.get("next") || "/account");
+      await requestPasswordReset(String(data.get("email")));
+      // Backend always responds 204 regardless of whether the email is
+      // registered — this message must never change based on the result, or
+      // it becomes a way to enumerate registered accounts.
+      setSent(true);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Something went wrong. Please try again.");
     } finally {
@@ -31,16 +30,23 @@ export function LoginForm() {
     }
   }
 
+  if (sent) {
+    return (
+      <div className="flex flex-col gap-2">
+        <p className="text-sm text-charcoal">
+          If an account exists for that email, we&apos;ve sent a link to reset your password.
+        </p>
+        <p className="text-sm text-muted">Check your inbox — the link expires in 30 minutes.</p>
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <Field label="Email" name="email" type="email" required autoComplete="email" />
-      <Field label="Password" name="password" type="password" required autoComplete="current-password" />
-      <Link href="/forgot-password" className="-mt-2 self-end text-xs text-muted transition-colors hover:text-burgundy">
-        Forgot password?
-      </Link>
       {error && <p className="text-sm text-burgundy">{error}</p>}
       <Button type="submit" variant="primary" size="md" disabled={submitting} className="mt-2 w-fit">
-        {submitting ? "Signing In…" : "Sign In"}
+        {submitting ? "Sending…" : "Send Reset Link"}
       </Button>
     </form>
   );

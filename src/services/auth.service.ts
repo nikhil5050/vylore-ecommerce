@@ -12,3 +12,15 @@ export async function loginCustomer(input: LoginInput): Promise<AuthTokens> {
 export async function fetchCurrentUser(): Promise<AuthUser> {
   return apiFetch<AuthUser>("/auth/me");
 }
+
+export async function verifyEmail(token: string): Promise<AuthUser> {
+  return apiFetch<AuthUser>("/auth/verify-email", { method: "POST", body: { token }, auth: false });
+}
+
+export async function requestPasswordReset(email: string): Promise<void> {
+  return apiFetch<void>("/auth/forgot-password", { method: "POST", body: { email }, auth: false });
+}
+
+export async function resetPassword(token: string, password: string): Promise<void> {
+  return apiFetch<void>("/auth/reset-password", { method: "POST", body: { token, password }, auth: false });
+}
