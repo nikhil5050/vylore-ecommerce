@@ -6,14 +6,59 @@ import type { SceneState } from "./types";
 // Total frames extracted from the video (every 2nd frame from 300 originals).
 const TOTAL_FRAMES = 150;
 
-// The video is a 360° rotation. We want scroll-down = assembly.
-// Frame 1 = front/assembled, Frame ~60 = side/fragmented.
-// We play frames 60 → 1 (reversed) so scroll progress 0 = side, 1 = assembled.
-const START_FRAME = 60; // side/fragmented view
-const END_FRAME = 1; // front/assembled view
+// The video is a 360° rotation. The necklace now starts front-facing and
+// spins away from camera as the user scrolls, so we play frames 1 → 60.
+const START_FRAME = 1; // front/assembled view
+const END_FRAME = 60; // side/rotated view
+
+// Rotation only plays out over the first part of the scroll (the "spin"
+// phase) — past this point the frame holds while the necklace repositions
+// for the About section. Matches the wordmark/hero fade timing in
+// VyloreExperience's GSAP timeline.
+const SPIN_END_PROGRESS = 0.45;
 
 function getFramePath(index: number): string {
-  return `/necklace-frames/frame_${String(index).padStart(4, "0")}.jpg`;
+  // Background-removed WebP — see public/necklace-frames (transparent everywhere
+  // except the necklace itself, including its inner gaps between links/stones).
+  return `/necklace-frames/frame_${String(index).padStart(4, "0")}.webp`;
+}
+
+function easeInOutCubic(t: number): number {
+  return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
+}
+
+function lerp(a: number, b: number, t: number): number {
+  return a + (b - a) * t;
+}
+
+interface Pose {
+  xVw: number;
+  scale: number;
+  rotateDeg: number;
+}
+
+/**
+ * Two-phase choreography driven entirely by scroll progress (0→1):
+ *  - Phase A (0 → SPIN_END_PROGRESS): necklace sits right-of-center, front
+ *    facing, and drifts a little further right as it spins away from camera.
+ *  - Phase B (SPIN_END_PROGRESS → 1): rotation holds; the necklace crosses
+ *    to the left, scaling down and tilting slightly to sit alongside the
+ *    About copy (which occupies the right column during this phase).
+ */
+function getPose(progress: number): Pose {
+  const p = Math.max(0, Math.min(1, progress));
+
+  if (p <= SPIN_END_PROGRESS) {
+    const t = easeInOutCubic(p / SPIN_END_PROGRESS);
+    return { xVw: lerp(24, 32, t), scale: 1, rotateDeg: 0 };
+  }
+
+  const t = easeInOutCubic((p - SPIN_END_PROGRESS) / (1 - SPIN_END_PROGRESS));
+  return {
+    xVw: lerp(32, -22, t),
+    scale: lerp(1, 0.72, t),
+    rotateDeg: lerp(0, -6, t),
+  };
 }
 
 interface NecklaceCanvasProps {
@@ -24,10 +69,11 @@ interface NecklaceCanvasProps {
 /**
  * Scroll-driven frame-sequence canvas inspired by Apple's AirPods technique.
  * Preloads all frames as Image objects on mount; on every rAF tick, reads
- * `sceneState.progress` (0→1, set by GSAP ScrollTrigger in the parent) and
- * draws the corresponding frame onto a <canvas>. Frame order is reversed so
- * scrolling DOWN assembles the necklace from its thin side view into the
- * fully-open front pose.
+ * `sceneState.progress` (0→1, set by GSAP ScrollTrigger in the parent),
+ * draws the matching frame onto a <canvas>, and repositions the canvas
+ * itself per `getPose` above. The necklace starts front-facing on the right
+ * and spins toward its side profile over the first ~45% of the scroll, then
+ * holds that pose while it crosses to the left for the About section.
  */
 export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -39,11 +85,11 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
   const [isReady, setIsReady] = useState(false);
 
   // Build the ordered list of frame indices for the scroll sequence.
-  // Goes from START_FRAME down to END_FRAME (reverse).
+  // Goes from START_FRAME up to END_FRAME.
   const frameSequence = useRef<number[]>([]);
   if (frameSequence.current.length === 0) {
     const seq: number[] = [];
-    for (let i = START_FRAME; i >= END_FRAME; i--) {
+    for (let i = START_FRAME; i <= END_FRAME; i++) {
       seq.push(i);
     }
     frameSequence.current = seq;
@@ -147,18 +193,27 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
     return () => observer.disconnect();
   }, [drawFrame]);
 
-  // Animation loop: read progress and draw the matching frame.
+  // Animation loop: read progress, draw the matching frame, and reposition
+  // the canvas per the current pose.
   useEffect(() => {
     function tick() {
       const progress = sceneState.current.progress;
-      // Clamp progress to [0, 1] and map to a frame index in our sequence.
       const clamped = Math.max(0, Math.min(1, progress));
-      const seqIdx = Math.round(clamped * (totalSequenceFrames - 1));
+
+      // Rotation only advances through SPIN_END_PROGRESS, then holds.
+      const rotationProgress = Math.min(clamped / SPIN_END_PROGRESS, 1);
+      const seqIdx = Math.round(rotationProgress * (totalSequenceFrames - 1));
       const frameIdx = frameSequence.current[seqIdx];
 
       if (frameIdx !== lastFrameRef.current && frameIdx !== undefined) {
         lastFrameRef.current = frameIdx;
         drawFrame(frameIdx);
+      }
+
+      const wrapper = wrapperRef.current;
+      if (wrapper) {
+        const { xVw, scale, rotateDeg } = getPose(clamped);
+        wrapper.style.transform = `translateX(${xVw}vw) scale(${scale}) rotate(${rotateDeg}deg)`;
       }
 
       rafRef.current = requestAnimationFrame(tick);
@@ -169,12 +224,12 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
   }, [sceneState, totalSequenceFrames, drawFrame]);
 
   if (reducedMotion) {
-    // Static fallback: just show the assembled frame (last in sequence).
+    // Static fallback: front-facing pose, centered, no motion.
     return (
       <div className="absolute inset-0 z-10 flex items-center justify-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={getFramePath(END_FRAME)}
+          src={getFramePath(START_FRAME)}
           alt="Vylore emerald necklace"
           className="h-full w-full object-contain"
         />

@@ -13,8 +13,10 @@ export function AboutOverlay({ innerRef }: AboutOverlayProps) {
       className="pointer-events-none absolute inset-0 z-20 flex flex-col justify-end pb-10 opacity-0 sm:pb-14 lg:flex-row lg:items-center lg:pb-0"
     >
       <Container className="w-full lg:grid lg:grid-cols-2 lg:gap-8">
-        {/* Text on the LEFT so it doesn't obstruct the necklace (right-of-center) */}
-        <div className="pointer-events-auto flex max-w-md flex-col items-start px-6 lg:px-0">
+        {/* Empty left column — necklace occupies this space */}
+        <div className="hidden lg:block" />
+        {/* Text on the RIGHT so it doesn't obstruct the necklace (left-of-center) */}
+        <div className="pointer-events-auto flex max-w-md flex-col items-start px-6 lg:px-0 lg:justify-self-end">
           <p className="about-stagger-item eyebrow text-xs text-muted">Our Story</p>
           <h2 className="about-stagger-item mt-4 max-w-md font-serif text-3xl leading-tight text-charcoal sm:text-4xl lg:text-5xl">
             Built on Legacy. Designed for What&apos;s Next.
@@ -44,8 +46,6 @@ export function AboutOverlay({ innerRef }: AboutOverlayProps) {
             </svg>
           </Button>
         </div>
-        {/* Empty right column — necklace occupies this space */}
-        <div className="hidden lg:block" />
       </Container>
     </div>
   );

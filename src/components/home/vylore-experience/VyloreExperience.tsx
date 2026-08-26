@@ -116,7 +116,7 @@ function StaticExperience() {
         <div className="absolute inset-0 z-10 flex items-center justify-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/necklace-frames/frame_0001.jpg"
+            src="/necklace-frames/frame_0001.webp"
             alt="Vylore emerald and diamond necklace"
             className="h-full w-full object-contain"
           />
@@ -129,7 +129,7 @@ function StaticExperience() {
             <div className="relative aspect-[4/3] overflow-hidden bg-white">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/necklace-frames/frame_0001.jpg"
+                src="/necklace-frames/frame_0001.webp"
                 alt="Vylore emerald necklace — assembled view"
                 className="h-full w-full object-contain"
               />
