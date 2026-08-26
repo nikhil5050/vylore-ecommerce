@@ -1,12 +1,17 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { OrdersTable } from "@/components/admin/OrdersTable";
 import { getOrders } from "@/lib/admin/api";
+import type { AdminOrder } from "@/types/admin";
 
-export const metadata: Metadata = { title: "Orders" };
+export default function OrdersPage() {
+  const [orders, setOrders] = useState<AdminOrder[]>([]);
 
-export default async function OrdersPage() {
-  const orders = await getOrders();
+  useEffect(() => {
+    getOrders().then(setOrders);
+  }, []);
 
   return (
     <div className="space-y-6">

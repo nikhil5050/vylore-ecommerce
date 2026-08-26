@@ -1,17 +1,25 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { OrdersTable } from "@/components/admin/OrdersTable";
 import { getOrders } from "@/lib/admin/api";
+import type { AdminOrder } from "@/types/admin";
 
-export const metadata: Metadata = { title: "Shipped Orders" };
+export default function ShippedOrdersPage() {
+  const [orders, setOrders] = useState<AdminOrder[]>([]);
 
-export default async function ShippedOrdersPage() {
-  const orders = (await getOrders()).filter((o) => o.status === "shipped" || o.status === "out_for_delivery");
+  useEffect(() => {
+    getOrders().then(setOrders);
+  }, []);
 
   return (
     <div className="space-y-6">
       <PageHeader title="Shipped Orders" description="Orders currently on their way to customers." />
-      <OrdersTable orders={orders} hideStatusFilter />
+      <OrdersTable
+        orders={orders.filter((o) => o.status === "shipped" || o.status === "out_for_delivery")}
+        hideStatusFilter
+      />
     </div>
   );
 }

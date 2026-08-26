@@ -1,14 +1,19 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useEffect, useState } from "react";
 import { Boxes, Package, PackageX, TriangleAlert } from "lucide-react";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { InventoryTable } from "@/components/admin/InventoryTable";
 import { Card, CardContent } from "@/components/admin/ui/card";
 import { getInventory } from "@/lib/admin/api";
+import type { InventoryItem } from "@/types/admin";
 
-export const metadata: Metadata = { title: "Inventory" };
+export default function InventoryPage() {
+  const [items, setItems] = useState<InventoryItem[]>([]);
 
-export default async function InventoryPage() {
-  const items = await getInventory();
+  useEffect(() => {
+    getInventory().then(setItems);
+  }, []);
 
   const totalStock = items.reduce((sum, i) => sum + i.quantity, 0);
   const lowStock = items.filter((i) => i.status === "low_stock").length;

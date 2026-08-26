@@ -1,15 +1,24 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { ProductTable } from "@/components/admin/ProductTable";
 import { Button } from "@/components/admin/ui/button";
 import { getCategories, getProducts, toProductListItem } from "@/lib/admin/api";
+import type { AdminCategory, Product } from "@/types/admin";
 
-export const metadata: Metadata = { title: "Products" };
+export default function ProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<AdminCategory[]>([]);
 
-export default async function ProductsPage() {
-  const [products, categories] = await Promise.all([getProducts(), getCategories()]);
+  useEffect(() => {
+    Promise.all([getProducts(), getCategories()]).then(([productsResult, categoriesResult]) => {
+      setProducts(productsResult);
+      setCategories(categoriesResult);
+    });
+  }, []);
 
   return (
     <div className="space-y-6">

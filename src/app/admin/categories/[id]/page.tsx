@@ -1,21 +1,26 @@
-import type { Metadata } from "next";
+"use client";
+
 import { notFound } from "next/navigation";
+import { use, useEffect, useState } from "react";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { CategoryForm } from "@/components/admin/CategoryForm";
 import { getCategories } from "@/lib/admin/api";
+import type { AdminCategory } from "@/types/admin";
 
-export async function generateMetadata({ params }: PageProps<"/admin/categories/[id]">): Promise<Metadata> {
-  const { id } = await params;
-  const categories = await getCategories();
-  const category = categories.find((c) => c.id === id);
-  return { title: category?.name ?? "Edit Category" };
-}
+export default function EditCategoryPage({ params }: PageProps<"/admin/categories/[id]">) {
+  const { id } = use(params);
+  const [category, setCategory] = useState<AdminCategory | null | undefined>(undefined);
 
-export default async function EditCategoryPage({ params }: PageProps<"/admin/categories/[id]">) {
-  const { id } = await params;
-  const categories = await getCategories();
-  const category = categories.find((c) => c.id === id);
-  if (!category) notFound();
+  useEffect(() => {
+    getCategories().then((categories) => setCategory(categories.find((c) => c.id === id) ?? null));
+  }, [id]);
+
+  useEffect(() => {
+    if (category) document.title = `${category.name} | Vylore Admin`;
+  }, [category]);
+
+  if (category === undefined) return null;
+  if (category === null) notFound();
 
   return (
     <div className="space-y-6">

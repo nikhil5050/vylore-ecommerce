@@ -1,14 +1,25 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useEffect, useState } from "react";
 import { DashboardStats } from "@/components/admin/DashboardStats";
 import { OrderStatusCard } from "@/components/admin/OrderStatusCard";
 import { RecentOrdersTable } from "@/components/admin/RecentOrdersTable";
 import { getDashboardOverview, getOrders } from "@/lib/admin/api";
+import type { AdminDashboardOverview } from "@/services/admin/dashboard.service";
+import type { AdminOrder } from "@/types/admin";
 
-export const metadata: Metadata = { title: "Dashboard" };
+export default function AdminDashboardPage() {
+  const [overview, setOverview] = useState<AdminDashboardOverview | null>(null);
+  const [orders, setOrders] = useState<AdminOrder[]>([]);
 
-export default async function AdminDashboardPage() {
-  const [overview, orders] = await Promise.all([getDashboardOverview(), getOrders()]);
-  const recentOrders = orders.slice(0, 6);
+  useEffect(() => {
+    Promise.all([getDashboardOverview(), getOrders()]).then(([overviewResult, ordersResult]) => {
+      setOverview(overviewResult);
+      setOrders(ordersResult);
+    });
+  }, []);
+
+  if (!overview) return null;
 
   return (
     <div className="space-y-6">
@@ -21,7 +32,7 @@ export default async function AdminDashboardPage() {
 
       <OrderStatusCard statuses={overview.orderStatusCounts} />
 
-      <RecentOrdersTable orders={recentOrders} />
+      <RecentOrdersTable orders={orders.slice(0, 6)} />
     </div>
   );
 }

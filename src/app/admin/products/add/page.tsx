@@ -1,12 +1,20 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { ProductForm } from "@/components/admin/ProductForm";
 import { getCategories } from "@/lib/admin/api";
+import type { AdminCategory } from "@/types/admin";
 
-export const metadata: Metadata = { title: "Add Product" };
+export default function AddProductPage() {
+  const [categories, setCategories] = useState<AdminCategory[] | null>(null);
 
-export default async function AddProductPage() {
-  const categories = await getCategories();
+  useEffect(() => {
+    getCategories().then(setCategories);
+  }, []);
+
+  if (!categories) return null;
+
   return (
     <div className="space-y-6">
       <PageHeader title="Add Product" description="Create a new product listing." />

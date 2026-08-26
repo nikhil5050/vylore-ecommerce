@@ -1,12 +1,17 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { CustomerTable } from "@/components/admin/CustomerTable";
 import { getCustomers } from "@/lib/admin/api";
+import type { Customer } from "@/types/admin";
 
-export const metadata: Metadata = { title: "Customers" };
+export default function CustomersPage() {
+  const [customers, setCustomers] = useState<Customer[]>([]);
 
-export default async function CustomersPage() {
-  const customers = await getCustomers();
+  useEffect(() => {
+    getCustomers().then(setCustomers);
+  }, []);
 
   return (
     <div className="space-y-6">
