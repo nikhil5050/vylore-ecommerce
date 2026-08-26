@@ -39,23 +39,30 @@ interface Pose {
 
 /**
  * Two-phase choreography driven entirely by scroll progress (0→1):
- *  - Phase A (0 → SPIN_END_PROGRESS): necklace sits right-of-center, front
- *    facing, and drifts a little further right as it spins away from camera.
- *  - Phase B (SPIN_END_PROGRESS → 1): rotation holds; the necklace crosses
- *    to the left, scaling down and tilting slightly to sit alongside the
- *    About copy (which occupies the right column during this phase).
+ *  - Phase A (0 → SPIN_END_PROGRESS): necklace sits right-of-center (its
+ *    drawn pose is already right-of-center at xVw=0 — see note below) and
+ *    drifts slightly further right as it spins away from camera.
+ *  - Phase B (SPIN_END_PROGRESS → 1): the necklace crosses to the left,
+ *    scaling down and tilting slightly to sit alongside the About copy
+ *    (which occupies the right column during this phase).
+ *
+ * xVw values are deliberately small: the source frames already draw the
+ * necklace right-of-center within the canvas (its own composition), so
+ * translateX stacks on top of that — a large positive value here pushes
+ * the necklace's right edge past the viewport and clips it.
  */
 function getPose(progress: number): Pose {
   const p = Math.max(0, Math.min(1, progress));
+  const PHASE_A_END_X = 6;
 
   if (p <= SPIN_END_PROGRESS) {
     const t = easeInOutCubic(p / SPIN_END_PROGRESS);
-    return { xVw: lerp(24, 32, t), scale: 1, rotateDeg: 0 };
+    return { xVw: lerp(0, PHASE_A_END_X, t), scale: 1, rotateDeg: 0 };
   }
 
   const t = easeInOutCubic((p - SPIN_END_PROGRESS) / (1 - SPIN_END_PROGRESS));
   return {
-    xVw: lerp(32, -22, t),
+    xVw: lerp(PHASE_A_END_X, -34, t),
     scale: lerp(1, 0.72, t),
     rotateDeg: lerp(0, -6, t),
   };
