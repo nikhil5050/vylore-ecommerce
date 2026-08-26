@@ -25,20 +25,30 @@ export function statusDotClass(tone: StatusTone) {
 }
 
 export const orderStatusTone: Record<string, StatusTone> = {
-  pending: "warning",
+  pending_payment: "warning",
+  payment_failed: "error",
+  paid: "info",
   processing: "info",
   shipped: "info",
+  out_for_delivery: "info",
   delivered: "success",
   cancelled: "error",
+  refund_pending: "warning",
   refunded: "neutral",
 };
 
 export const paymentStatusTone: Record<string, StatusTone> = {
-  paid: "success",
   pending: "warning",
+  paid: "success",
   failed: "error",
-  refunded: "neutral",
-  partially_refunded: "warning",
+};
+
+export const shippingStatusTone: Record<string, StatusTone> = {
+  not_shipped: "neutral",
+  shipped: "info",
+  out_for_delivery: "info",
+  delivered: "success",
+  cancelled: "error",
 };
 
 export const stockStatusTone: Record<string, StatusTone> = {
@@ -49,26 +59,7 @@ export const stockStatusTone: Record<string, StatusTone> = {
 
 export const productStatusTone: Record<string, StatusTone> = {
   active: "success",
-  draft: "neutral",
-  inactive: "error",
-};
-
-export const shipmentStatusTone: Record<string, StatusTone> = {
-  ready_to_ship: "neutral",
-  picked_up: "info",
-  in_transit: "info",
-  out_for_delivery: "info",
-  delivered: "success",
-  failed_delivery: "error",
-  returned: "error",
-};
-
-export const contentStatusTone: Record<string, StatusTone> = {
-  active: "success",
-  draft: "neutral",
-  inactive: "error",
-  scheduled: "info",
-  expired: "neutral",
+  inactive: "neutral",
 };
 
 export function toTitleCase(value: string) {

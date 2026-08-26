@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
+import { Bell } from "lucide-react";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { SettingsNav } from "@/components/admin/SettingsNav";
-import { NotificationSettingsForm } from "@/components/admin/settings/NotificationSettingsForm";
-import { mockNotificationSettings } from "@/lib/admin/mock";
+import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
 
 export const metadata: Metadata = { title: "Notification Settings" };
 
 export default function NotificationSettingsPage() {
   return (
     <div className="space-y-6">
-      <PageHeader title="Notification Settings" description="Choose which admin alerts you want to receive." />
+      <PageHeader title="Notification Settings" description="Configure admin notification preferences." />
       <SettingsNav />
-      <NotificationSettingsForm initial={mockNotificationSettings} />
+      <AdminEmptyState icon={Bell} title="Notification settings aren't connected yet" description="The backend doesn't have a notification settings endpoint yet." />
     </div>
   );
 }

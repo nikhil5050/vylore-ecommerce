@@ -1,17 +1,15 @@
+import type { Metadata } from "next";
+import { Tag } from "lucide-react";
 import { PageHeader } from "@/components/admin/PageHeader";
-import { CouponsView } from "@/components/admin/CouponsView";
-import { getCoupons } from "@/lib/admin/api";
+import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
 
-export default async function ProductOffersPage() {
-  const coupons = await getCoupons();
+export const metadata: Metadata = { title: "Product Offers" };
 
+export default function ProductOffersPage() {
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Product Offers"
-        description="Coupons scoped to specific categories, grouped by where they apply."
-      />
-      <CouponsView coupons={coupons} mode="product-offers" />
+      <PageHeader title="Product Offers" description="Per-product discounts and promotions." />
+      <AdminEmptyState icon={Tag} title="Product offers aren't connected yet" description="The backend doesn't have an offers endpoint yet." />
     </div>
   );
 }

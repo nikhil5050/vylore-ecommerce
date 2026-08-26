@@ -10,7 +10,7 @@ export default async function CancelledOrdersPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Cancelled Orders" description="Orders cancelled before fulfillment." />
+      <PageHeader title="Cancelled Orders" description="Orders that were cancelled." />
       <OrdersTable orders={orders} hideStatusFilter />
     </div>
   );

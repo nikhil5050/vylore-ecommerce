@@ -1,12 +1,18 @@
 export type OrderStatus =
-  | "pending"
+  | "pending_payment"
+  | "payment_failed"
+  | "paid"
   | "processing"
   | "shipped"
+  | "out_for_delivery"
   | "delivered"
   | "cancelled"
+  | "refund_pending"
   | "refunded";
 
-export type PaymentStatus = "paid" | "pending" | "failed" | "refunded" | "partially_refunded";
+export type PaymentStatus = "pending" | "paid" | "failed";
+
+export type ShippingStatus = "not_shipped" | "shipped" | "out_for_delivery" | "delivered" | "cancelled";
 
 export interface OrderAddress {
   fullName: string;
@@ -16,13 +22,13 @@ export interface OrderAddress {
   state: string;
   postalCode: string;
   country: string;
-  phone?: string;
+  phone: string;
+  landmark?: string;
 }
 
 export interface OrderLineItem {
-  productId: string;
+  productId?: string;
   name: string;
-  imageUrl?: string;
   sku: string;
   quantity: number;
   price: number;
@@ -37,24 +43,31 @@ export interface OrderSummary {
   total: number;
 }
 
-export interface OrderPaymentInfo {
-  gateway: string;
-  transactionId: string;
-  status: PaymentStatus;
+// Shipment tracking is a separate resource from the order itself on the
+// backend (GET/PATCH /admin/orders/{id}/shipment) — only fetched for the
+// order detail view, not the list.
+export interface OrderShipment {
+  provider: string;
+  status: string;
+  awbNumber?: string;
+  trackingNumber?: string;
+  trackingUrl?: string;
+  shippedAt?: string;
+  deliveredAt?: string;
 }
 
 export interface AdminOrder {
   id: string;
+  orderNumber: string;
   customerId: string;
   customerName: string;
   customerEmail: string;
   customerPhone: string;
   items: OrderLineItem[];
-  billingAddress: OrderAddress;
   shippingAddress: OrderAddress;
   summary: OrderSummary;
-  payment: OrderPaymentInfo;
-  deliveryPartner: string;
+  paymentStatus: PaymentStatus;
+  shippingStatus: ShippingStatus;
   status: OrderStatus;
   placedAt: string;
 }

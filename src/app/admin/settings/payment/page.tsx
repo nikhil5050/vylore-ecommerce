@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
+import { CreditCard } from "lucide-react";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { SettingsNav } from "@/components/admin/SettingsNav";
-import { PaymentSettingsForm } from "@/components/admin/settings/PaymentSettingsForm";
-import { mockPaymentSettings } from "@/lib/admin/mock";
+import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
 
 export const metadata: Metadata = { title: "Payment Settings" };
 
 export default function PaymentSettingsPage() {
   return (
     <div className="space-y-6">
-      <PageHeader title="Payment Settings" description="Configure the PayU payment gateway." />
+      <PageHeader title="Payment Settings" description="Configure payment gateways." />
       <SettingsNav />
-      <PaymentSettingsForm initial={mockPaymentSettings} />
+      <AdminEmptyState icon={CreditCard} title="Payment settings aren't connected yet" description="The backend doesn't have a payment settings endpoint yet." />
     </div>
   );
 }

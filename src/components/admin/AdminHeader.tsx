@@ -3,26 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment, useMemo } from "react";
-import {
-  AlertTriangle,
-  Bell,
-  ChevronRight,
-  CreditCard,
-  LogOut,
-  Menu,
-  PackageX,
-  Search,
-  Settings,
-  ShoppingBag,
-  Truck,
-  User,
-} from "lucide-react";
+import { Bell, ChevronRight, LogOut, Menu, Settings, User } from "lucide-react";
 import { adminNav, type AdminNavChild } from "@/lib/admin/nav";
-import { mockNotifications } from "@/lib/admin/mock";
-import { relativeTimeFromNow } from "@/lib/admin/format";
-import { cn } from "@/lib/utils";
-import { Input } from "@/components/admin/ui/input";
-import { Badge } from "@/components/admin/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/admin/ui/avatar";
 import {
   DropdownMenu,
@@ -34,14 +16,6 @@ import {
 } from "@/components/admin/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/admin/ui/sheet";
 import { AdminSidebarMobileContent } from "@/components/admin/AdminSidebar";
-
-const notificationIcon = {
-  new_order: ShoppingBag,
-  low_stock: PackageX,
-  payment_failed: CreditCard,
-  delivery_issue: Truck,
-  return_request: AlertTriangle,
-};
 
 function useBreadcrumbs() {
   const pathname = usePathname();
@@ -90,7 +64,6 @@ interface AdminHeaderProps {
 
 export function AdminHeader({ mobileNavOpen, onMobileNavOpenChange, onOpenMobileNav }: AdminHeaderProps) {
   const breadcrumbs = useBreadcrumbs();
-  const unreadCount = mockNotifications.filter((n) => !n.read).length;
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur supports-backdrop-filter:bg-background/80 sm:px-6">
@@ -144,47 +117,11 @@ export function AdminHeader({ mobileNavOpen, onMobileNavOpenChange, onOpenMobile
             }
           >
             <Bell className="h-[18px] w-[18px]" />
-            {unreadCount > 0 && (
-              <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground">
-                {unreadCount}
-              </span>
-            )}
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-80">
-            <DropdownMenuLabel className="flex items-center justify-between px-1.5 py-1.5 text-sm text-foreground">
-              Notifications
-              {unreadCount > 0 && <Badge variant="secondary">{unreadCount} new</Badge>}
-            </DropdownMenuLabel>
+            <DropdownMenuLabel className="px-1.5 py-1.5 text-sm text-foreground">Notifications</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <div className="max-h-80 overflow-y-auto py-1">
-              {mockNotifications.map((notification) => {
-                const Icon = notificationIcon[notification.type];
-                return (
-                  <DropdownMenuItem
-                    key={notification.id}
-                    render={<Link href={notification.href ?? "/admin"} />}
-                    className="flex items-start gap-2.5 py-2"
-                  >
-                    <span
-                      className={cn(
-                        "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full",
-                        notification.read ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary",
-                      )}
-                    >
-                      <Icon className="h-3.5 w-3.5" />
-                    </span>
-                    <span className="flex-1 space-y-0.5">
-                      <span className="block text-sm font-medium text-foreground">{notification.title}</span>
-                      <span className="block text-xs text-muted-foreground">{notification.message}</span>
-                      <span className="block text-[11px] text-muted-foreground/70">
-                        {relativeTimeFromNow(notification.createdAt)}
-                      </span>
-                    </span>
-                    {!notification.read && <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />}
-                  </DropdownMenuItem>
-                );
-              })}
-            </div>
+            <p className="px-2 py-6 text-center text-sm text-muted-foreground">No notifications yet.</p>
           </DropdownMenuContent>
         </DropdownMenu>
 

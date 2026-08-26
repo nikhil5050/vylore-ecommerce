@@ -1,22 +1,19 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { OrderDetail } from "@/components/admin/OrderDetail";
-import { getOrder, getOrders } from "@/lib/admin/api";
-
-export async function generateStaticParams() {
-  const orders = await getOrders();
-  return orders.map((order) => ({ id: order.id }));
-}
+import { getOrder, getOrderShipment } from "@/lib/admin/api";
 
 export async function generateMetadata({ params }: PageProps<"/admin/orders/[id]">): Promise<Metadata> {
   const { id } = await params;
-  return { title: `Order #${id}` };
+  const order = await getOrder(id);
+  return { title: order ? `Order #${order.orderNumber}` : "Order" };
 }
 
 export default async function OrderDetailPage({ params }: PageProps<"/admin/orders/[id]">) {
   const { id } = await params;
   const order = await getOrder(id);
   if (!order) notFound();
+  const shipment = await getOrderShipment(id);
 
-  return <OrderDetail order={order} />;
+  return <OrderDetail order={order} shipment={shipment} />;
 }

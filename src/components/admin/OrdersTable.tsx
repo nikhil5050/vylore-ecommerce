@@ -2,27 +2,31 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { toast } from "sonner";
-import { Download, Eye, MoreHorizontal, Pencil, Search, Truck } from "lucide-react";
+import { Eye, Search } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/admin/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/admin/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/admin/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/admin/ui/select";
 import { Input } from "@/components/admin/ui/input";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
-import { orderStatusTone, paymentStatusTone, toTitleCase } from "@/lib/admin/status";
+import { orderStatusTone, paymentStatusTone, shippingStatusTone, toTitleCase } from "@/lib/admin/status";
 import { formatAdminDate } from "@/lib/admin/format";
 import { formatPrice } from "@/utils/formatPrice";
 import type { AdminOrder, OrderStatus, PaymentStatus } from "@/types/admin";
 
-const orderStatuses: OrderStatus[] = ["pending", "processing", "shipped", "delivered", "cancelled", "refunded"];
-const paymentStatuses: PaymentStatus[] = ["paid", "pending", "failed", "refunded", "partially_refunded"];
+const orderStatuses: OrderStatus[] = [
+  "pending_payment",
+  "payment_failed",
+  "paid",
+  "processing",
+  "shipped",
+  "out_for_delivery",
+  "delivered",
+  "cancelled",
+  "refund_pending",
+  "refunded",
+];
+const paymentStatuses: PaymentStatus[] = ["pending", "paid", "failed"];
 
 interface OrdersTableProps {
   orders: AdminOrder[];
@@ -34,22 +38,22 @@ export function OrdersTable({ orders, hideStatusFilter, compact }: OrdersTablePr
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [paymentFilter, setPaymentFilter] = useState<string>("all");
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
     return orders.filter((order) => {
-      if (query && !order.id.toLowerCase().includes(query) && !order.customerName.toLowerCase().includes(query)) {
+      if (
+        query &&
+        !order.orderNumber.toLowerCase().includes(query) &&
+        !order.customerName.toLowerCase().includes(query)
+      ) {
         return false;
       }
       if (statusFilter !== "all" && order.status !== statusFilter) return false;
-      if (paymentFilter !== "all" && order.payment.status !== paymentFilter) return false;
-      if (fromDate && order.placedAt < fromDate) return false;
-      if (toDate && order.placedAt > toDate) return false;
+      if (paymentFilter !== "all" && order.paymentStatus !== paymentFilter) return false;
       return true;
     });
-  }, [orders, search, statusFilter, paymentFilter, fromDate, toDate]);
+  }, [orders, search, statusFilter, paymentFilter]);
 
   return (
     <Card>
@@ -69,7 +73,7 @@ export function OrdersTable({ orders, hideStatusFilter, compact }: OrdersTablePr
           </div>
           {!hideStatusFilter && (
             <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value ?? "all")}>
-              <SelectTrigger className="w-36"><SelectValue placeholder="Status" /></SelectTrigger>
+              <SelectTrigger className="w-40"><SelectValue placeholder="Status" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All statuses</SelectItem>
                 {orderStatuses.map((status) => (
@@ -87,8 +91,6 @@ export function OrdersTable({ orders, hideStatusFilter, compact }: OrdersTablePr
               ))}
             </SelectContent>
           </Select>
-          <Input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} className="w-36" aria-label="From date" />
-          <Input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} className="w-36" aria-label="To date" />
         </div>
       </CardHeader>
       {filtered.length === 0 ? (
@@ -99,13 +101,13 @@ export function OrdersTable({ orders, hideStatusFilter, compact }: OrdersTablePr
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Order ID</TableHead>
+              <TableHead>Order</TableHead>
               <TableHead>Customer</TableHead>
               <TableHead>Date</TableHead>
               {!compact && <TableHead>Items</TableHead>}
               <TableHead>Total</TableHead>
               <TableHead>Payment</TableHead>
-              {!compact && <TableHead>Delivery</TableHead>}
+              {!compact && <TableHead>Shipping</TableHead>}
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Action</TableHead>
             </TableRow>
@@ -115,7 +117,7 @@ export function OrdersTable({ orders, hideStatusFilter, compact }: OrdersTablePr
               <TableRow key={order.id}>
                 <TableCell className="font-medium text-foreground">
                   <Link href={`/admin/orders/${order.id}`} className="hover:text-primary hover:underline">
-                    #{order.id}
+                    #{order.orderNumber}
                   </Link>
                 </TableCell>
                 <TableCell>{order.customerName}</TableCell>
@@ -127,40 +129,24 @@ export function OrdersTable({ orders, hideStatusFilter, compact }: OrdersTablePr
                 )}
                 <TableCell className="font-medium text-foreground">{formatPrice(order.summary.total)}</TableCell>
                 <TableCell>
-                  <StatusBadge status={order.payment.status} tone={paymentStatusTone[order.payment.status] ?? "neutral"} />
+                  <StatusBadge status={order.paymentStatus} tone={paymentStatusTone[order.paymentStatus] ?? "neutral"} />
                 </TableCell>
-                {!compact && <TableCell className="text-muted-foreground">{order.deliveryPartner}</TableCell>}
+                {!compact && (
+                  <TableCell>
+                    <StatusBadge status={order.shippingStatus} tone={shippingStatusTone[order.shippingStatus] ?? "neutral"} />
+                  </TableCell>
+                )}
                 <TableCell>
                   <StatusBadge status={order.status} tone={orderStatusTone[order.status] ?? "neutral"} />
                 </TableCell>
                 <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger
-                      render={
-                        <button
-                          type="button"
-                          className="ml-auto flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
-                          aria-label="Order actions"
-                        />
-                      }
-                    >
-                      <MoreHorizontal className="h-4 w-4" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem render={<Link href={`/admin/orders/${order.id}`} />}>
-                        <Eye className="h-4 w-4" /> View
-                      </DropdownMenuItem>
-                      <DropdownMenuItem render={<Link href={`/admin/orders/${order.id}`} />}>
-                        <Pencil className="h-4 w-4" /> Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem render={<Link href="/admin/shipping/tracking" />}>
-                        <Truck className="h-4 w-4" /> Track
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => toast.success("Invoice downloaded.")}>
-                        <Download className="h-4 w-4" /> Download Invoice
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <Link
+                    href={`/admin/orders/${order.id}`}
+                    className="ml-auto flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+                    aria-label={`View order ${order.orderNumber}`}
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Link>
                 </TableCell>
               </TableRow>
             ))}

@@ -13,15 +13,13 @@ import { Input } from "@/components/admin/ui/input";
 import { Label } from "@/components/admin/ui/label";
 import { Textarea } from "@/components/admin/ui/textarea";
 import { Switch } from "@/components/admin/ui/switch";
-import { ImagePlaceholder } from "@/components/admin/ImagePlaceholder";
+import { createCategory, updateCategory } from "@/lib/admin/api";
 import type { AdminCategory } from "@/types/admin";
 
 const categorySchema = z.object({
   name: z.string().min(1, "Category name is required."),
-  slug: z.string().min(1, "Slug is required."),
+  slug: z.string().optional(),
   description: z.string().optional(),
-  seoTitle: z.string().optional(),
-  seoDescription: z.string().optional(),
   active: z.boolean(),
 });
 
@@ -40,7 +38,6 @@ export function CategoryForm({ category }: { category?: AdminCategory }) {
     register,
     handleSubmit,
     control,
-    watch,
     setValue,
     formState: { errors },
   } = useForm<CategoryFormValues>({
@@ -49,20 +46,23 @@ export function CategoryForm({ category }: { category?: AdminCategory }) {
       name: category?.name ?? "",
       slug: category?.slug ?? "",
       description: category?.description ?? "",
-      seoTitle: category?.seoTitle ?? "",
-      seoDescription: category?.seoDescription ?? "",
       active: category?.active ?? true,
     },
   });
 
-  const name = watch("name");
-
   async function onSubmit(data: CategoryFormValues) {
     setSubmitting(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      toast.success(category ? "Category updated successfully." : "Category created successfully.");
+      if (category) {
+        await updateCategory(category.id, { name: data.name, slug: data.slug, description: data.description, active: data.active });
+        toast.success("Category updated successfully.");
+      } else {
+        await createCategory({ name: data.name, slug: data.slug, description: data.description, active: data.active });
+        toast.success("Category created successfully.");
+      }
       router.push("/admin/categories");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Couldn't save the category.");
     } finally {
       setSubmitting(false);
     }
@@ -88,17 +88,12 @@ export function CategoryForm({ category }: { category?: AdminCategory }) {
             {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="slug">Slug *</Label>
-            <Input id="slug" {...register("slug", { onChange: () => setSlugTouched(true) })} />
-            {errors.slug && <p className="text-xs text-destructive">{errors.slug.message}</p>}
+            <Label htmlFor="slug">Slug</Label>
+            <Input id="slug" {...register("slug", { onChange: () => setSlugTouched(true) })} placeholder="auto-generated from name" />
           </div>
           <div className="space-y-1.5 sm:col-span-2">
             <Label htmlFor="description">Description</Label>
             <Textarea id="description" rows={3} {...register("description")} />
-          </div>
-          <div className="space-y-1.5 sm:col-span-2">
-            <Label>Category Image</Label>
-            <ImagePlaceholder className="h-32 w-32 cursor-pointer rounded-lg border border-dashed border-border" />
           </div>
           <div className="flex items-center justify-between rounded-lg border border-border px-3 py-2 sm:col-span-2">
             <div>
@@ -106,22 +101,6 @@ export function CategoryForm({ category }: { category?: AdminCategory }) {
               <p className="text-xs text-muted-foreground">Visible in storefront navigation and filters.</p>
             </div>
             <Controller control={control} name="active" render={({ field }) => <Switch checked={field.value} onCheckedChange={field.onChange} />} />
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="border-b pb-4">
-          <CardTitle className="text-base">SEO</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4 pt-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="seoTitle">SEO Title</Label>
-            <Input id="seoTitle" {...register("seoTitle")} placeholder={name ? `${name} | Vylore Jewellery` : undefined} />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="seoDescription">SEO Description</Label>
-            <Textarea id="seoDescription" rows={2} {...register("seoDescription")} />
           </div>
         </CardContent>
       </Card>

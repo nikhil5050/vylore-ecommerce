@@ -17,12 +17,12 @@ import type { Customer, CustomerStatus } from "@/types/admin";
 const customerStatusTone: Record<CustomerStatus, StatusTone> = {
   active: "success",
   inactive: "neutral",
-  blocked: "error",
 };
 
 function initials(name: string) {
   return name
     .split(" ")
+    .filter(Boolean)
     .map((part) => part[0])
     .slice(0, 2)
     .join("")
@@ -69,7 +69,7 @@ export function CustomerTable({ customers }: { customers: Customer[] }) {
               <TableHead>Phone</TableHead>
               <TableHead>Orders</TableHead>
               <TableHead>Total Spent</TableHead>
-              <TableHead>Last Order</TableHead>
+              <TableHead>Joined</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Action</TableHead>
             </TableRow>
@@ -89,9 +89,7 @@ export function CustomerTable({ customers }: { customers: Customer[] }) {
                 <TableCell className="text-muted-foreground">{customer.phone}</TableCell>
                 <TableCell>{customer.ordersCount}</TableCell>
                 <TableCell className="font-medium text-foreground">{formatPrice(customer.totalSpent)}</TableCell>
-                <TableCell className="text-muted-foreground">
-                  {customer.lastOrderAt ? formatAdminDate(customer.lastOrderAt) : "—"}
-                </TableCell>
+                <TableCell className="text-muted-foreground">{formatAdminDate(customer.joinedAt)}</TableCell>
                 <TableCell>
                   <StatusBadge status={customer.status} tone={customerStatusTone[customer.status]} />
                 </TableCell>

@@ -6,11 +6,11 @@ import { getOrders } from "@/lib/admin/api";
 export const metadata: Metadata = { title: "Returns / Refunds" };
 
 export default async function ReturnsOrdersPage() {
-  const orders = (await getOrders()).filter((o) => o.status === "cancelled" || o.status === "refunded");
+  const orders = (await getOrders()).filter((o) => o.status === "refund_pending" || o.status === "refunded");
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Returns / Refunds" description="Orders that were cancelled, returned, or refunded." />
+      <PageHeader title="Returns / Refunds" description="Orders with a refund in progress or completed." />
       <OrdersTable orders={orders} hideStatusFilter />
     </div>
   );

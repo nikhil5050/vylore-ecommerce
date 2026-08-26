@@ -15,9 +15,9 @@ export default function Home() {
     <main className="flex flex-1 flex-col">
       <VyloreExperience />
       <CategoryGrid />
-      <FeaturedCollections />
+      {/* <FeaturedCollections />
       <NewArrivals />
-      <NoCompromise />
+      <NoCompromise /> */}
       <TrustSection />
       <Bestsellers />
       <CustomJewellery />

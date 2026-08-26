@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/admin/ui/card";
-import { orderStatusTone, statusDotClass } from "@/lib/admin/status";
+import { orderStatusTone, statusDotClass, toTitleCase } from "@/lib/admin/status";
 import { cn } from "@/lib/utils";
 import type { OrderStatusCount } from "@/types/admin";
 
@@ -10,7 +10,7 @@ export function OrderStatusCard({ statuses }: { statuses: OrderStatusCount[] }) 
     <Card className="h-full">
       <CardHeader className="border-b pb-4">
         <CardTitle className="text-base">Order Status</CardTitle>
-        <p className="mt-1 text-sm text-muted-foreground">{total} orders in the last 30 days</p>
+        <p className="mt-1 text-sm text-muted-foreground">{total} orders across the store</p>
       </CardHeader>
       <CardContent className="space-y-4 pt-4">
         {statuses.map((item) => {
@@ -21,7 +21,7 @@ export function OrderStatusCard({ statuses }: { statuses: OrderStatusCount[] }) 
               <div className="flex items-center justify-between text-sm">
                 <span className="flex items-center gap-2 font-medium text-foreground">
                   <span className={cn("inline-flex h-2 w-2 rounded-full", statusDotClass(tone))} />
-                  {item.status}
+                  {toTitleCase(item.status)}
                 </span>
                 <span className="text-muted-foreground">{item.count}</span>
               </div>

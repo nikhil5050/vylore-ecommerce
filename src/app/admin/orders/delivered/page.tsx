@@ -10,7 +10,7 @@ export default async function DeliveredOrdersPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Delivered Orders" description="Orders successfully delivered to customers." />
+      <PageHeader title="Delivered Orders" description="Orders successfully completed." />
       <OrdersTable orders={orders} hideStatusFilter />
     </div>
   );

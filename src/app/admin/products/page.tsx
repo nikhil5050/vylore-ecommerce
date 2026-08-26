@@ -4,11 +4,13 @@ import { Plus } from "lucide-react";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { ProductTable } from "@/components/admin/ProductTable";
 import { Button } from "@/components/admin/ui/button";
-import { mockCategories, mockProductListItems } from "@/lib/admin/mock";
+import { getCategories, getProducts, toProductListItem } from "@/lib/admin/api";
 
 export const metadata: Metadata = { title: "Products" };
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  const [products, categories] = await Promise.all([getProducts(), getCategories()]);
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -20,7 +22,7 @@ export default function ProductsPage() {
           </Button>
         }
       />
-      <ProductTable products={mockProductListItems} categories={mockCategories.map((c) => c.name)} />
+      <ProductTable products={products.map(toProductListItem)} categories={categories.map((c) => c.name)} />
     </div>
   );
 }

@@ -4,8 +4,5 @@ export interface AdminCategory {
   slug: string;
   imageUrl?: string;
   description: string;
-  seoTitle?: string;
-  seoDescription?: string;
-  productCount: number;
   active: boolean;
 }

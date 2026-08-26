@@ -6,7 +6,7 @@ interface ImagePlaceholderProps {
   variant?: "gem" | "image";
 }
 
-// Stand-in for real product/banner photography until Cloudinary assets exist.
+// Fallback for products/categories that don't have an image uploaded yet.
 export function ImagePlaceholder({ className, variant = "gem" }: ImagePlaceholderProps) {
   const Icon = variant === "gem" ? Gem : ImageIcon;
   return (
