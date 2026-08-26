@@ -14,6 +14,14 @@ import type { InventoryItem } from "@/types/admin";
 
 export function InventoryTable({ items: initialItems }: { items: InventoryItem[] }) {
   const [items, setItems] = useState(initialItems);
+  // Same fix as ProductTable: the page fetches asynchronously, so useState's
+  // initializer alone misses the real data. Compare during render (React's
+  // documented pattern), not in an effect, since an effect runs one render late.
+  const [prevInitialItems, setPrevInitialItems] = useState(initialItems);
+  if (initialItems !== prevInitialItems) {
+    setPrevInitialItems(initialItems);
+    setItems(initialItems);
+  }
 
   if (items.length === 0) {
     return <AdminEmptyState icon={Boxes} title="No inventory to show" description="Try a different filter." />;

@@ -26,6 +26,16 @@ interface ProductTableProps {
 
 export function ProductTable({ products: initialProducts, categories = [] }: ProductTableProps) {
   const [products, setProducts] = useState(initialProducts);
+  // The page fetches products asynchronously (client-side, after this table
+  // already mounted with useState's initial []), so useState's initializer
+  // alone never sees the real data. React's own documented pattern for
+  // "adjust state when a prop changes" — compare during render, not in an
+  // effect — since an effect would run one render late.
+  const [prevInitialProducts, setPrevInitialProducts] = useState(initialProducts);
+  if (initialProducts !== prevInitialProducts) {
+    setPrevInitialProducts(initialProducts);
+    setProducts(initialProducts);
+  }
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<string>("all");
   const [status, setStatus] = useState<string>("all");
