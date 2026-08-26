@@ -1,14 +1,22 @@
 // Admin API facade — every function here calls the real Vylore FastAPI
 // backend (see paths in comments). Sections of the admin panel with no
-// backend support yet (payments, shipping partners, offers, CMS content,
-// settings, analytics) have no functions here — those pages render an empty
-// state directly instead of pretending to have data.
+// backend support yet (payments, shipping partners, coupons/product/festival
+// offers, other CMS content, settings, analytics) have no functions here —
+// those pages render an empty state directly instead of pretending to have
+// data.
+//
+// Offer banners are the one exception: /admin/banners doesn't exist on the
+// backend yet either, but the functions below are written against its
+// intended contract (see BANNER_API.md) so the admin UI and homepage
+// section are ready to go live the moment it ships — until then they'll
+// fail with a 404, which the pages that call them handle gracefully.
 import * as categoryService from "@/services/admin/category.service";
 import * as productService from "@/services/admin/product.service";
 import * as inventoryService from "@/services/admin/inventory.service";
 import * as orderService from "@/services/admin/order.service";
 import * as customerService from "@/services/admin/customer.service";
 import * as dashboardService from "@/services/admin/dashboard.service";
+import * as bannerService from "@/services/admin/banner.service";
 
 // GET /api/v1/admin/dashboard/stats
 export const getDashboardOverview = dashboardService.getAdminDashboardOverview;
@@ -52,3 +60,10 @@ export const updateOrderShipment = orderService.updateOrderShipment;
 // GET /api/v1/admin/customers, GET /api/v1/admin/customers/:id
 export const getCustomers = customerService.getAdminCustomers;
 export const getCustomer = customerService.getAdminCustomer;
+
+// GET/POST /api/v1/admin/banners, PATCH/DELETE /api/v1/admin/banners/:id
+// (not implemented on the backend yet — see note above)
+export const getBanners = bannerService.getAdminBanners;
+export const createBanner = bannerService.createAdminBanner;
+export const updateBanner = bannerService.updateAdminBanner;
+export const deleteBanner = bannerService.deleteAdminBanner;
