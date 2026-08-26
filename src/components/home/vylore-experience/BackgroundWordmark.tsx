@@ -56,7 +56,7 @@ export function BackgroundWordmark({ innerRef }: BackgroundWordmarkProps) {
           }}
         >
           <img
-            src="https://vylore.in/public/ring.png"
+            src="/ring.png"
             alt=""
             className="
   absolute
