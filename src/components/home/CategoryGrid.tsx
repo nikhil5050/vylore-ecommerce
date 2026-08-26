@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
-import { PlaceholderImage } from "@/components/ui/PlaceholderImage";
+import { ProductThumbnail } from "@/components/ui/ProductThumbnail";
 import { getCategories } from "@/services/category.service";
 
 export async function CategoryGrid() {
@@ -20,7 +20,12 @@ export async function CategoryGrid() {
                 >
                   <div className="relative aspect-square w-full overflow-hidden rounded-full border border-charcoal/80 p-0.5 transition-transform duration-300 group-hover:scale-105 group-hover:border-burgundy">
                     <div className="h-full w-full overflow-hidden rounded-full">
-                      <PlaceholderImage className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                      <ProductThumbnail
+                        src={category.imageUrl}
+                        alt={category.name}
+                        transform="w-300"
+                        className="transition-transform duration-500 group-hover:scale-110"
+                      />
                     </div>
                   </div>
 
@@ -40,7 +45,7 @@ export async function CategoryGrid() {
                 >
                   <div className="relative aspect-square w-full overflow-hidden rounded-full border border-charcoal/80 p-0.5">
                     <div className="h-full w-full overflow-hidden rounded-full">
-                      <PlaceholderImage className="h-full w-full object-cover" />
+                      <ProductThumbnail src={category.imageUrl} alt={category.name} transform="w-300" />
                     </div>
                   </div>
                   <h3 className="mt-4 font-serif text-xs font-semibold tracking-widest text-charcoal uppercase sm:text-sm">

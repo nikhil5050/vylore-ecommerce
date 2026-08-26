@@ -130,20 +130,7 @@ export const adminNav: AdminNavSection[] = [
           { label: "Revenue Analytics", href: "/admin/analytics/revenue" },
         ],
       },
-      {
-        label: "Settings",
-        href: "/admin/settings/store",
-        icon: Settings,
-        children: [
-          { label: "Store Settings", href: "/admin/settings/store" },
-          { label: "Admin Profile", href: "/admin/settings/profile" },
-          { label: "Payment Settings", href: "/admin/settings/payment" },
-          { label: "Shipping Settings", href: "/admin/settings/shipping" },
-          { label: "iCarry Settings", href: "/admin/settings/icarry" },
-          { label: "Tax Settings", href: "/admin/settings/tax" },
-          { label: "Notification Settings", href: "/admin/settings/notifications" },
-        ],
-      },
+      { label: "Settings", href: "/admin/settings", icon: Settings },
     ],
   },
 ];

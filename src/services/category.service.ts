@@ -16,6 +16,7 @@ function mapCategory(category: BackendCategory): Category {
     slug: category.slug,
     name: category.name,
     description: category.description ?? "",
+    imageUrl: category.image_url ?? undefined,
   };
 }
 

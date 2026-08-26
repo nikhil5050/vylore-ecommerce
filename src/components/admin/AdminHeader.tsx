@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Fragment, useMemo } from "react";
-import { Bell, ChevronRight, LogOut, Menu, Settings, User } from "lucide-react";
+import { Bell, ChevronRight, LogOut, Menu, Settings } from "lucide-react";
 import { adminNav, type AdminNavChild } from "@/lib/admin/nav";
+import { useAuthStore } from "@/store/auth.store";
 import { Avatar, AvatarFallback } from "@/components/admin/ui/avatar";
 import {
   DropdownMenu,
@@ -64,6 +65,17 @@ interface AdminHeaderProps {
 
 export function AdminHeader({ mobileNavOpen, onMobileNavOpenChange, onOpenMobileNav }: AdminHeaderProps) {
   const breadcrumbs = useBreadcrumbs();
+  const router = useRouter();
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
+
+  const displayName = user ? `${user.first_name} ${user.last_name}`.trim() : "Admin";
+  const initials = user ? `${user.first_name[0] ?? ""}${user.last_name[0] ?? ""}`.toUpperCase() || "A" : "A";
+
+  function handleLogout() {
+    logout();
+    router.replace("/login");
+  }
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur supports-backdrop-filter:bg-background/80 sm:px-6">
@@ -135,24 +147,21 @@ export function AdminHeader({ mobileNavOpen, onMobileNavOpenChange, onOpenMobile
             }
           >
             <Avatar size="sm">
-              <AvatarFallback>AU</AvatarFallback>
+              <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
             <span className="hidden text-left text-sm leading-tight sm:block">
-              <span className="block font-medium text-foreground">Admin User</span>
-              <span className="block text-xs text-muted-foreground">Super Admin</span>
+              <span className="block font-medium text-foreground">{displayName}</span>
+              <span className="block text-xs text-muted-foreground capitalize">{user?.role ?? "—"}</span>
             </span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-52">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem render={<Link href="/admin/settings/profile" />}>
-              <User className="h-4 w-4" /> Profile
-            </DropdownMenuItem>
-            <DropdownMenuItem render={<Link href="/admin/settings/store" />}>
+            <DropdownMenuItem render={<Link href="/admin/settings" />}>
               <Settings className="h-4 w-4" /> Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive">
+            <DropdownMenuItem variant="destructive" onClick={handleLogout}>
               <LogOut className="h-4 w-4" /> Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

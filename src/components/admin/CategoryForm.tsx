@@ -13,6 +13,7 @@ import { Input } from "@/components/admin/ui/input";
 import { Label } from "@/components/admin/ui/label";
 import { Textarea } from "@/components/admin/ui/textarea";
 import { Switch } from "@/components/admin/ui/switch";
+import { CategoryImageUploader } from "@/components/admin/CategoryImageUploader";
 import { createCategory, updateCategory } from "@/lib/admin/api";
 import type { AdminCategory } from "@/types/admin";
 
@@ -29,10 +30,16 @@ function slugify(value: string) {
   return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
+function tempSessionId() {
+  return typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `tmp-${Date.now()}`;
+}
+
 export function CategoryForm({ category }: { category?: AdminCategory }) {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [slugTouched, setSlugTouched] = useState(!!category);
+  const [imageUrl, setImageUrl] = useState(category?.imageUrl);
+  const [folderId] = useState(() => category?.id ?? tempSessionId());
 
   const {
     register,
@@ -54,10 +61,22 @@ export function CategoryForm({ category }: { category?: AdminCategory }) {
     setSubmitting(true);
     try {
       if (category) {
-        await updateCategory(category.id, { name: data.name, slug: data.slug, description: data.description, active: data.active });
+        await updateCategory(category.id, {
+          name: data.name,
+          slug: data.slug,
+          description: data.description,
+          active: data.active,
+          imageUrl,
+        });
         toast.success("Category updated successfully.");
       } else {
-        await createCategory({ name: data.name, slug: data.slug, description: data.description, active: data.active });
+        await createCategory({
+          name: data.name,
+          slug: data.slug,
+          description: data.description,
+          active: data.active,
+          imageUrl,
+        });
         toast.success("Category created successfully.");
       }
       router.push("/admin/categories");
@@ -94,6 +113,10 @@ export function CategoryForm({ category }: { category?: AdminCategory }) {
           <div className="space-y-1.5 sm:col-span-2">
             <Label htmlFor="description">Description</Label>
             <Textarea id="description" rows={3} {...register("description")} />
+          </div>
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label>Category Image</Label>
+            <CategoryImageUploader imageUrl={imageUrl} onChange={setImageUrl} folderId={folderId} />
           </div>
           <div className="flex items-center justify-between rounded-lg border border-border px-3 py-2 sm:col-span-2">
             <div>

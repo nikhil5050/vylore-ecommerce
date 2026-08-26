@@ -39,7 +39,10 @@ function toBackendPayload(input: Partial<CategoryInput>) {
   if (input.name !== undefined) payload.name = input.name;
   if (input.slug !== undefined) payload.slug = input.slug || null;
   if (input.description !== undefined) payload.description = input.description || null;
-  if (input.imageUrl !== undefined) payload.image_url = input.imageUrl || null;
+  // "imageUrl" in input (not !== undefined) — the caller sends this key
+  // explicitly to clear an image, so an `undefined` value must still reach
+  // the backend as image_url: null rather than being skipped.
+  if ("imageUrl" in input) payload.image_url = input.imageUrl || null;
   if (input.active !== undefined) payload.is_active = input.active;
   return payload;
 }
