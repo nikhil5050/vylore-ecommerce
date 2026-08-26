@@ -2,36 +2,32 @@
 
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { GemIcon } from "@/components/icons/Icons";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
-import { useIsDesktop } from "@/hooks/useIsDesktop";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { AboutOverlay } from "./AboutOverlay";
 import { BackgroundWordmark } from "./BackgroundWordmark";
 import { HeroOverlay } from "./HeroOverlay";
-import { StagePoster } from "./StagePoster";
+import { NecklaceCanvas } from "./NecklaceCanvas";
 import type { SceneState } from "./types";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-const Scene = dynamic(() => import("./Scene").then((mod) => mod.Scene), {
-  ssr: false,
-  loading: () => <StagePoster />,
-});
-
 /**
- * Hero -> About scroll experience: a sticky stage holds the 3D canvas while
- * GSAP ScrollTrigger drives a shared progress ref (0 = hero, 1 = about) that
- * the R3F bracelet billboard reads imperatively in useFrame, plus a
- * text-layer timeline (hero copy + background wordmark fade/parallax out,
- * About content fades and staggers in).
+ * Hero → About scroll experience: a sticky stage holds the scroll-driven
+ * necklace assembly canvas while GSAP ScrollTrigger drives a shared progress
+ * ref (0 = side/fragmented view, 1 = fully assembled necklace). The necklace
+ * visually assembles from scattered fragments into its complete form as the
+ * user scrolls, ending with the emerald pendant settling into place.
+ *
+ * Text overlays (hero copy + background wordmark) fade/parallax out as the
+ * necklace assembles, then About content fades and staggers in.
  */
 export function VyloreExperience() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -40,7 +36,6 @@ export function VyloreExperience() {
   const aboutRef = useRef<HTMLDivElement>(null);
   const sceneState = useRef<SceneState>({ progress: 0 });
   const reducedMotion = useReducedMotion();
-  const isDesktop = useIsDesktop();
 
   useEffect(() => {
     if (reducedMotion) return;
@@ -101,10 +96,10 @@ export function VyloreExperience() {
   }
 
   return (
-    <section ref={containerRef} className="relative h-[200dvh] w-full bg-ivory lg:h-[220dvh]">
+    <section ref={containerRef} className="relative h-[250dvh] w-full bg-white lg:h-[280dvh]">
       <div className="sticky top-0 h-dvh w-full overflow-hidden">
         <BackgroundWordmark innerRef={wordmarkRef} />
-        <Scene sceneState={sceneState} reducedMotion={false} isDesktop={isDesktop} />
+        <NecklaceCanvas sceneState={sceneState} reducedMotion={false} />
         <HeroOverlay innerRef={heroRef} />
         <AboutOverlay innerRef={aboutRef} />
       </div>
@@ -112,23 +107,19 @@ export function VyloreExperience() {
   );
 }
 
-/** No-JS-animation fallback for prefers-reduced-motion: a static hero pose plus a normal-flow about section. */
+/** No-JS-animation fallback for prefers-reduced-motion: a static necklace image plus a normal-flow about section. */
 function StaticExperience() {
-  const sceneState = useRef<SceneState>({ progress: 0 });
-  const isDesktop = useIsDesktop();
-
   return (
     <>
-      <section className="relative flex min-h-dvh w-full items-center justify-center overflow-hidden bg-ivory">
+      <section className="relative flex min-h-dvh w-full items-center justify-center overflow-hidden bg-white">
         <BackgroundWordmark />
-        <Scene sceneState={sceneState} reducedMotion isDesktop={isDesktop} />
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-end gap-3 pb-16">
-          <div className="flex items-center gap-2">
-            <GemIcon className="h-3.5 w-3.5 text-champagne" />
-            <p className="eyebrow text-xs text-charcoal/70">
-              Jewellery that becomes part of your story
-            </p>
-          </div>
+        <div className="absolute inset-0 z-10 flex items-center justify-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/necklace-frames/frame_0001.jpg"
+            alt="Vylore emerald and diamond necklace"
+            className="h-full w-full object-contain"
+          />
         </div>
       </section>
 
@@ -136,12 +127,11 @@ function StaticExperience() {
         <Container className="grid items-center gap-10 lg:grid-cols-2 lg:gap-20">
           <FadeIn>
             <div className="relative aspect-[4/3] overflow-hidden bg-white">
-              <Image
-                src="/images/jewellery/vylore-bracelet-v2.png"
-                alt="Vylore silver diamond bracelet"
-                fill
-                sizes="(min-width: 1024px) 40vw, 90vw"
-                className="object-contain"
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/necklace-frames/frame_0001.jpg"
+                alt="Vylore emerald necklace — assembled view"
+                className="h-full w-full object-contain"
               />
             </div>
           </FadeIn>

@@ -27,7 +27,7 @@ export function HeroOverlay({ innerRef }: HeroOverlayProps) {
             <span className="relative inline-flex h-2 w-2 rounded-full bg-champagne" />
           </span>
           <p className="eyebrow text-[10px] font-medium uppercase tracking-wider text-charcoal/90 leading-tight">
-            Silver &amp; Emerald-Cut Diamonds
+            Emerald & Diamond Necklace
           </p>
         </div>
       </div>
@@ -70,7 +70,7 @@ export function HeroOverlay({ innerRef }: HeroOverlayProps) {
           </div>
           <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-champagne" />
           <p className="eyebrow text-[10px] font-medium text-charcoal/90">
-            Silver &amp; Emerald-Cut Diamonds
+            Emerald & Diamond Necklace
           </p>
         </div>
 
