@@ -1,3 +1,13 @@
+import { Playfair_Display } from "next/font/google";
+
+// A dedicated display serif for this oversized background wordmark — richer
+// letterforms and more presence at huge sizes than the site's default
+// --font-display (currently a sans-serif placeholder, see layout.tsx).
+const wordmarkFont = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["700", "800", "900"],
+});
+
 interface BackgroundWordmarkProps {
   innerRef?: React.RefObject<HTMLDivElement | null>;
 }
@@ -11,18 +21,18 @@ export function BackgroundWordmark({ innerRef }: BackgroundWordmarkProps) {
     >
       {/* VYLORE — top-left on desktop, centered on mobile */}
       <div
-        className="
+        className={`
           relative
           flex
           items-center
-          font-serif
+          ${wordmarkFont.className}
           font-bold
           uppercase
           leading-none
           tracking-tight
           text-burgundy
           sm:self-start
-        "
+        `}
         style={{
           fontSize: "clamp(2.75rem, 13vw, 9rem)",
         }}

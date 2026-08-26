@@ -16,7 +16,7 @@ export default function StockAdjustmentsPage() {
         title="Adjustment history isn't tracked yet"
         description="The backend doesn't keep an audit log of stock changes. Use the Stock Overview page to adjust quantities directly."
         action={
-          <Button size="sm" variant="outline" render={<Link href="/admin/inventory" />}>
+          <Button size="sm" variant="outline" nativeButton={false} render={<Link href="/admin/inventory" />}>
             Go to Stock Overview
           </Button>
         }

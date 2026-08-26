@@ -26,7 +26,7 @@ export default function ProductsPage() {
         title="Products"
         description="Manage your full jewellery catalogue."
         actions={
-          <Button render={<Link href="/admin/products/add" />}>
+          <Button nativeButton={false} render={<Link href="/admin/products/add" />}>
             <Plus className="h-4 w-4" /> Add Product
           </Button>
         }

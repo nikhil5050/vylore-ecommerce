@@ -47,7 +47,7 @@ export default function CategoriesPage() {
         title="Categories"
         description="Organise your catalogue into shoppable categories."
         actions={
-          <Button render={<Link href="/admin/categories/add" />}>
+          <Button nativeButton={false} render={<Link href="/admin/categories/add" />}>
             <Plus className="h-4 w-4" /> Add Category
           </Button>
         }
