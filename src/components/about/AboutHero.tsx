@@ -271,7 +271,7 @@ export function AboutHero() {
         role="region"
         aria-roledescription="carousel"
         aria-label="Vylore jewellery highlights"
-        className="relative mx-auto mt-12 h-[62vw] max-h-[440px] min-h-[280px] w-full max-w-5xl touch-pan-y select-none sm:mt-16 sm:h-[46vw] lg:h-[26vw]"
+        className="relative mx-auto mt-12 h-[118vw] max-h-[500px] min-h-[360px] w-full max-w-5xl touch-pan-y select-none sm:mt-16 sm:h-[46vw] sm:max-h-[440px] sm:min-h-[280px] lg:h-[26vw]"
         style={{ perspective: "1400px" }}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => {
