@@ -31,6 +31,134 @@ interface Pose {
   rotateDeg: number;
 }
 
+interface ContainFit {
+  dx: number;
+  dy: number;
+  dw: number;
+  dh: number;
+}
+
+function computeContainFit(cw: number, ch: number, iw: number, ih: number): ContainFit {
+  const scale = Math.min(cw / iw, ch / ih);
+  const dw = iw * scale;
+  const dh = ih * scale;
+  return { dx: (cw - dw) / 2, dy: (ch - dh) / 2, dw, dh };
+}
+
+/**
+ * Finds candidate "glint" spots on a frame — near-white, low-saturation,
+ * opaque pixels, which on these frames means a diamond facet catching
+ * light rather than the gold setting or the emerald stones. Scans a small
+ * downscaled copy of the frame (not the full 1280x720) since this only
+ * needs to find plausible facet locations, not exact pixels, and runs
+ * once per frame during preload rather than every render.
+ */
+function extractGlintPoints(img: HTMLImageElement, maxPoints: number): { x: number; y: number }[] {
+  const SAMPLE_W = 160;
+  const SAMPLE_H = Math.max(1, Math.round(SAMPLE_W * (img.naturalHeight / img.naturalWidth)));
+  const sampler = document.createElement("canvas");
+  sampler.width = SAMPLE_W;
+  sampler.height = SAMPLE_H;
+  const sctx = sampler.getContext("2d", { willReadFrequently: true });
+  if (!sctx) return [];
+  sctx.drawImage(img, 0, 0, SAMPLE_W, SAMPLE_H);
+
+  let data: Uint8ClampedArray;
+  try {
+    data = sctx.getImageData(0, 0, SAMPLE_W, SAMPLE_H).data;
+  } catch {
+    return []; // canvas tainted (shouldn't happen for same-origin /public assets) — fail quietly
+  }
+
+  const candidates: { x: number; y: number; brightness: number }[] = [];
+  for (let y = 0; y < SAMPLE_H; y++) {
+    for (let x = 0; x < SAMPLE_W; x++) {
+      const i = (y * SAMPLE_W + x) * 4;
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+      const a = data[i + 3];
+      if (a < 200) continue; // transparent background, not the necklace
+      const brightness = (r + g + b) / 3;
+      const saturation = Math.max(r, g, b) - Math.min(r, g, b);
+      if (brightness > 232 && saturation < 22) {
+        candidates.push({ x: x / SAMPLE_W, y: y / SAMPLE_H, brightness });
+      }
+    }
+  }
+
+  candidates.sort((a, b) => b.brightness - a.brightness);
+  const picked: { x: number; y: number }[] = [];
+  const MIN_SEPARATION = 0.06; // normalized fraction of image size — keeps points spread out
+  for (const c of candidates) {
+    if (picked.length >= maxPoints) break;
+    if (picked.every((p) => Math.hypot(p.x - c.x, p.y - c.y) > MIN_SEPARATION)) {
+      picked.push({ x: c.x, y: c.y });
+    }
+  }
+  return picked;
+}
+
+/** A small four-point lens-flare glint, additively blended so it reads as light rather than a painted shape. */
+function drawGlint(ctx: CanvasRenderingContext2D, x: number, y: number, size: number, opacity: number) {
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  ctx.globalAlpha = opacity;
+
+  const coreRadius = size * 0.9;
+  const core = ctx.createRadialGradient(x, y, 0, x, y, coreRadius);
+  core.addColorStop(0, "rgba(255,255,255,1)");
+  core.addColorStop(0.4, "rgba(255,255,255,0.5)");
+  core.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = core;
+  ctx.beginPath();
+  ctx.arc(x, y, coreRadius, 0, Math.PI * 2);
+  ctx.fill();
+
+  const rayLen = size * 3.2;
+  ctx.lineWidth = size * 0.35;
+
+  const horizontal = ctx.createLinearGradient(x - rayLen, y, x + rayLen, y);
+  horizontal.addColorStop(0, "rgba(255,255,255,0)");
+  horizontal.addColorStop(0.5, "rgba(255,255,255,0.9)");
+  horizontal.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.strokeStyle = horizontal;
+  ctx.beginPath();
+  ctx.moveTo(x - rayLen, y);
+  ctx.lineTo(x + rayLen, y);
+  ctx.stroke();
+
+  const vertical = ctx.createLinearGradient(x, y - rayLen, x, y + rayLen);
+  vertical.addColorStop(0, "rgba(255,255,255,0)");
+  vertical.addColorStop(0.5, "rgba(255,255,255,0.9)");
+  vertical.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.strokeStyle = vertical;
+  ctx.beginPath();
+  ctx.moveTo(x, y - rayLen);
+  ctx.lineTo(x, y + rayLen);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+const SPARKLE_COUNT = 7;
+
+interface SparkleSlot {
+  candidateIndex: number;
+  cycleDurationSec: number;
+  phaseOffsetSec: number;
+  lastPhase: number;
+}
+
+function makeSparkleSlots(count: number): SparkleSlot[] {
+  return Array.from({ length: count }, (_, i) => ({
+    candidateIndex: i,
+    cycleDurationSec: 1.6 + Math.random() * 1.8,
+    phaseOffsetSec: Math.random() * 4,
+    lastPhase: 0,
+  }));
+}
+
 /**
  * Continuous choreography driven entirely by scroll progress (0→1):
  * As the user scrolls, the necklace smoothly rotates (frames 1 to 150)
@@ -64,8 +192,14 @@ interface NecklaceCanvasProps {
  */
 export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const sparkleCanvasRef = useRef<HTMLCanvasElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const imagesRef = useRef<HTMLImageElement[]>([]);
+  const glintPointsRef = useRef<Map<number, { x: number; y: number }[]>>(new Map());
+  const sparkleSlotsRef = useRef<SparkleSlot[]>([]);
+  if (sparkleSlotsRef.current.length === 0) {
+    sparkleSlotsRef.current = makeSparkleSlots(SPARKLE_COUNT);
+  }
   const lastFrameRef = useRef(-1);
   const rafRef = useRef<number>(0);
   const [loadingProgress, setLoadingProgress] = useState(0);
@@ -121,6 +255,7 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
     firstImg.onload = () => {
       images[frameSequence.current[0]] = firstImg;
       imagesRef.current = images;
+      glintPointsRef.current.set(frameSequence.current[0], extractGlintPoints(firstImg, SPARKLE_COUNT));
       // Draw right away once the canvas is sized.
       requestAnimationFrame(() => drawFrame(frameSequence.current[0]));
     };
@@ -139,6 +274,7 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
         img.src = getFramePath(fi);
         img.onload = () => {
           images[fi] = img;
+          glintPointsRef.current.set(fi, extractGlintPoints(img, SPARKLE_COUNT));
           loaded++;
           setLoadingProgress(Math.round((loaded / totalToLoad) * 100));
           resolve();
@@ -157,11 +293,12 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
     });
   }, [totalSequenceFrames, drawFrame]);
 
-  // Resize canvas to match CSS pixel size (retina-aware).
+  // Resize both canvases to match CSS pixel size (retina-aware).
   useEffect(() => {
     const canvas = canvasRef.current;
+    const sparkleCanvas = sparkleCanvasRef.current;
     const wrapper = wrapperRef.current;
-    if (!canvas || !wrapper) return;
+    if (!canvas || !sparkleCanvas || !wrapper) return;
 
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -169,6 +306,8 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
         canvas.width = width * dpr;
         canvas.height = height * dpr;
+        sparkleCanvas.width = width * dpr;
+        sparkleCanvas.height = height * dpr;
         // Redraw at current frame after resize.
         if (lastFrameRef.current >= 0) {
           drawFrame(lastFrameRef.current);
@@ -180,10 +319,46 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
     return () => observer.disconnect();
   }, [drawFrame]);
 
-  // Animation loop: read progress, draw the matching frame, and reposition
-  // the canvas per the current pose.
+  // Draws the twinkling glints on the sparkle canvas. Runs every tick
+  // (unlike drawFrame, which only redraws when the rotation frame changes)
+  // since sparkles animate on real elapsed time, independent of scroll.
+  const drawSparkles = useCallback((frameIdx: number, timestampMs: number) => {
+    const canvas = sparkleCanvasRef.current;
+    const img = imagesRef.current[frameIdx];
+    const points = glintPointsRef.current.get(frameIdx);
+    if (!canvas || !img || !points || points.length === 0) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const { dx, dy, dw, dh } = computeContainFit(canvas.width, canvas.height, img.naturalWidth, img.naturalHeight);
+    const glintSize = Math.max(1.2, dw * 0.005);
+    const t = timestampMs / 1000;
+
+    for (const slot of sparkleSlotsRef.current) {
+      const phase = ((t + slot.phaseOffsetSec) % slot.cycleDurationSec) / slot.cycleDurationSec;
+      // Re-roll which facet this slot flashes on each time its cycle restarts.
+      if (phase < slot.lastPhase) {
+        slot.candidateIndex = Math.floor(Math.random() * points.length);
+      }
+      slot.lastPhase = phase;
+
+      const opacity = Math.max(0, Math.sin(phase * Math.PI)) ** 3;
+      if (opacity < 0.02) continue;
+
+      const point = points[slot.candidateIndex % points.length];
+      const px = dx + point.x * dw;
+      const py = dy + point.y * dh;
+      drawGlint(ctx, px, py, glintSize, opacity);
+    }
+  }, []);
+
+  // Animation loop: read progress, draw the matching frame, reposition the
+  // canvas per the current pose, and animate the sparkle overlay.
   useEffect(() => {
-    function tick() {
+    function tick(timestampMs: number) {
       const progress = sceneState.current.progress;
       const clamped = Math.max(0, Math.min(1, progress));
 
@@ -194,6 +369,10 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
       if (frameIdx !== lastFrameRef.current && frameIdx !== undefined) {
         lastFrameRef.current = frameIdx;
         drawFrame(frameIdx);
+      }
+
+      if (frameIdx !== undefined) {
+        drawSparkles(frameIdx, timestampMs);
       }
 
       const wrapper = wrapperRef.current;
@@ -207,7 +386,7 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
 
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [sceneState, totalSequenceFrames, drawFrame]);
+  }, [sceneState, totalSequenceFrames, drawFrame, drawSparkles]);
 
   if (reducedMotion) {
     // Static fallback: front-facing pose, centered, no motion.
@@ -239,6 +418,9 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
             "drop-shadow(0 25px 35px rgba(0,0,0,0.12)) drop-shadow(0 8px 12px rgba(0,0,0,0.08))",
         }}
       />
+
+      {/* Twinkling glints over the diamond facets — see extractGlintPoints/drawSparkles */}
+      <canvas ref={sparkleCanvasRef} className="pointer-events-none absolute inset-0 z-[8] h-full w-full" aria-hidden="true" />
 
       {/* Dynamic bottom shadow — sits beneath the necklace, follows its position */}
       <div
