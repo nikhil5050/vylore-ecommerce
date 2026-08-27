@@ -3,6 +3,7 @@ import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { ComingSoon } from "@/components/home/ComingSoon";
 import { CustomJewellery } from "@/components/home/CustomJewellery";
 import { FeaturedCollections } from "@/components/home/FeaturedCollections";
+import { MaterialStory } from "@/components/home/MaterialStory";
 // import { InstagramProof } from "@/components/home/InstagramProof";
 import { NewArrivals } from "@/components/home/NewArrivals";
 import { NoCompromise } from "@/components/home/NoCompromise";
@@ -29,6 +30,7 @@ export default function Home() {
       <NoCompromise /> */}
       <TrustSection />
       <Bestsellers />
+      <MaterialStory />
       <CustomJewellery />
       <Testimonials />
       {/* <InstagramProof /> */}

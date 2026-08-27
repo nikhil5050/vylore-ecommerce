@@ -216,6 +216,45 @@ body {
       animation: none;
     }
   }
+
+  .material-arrow {
+    display: block;
+    width: 5rem;
+    border-top: 1px dashed color-mix(in srgb, var(--burgundy) 55%, transparent);
+    position: relative;
+    animation: material-arrow-pulse 2.2s ease-in-out infinite;
+  }
+
+  .material-arrow::after {
+    content: "";
+    position: absolute;
+    top: -5px;
+    width: 8px;
+    height: 8px;
+    border-top: 1px solid var(--burgundy);
+    border-right: 1px solid var(--burgundy);
+  }
+
+  .material-arrow-right::after {
+    right: 0;
+    transform: rotate(45deg);
+  }
+
+  .material-arrow-left::after {
+    left: 0;
+    transform: rotate(-135deg);
+  }
+
+  @keyframes material-arrow-pulse {
+    0%, 100% { opacity: 0.45; transform: scaleX(0.9); transform-origin: center; }
+    50% { opacity: 1; transform: scaleX(1); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .material-arrow {
+      animation: none;
+    }
+  }
 }
 
 /* ---------------------------------------------------------------------
