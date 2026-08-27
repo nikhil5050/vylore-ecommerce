@@ -5,3 +5,4 @@ export * from "./customer";
 export * from "./category";
 export * from "./dashboard";
 export * from "./inventory";
+export * from "./banner";

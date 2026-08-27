@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, Open_Sans } from "next/font/google";
 import "./globals.css";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { siteConfig } from "@/config/site";
+import { isComingSoon } from "@/config/launch";
 
 // TEMPORARY stand-in for "Black Mango" (a paid/personal-use display font,
 // not on Google Fonts — see AGENTS.md note or ask about licensing). Swap this
@@ -28,6 +29,13 @@ export const metadata: Metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
+  // Replaces the old placeholder gem-shaped app/icon.svg — this points
+  // straight at the real logo instead, so there's only one favicon source.
+  icons: {
+    icon: "/logo/logo.png",
+    shortcut: "/logo/logo.png",
+    apple: "/logo/logo.png",
+  },
   openGraph: {
     siteName: siteConfig.name,
     type: "website",
@@ -68,7 +76,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
-        <SiteChrome>{children}</SiteChrome>
+        <SiteChrome comingSoon={isComingSoon}>{children}</SiteChrome>
       </body>
     </html>
   );

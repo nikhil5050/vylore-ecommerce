@@ -6,7 +6,7 @@ export interface NavItem {
 export const mainNav: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "Shop", href: "/shop" },
-  { label: "Collections", href: "/collections" },
+  // { label: "Collections", href: "/collections" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
@@ -18,7 +18,7 @@ export const footerNav: Record<"shop" | "about" | "help", NavItem[]> = {
     { label: "Necklaces", href: "/category/necklaces" },
     { label: "Earrings", href: "/category/earrings" },
     { label: "Anklets", href: "/category/anklets" },
-    { label: "Collections", href: "/collections" },
+    // { label: "Collections", href: "/collections" },
   ],
   about: [
     { label: "Our Story", href: "/about" },

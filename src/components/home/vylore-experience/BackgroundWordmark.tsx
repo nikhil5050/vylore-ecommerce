@@ -56,7 +56,7 @@ export function BackgroundWordmark({ innerRef }: BackgroundWordmarkProps) {
           }}
         >
           <img
-            src="/ring.png"
+            src="https://vylore.in/public/ring%20(2).png"
             alt=""
             className="
   absolute
@@ -68,13 +68,12 @@ export function BackgroundWordmark({ innerRef }: BackgroundWordmarkProps) {
   -translate-x-1/2
   -translate-y-[38%]
   object-contain
-"          />
+"
+          />
         </span>
 
         {/* RE */}
-        <span className="relative z-10">
-          RE
-        </span>
+        <span className="relative z-10">RE</span>
       </div>
 
       {/* JEWELLERS — bottom-left on desktop, centered on mobile */}
