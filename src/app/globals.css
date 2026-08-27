@@ -190,6 +190,32 @@ body {
       transform: translateX(-50%);
     }
   }
+
+  /* Two duplicate, full-width tracks placed side by side (not one track
+     with doubled content, like .marquee-track above) — each slides its own
+     full width from off-screen left to its natural position, so as one
+     exits right the other enters left: continuous left-to-right motion.
+     Kept as its own named keyframe rather than reusing "marquee" above —
+     that one is tuned for the opposite (doubled-content, right-to-left)
+     technique and the two aren't interchangeable. */
+  @keyframes slide-in-ltr {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0%);
+    }
+  }
+
+  .slide-in-ltr-track {
+    animation: slide-in-ltr 25s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .slide-in-ltr-track {
+      animation: none;
+    }
+  }
 }
 
 /* ---------------------------------------------------------------------
