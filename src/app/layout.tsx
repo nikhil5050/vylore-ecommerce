@@ -29,6 +29,13 @@ export const metadata: Metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
+  // Replaces the old placeholder gem-shaped app/icon.svg — this points
+  // straight at the real logo instead, so there's only one favicon source.
+  icons: {
+    icon: "/logo/logo.png",
+    shortcut: "/logo/logo.png",
+    apple: "/logo/logo.png",
+  },
   openGraph: {
     siteName: siteConfig.name,
     type: "website",

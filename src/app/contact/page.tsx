@@ -88,36 +88,6 @@ const directionsHref = `https://www.google.com/maps/dir/?api=1&destination=${enc
 export default function ContactPage() {
   return (
     <main className="relative flex flex-1 flex-col overflow-hidden bg-white py-12 sm:py-16 lg:py-20">
-      
-      {/* --- Seamless Automated Marquee Background Watermark ---
-          Hidden below sm: at 28vw a phone renders this as a huge block of
-          text that's expensive to paint for something already at 5%
-          opacity there — not worth the cost on mobile. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-8 hidden overflow-hidden opacity-20 select-none z-0 sm:flex"
-      >
-        {/* Two identical tracks placed side by side — as the first slides
-            fully into view the second follows right behind it, so the loop
-            has no visible gap or jump-cut. Both need the same content. */}
-        <div className="slide-in-ltr-track flex min-w-full shrink-0 items-center justify-around gap-16">
-          <span className="font-serif text-[18vw] font-bold tracking-widest text-burgundy uppercase leading-none">
-            CONTACT-US
-          </span>
-          <span className="font-serif text-[18vw] font-bold tracking-widest text-burgundy uppercase leading-none">
-            CONTACT-US
-          </span>
-        </div>
-        <div className="slide-in-ltr-track flex min-w-full shrink-0 items-center justify-around gap-16">
-          <span className="font-serif text-[18vw] font-bold tracking-widest text-burgundy uppercase leading-none">
-            CONTACT-US
-          </span>
-          <span className="font-serif text-[18vw] font-bold tracking-widest text-burgundy uppercase leading-none">
-            CONTACT-US
-          </span>
-        </div>
-      </div>
-
       <Container className="relative z-10">
         <Breadcrumb
           items={[{ label: "Home", href: "/" }, { label: "Contact" }]}
