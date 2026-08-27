@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, Open_Sans } from "next/font/google";
 import "./globals.css";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { siteConfig } from "@/config/site";
+import { isComingSoon } from "@/config/launch";
 
 // TEMPORARY stand-in for "Black Mango" (a paid/personal-use display font,
 // not on Google Fonts — see AGENTS.md note or ask about licensing). Swap this
@@ -68,7 +69,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
-        <SiteChrome>{children}</SiteChrome>
+        <SiteChrome comingSoon={isComingSoon}>{children}</SiteChrome>
       </body>
     </html>
   );
