@@ -9,13 +9,7 @@ const TOTAL_FRAMES = 150;
 // The video is a 360° rotation. The necklace now starts front-facing and
 // spins away from camera as the user scrolls, so we play frames 1 → 60.
 const START_FRAME = 1; // front/assembled view
-const END_FRAME = 60; // side/rotated view
-
-// Rotation only plays out over the first part of the scroll (the "spin"
-// phase) — past this point the frame holds while the necklace repositions
-// for the About section. Matches the wordmark/hero fade timing in
-// VyloreExperience's GSAP timeline.
-const SPIN_END_PROGRESS = 0.45;
+const END_FRAME = 150; // full rotation
 
 function getFramePath(index: number): string {
   // Background-removed WebP — see public/necklace-frames (transparent everywhere
@@ -38,33 +32,20 @@ interface Pose {
 }
 
 /**
- * Two-phase choreography driven entirely by scroll progress (0→1):
- *  - Phase A (0 → SPIN_END_PROGRESS): necklace sits right-of-center (its
- *    drawn pose is already right-of-center at xVw=0 — see note below) and
- *    drifts slightly further right as it spins away from camera.
- *  - Phase B (SPIN_END_PROGRESS → 1): the necklace crosses to the left,
- *    scaling down and tilting slightly to sit alongside the About copy
- *    (which occupies the right column during this phase).
- *
- * xVw values are deliberately small: the source frames already draw the
- * necklace right-of-center within the canvas (its own composition), so
- * translateX stacks on top of that — a large positive value here pushes
- * the necklace's right edge past the viewport and clips it.
+ * Continuous choreography driven entirely by scroll progress (0→1):
+ * As the user scrolls, the necklace smoothly rotates (frames 1 to 150)
+ * while smoothly sliding from slightly right-of-center to the left to
+ * sit alongside the About copy.
  */
 function getPose(progress: number): Pose {
   const p = Math.max(0, Math.min(1, progress));
-  const PHASE_A_END_X = 6;
 
-  if (p <= SPIN_END_PROGRESS) {
-    const t = easeInOutCubic(p / SPIN_END_PROGRESS);
-    return { xVw: lerp(0, PHASE_A_END_X, t), scale: 1, rotateDeg: 0 };
-  }
-
-  const t = easeInOutCubic((p - SPIN_END_PROGRESS) / (1 - SPIN_END_PROGRESS));
+  // Linear slide from right-of-center to left for the About section.
+  // No easing — keeps motion perfectly synced with frame rotation.
   return {
-    xVw: lerp(PHASE_A_END_X, -34, t),
-    scale: lerp(1, 0.72, t),
-    rotateDeg: lerp(0, -6, t),
+    xVw: lerp(0, -30, p),
+    scale: 1,
+    rotateDeg: 0,
   };
 }
 
@@ -78,9 +59,8 @@ interface NecklaceCanvasProps {
  * Preloads all frames as Image objects on mount; on every rAF tick, reads
  * `sceneState.progress` (0→1, set by GSAP ScrollTrigger in the parent),
  * draws the matching frame onto a <canvas>, and repositions the canvas
- * itself per `getPose` above. The necklace starts front-facing on the right
- * and spins toward its side profile over the first ~45% of the scroll, then
- * holds that pose while it crosses to the left for the About section.
+ * itself per `getPose` above. The necklace spins continuously through all frames
+ * as the user scrolls, while crossing to the left for the About section.
  */
 export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -207,9 +187,8 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
       const progress = sceneState.current.progress;
       const clamped = Math.max(0, Math.min(1, progress));
 
-      // Rotation only advances through SPIN_END_PROGRESS, then holds.
-      const rotationProgress = Math.min(clamped / SPIN_END_PROGRESS, 1);
-      const seqIdx = Math.round(rotationProgress * (totalSequenceFrames - 1));
+      // Continuous rotation through all 150 frames across the entire scroll.
+      const seqIdx = Math.round(clamped * (totalSequenceFrames - 1));
       const frameIdx = frameSequence.current[seqIdx];
 
       if (frameIdx !== lastFrameRef.current && frameIdx !== undefined) {
@@ -255,6 +234,24 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
         className="h-full w-full"
         aria-label="Scroll-driven necklace assembly animation"
         role="img"
+        style={{
+          filter:
+            "drop-shadow(0 25px 35px rgba(0,0,0,0.12)) drop-shadow(0 8px 12px rgba(0,0,0,0.08))",
+        }}
+      />
+
+      {/* Dynamic bottom shadow — sits beneath the necklace, follows its position */}
+      <div
+        className="pointer-events-none absolute left-1/2 z-[5]"
+        style={{
+          bottom: "12%",
+          width: "40%",
+          height: "6%",
+          transform: "translateX(-50%)",
+          background:
+            "radial-gradient(ellipse 100% 100% at 50% 50%, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.05) 40%, transparent 70%)",
+          filter: "blur(12px)",
+        }}
       />
 
       {/* Loading shimmer — visible until all frames are loaded */}
