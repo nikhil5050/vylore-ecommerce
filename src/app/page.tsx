@@ -1,10 +1,8 @@
 import { Bestsellers } from "@/components/home/Bestsellers";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { ComingSoon } from "@/components/home/ComingSoon";
-import { CustomJewellery } from "@/components/home/CustomJewellery";
 import { FeaturedCollections } from "@/components/home/FeaturedCollections";
 import { MaterialStory } from "@/components/home/MaterialStory";
-// import { InstagramProof } from "@/components/home/InstagramProof";
 import { NewArrivals } from "@/components/home/NewArrivals";
 import { NoCompromise } from "@/components/home/NoCompromise";
 import { OfferBanner } from "@/components/home/OfferBanner";
@@ -25,15 +23,10 @@ export default function Home() {
       <CategoryGrid />
       <HeroGrid />
       <OfferBanner />
-      {/* <FeaturedCollections />
-      <NewArrivals />
-      <NoCompromise /> */}
       <TrustSection />
       <Bestsellers />
-      <MaterialStory />
-      <CustomJewellery />
+      <MaterialStory /> 
       <Testimonials />
-      {/* <InstagramProof /> */}
       <Faq />
     </main>
   );
