@@ -23,7 +23,7 @@ export function Field({ label, required, className, type, ...props }: FieldProps
           required={required}
           type={isPassword && visible ? "text" : type}
           className={cn(
-            "h-11 w-full border border-silver/50 bg-white px-3 text-sm text-charcoal focus:border-burgundy focus:outline-none",
+            "h-11 w-full rounded-[2px] border border-silver/50 bg-white px-3 text-sm text-charcoal transition-all duration-200 placeholder:text-silver hover:border-silver focus:border-burgundy focus:outline-none focus:ring-4 focus:ring-burgundy/10",
             isPassword && "pr-10",
           )}
           {...props}

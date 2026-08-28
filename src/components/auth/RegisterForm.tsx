@@ -53,7 +53,7 @@ export function RegisterForm() {
         autoComplete="new-password"
       />
       {error && <p className="text-sm text-burgundy">{error}</p>}
-      <Button type="submit" variant="primary" size="md" disabled={submitting} className="mt-2 w-fit">
+      <Button type="submit" variant="primary" size="lg" disabled={submitting} className="mt-2 w-full">
         {submitting ? "Creating Account…" : "Create Account"}
       </Button>
     </form>

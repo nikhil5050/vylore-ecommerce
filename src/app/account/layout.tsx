@@ -15,13 +15,16 @@ export const metadata: Metadata = buildMetadata({
 
 export default function AccountLayout({ children }: { children: ReactNode }) {
   return (
-    <main className="flex flex-1 flex-col py-16 lg:py-24">
+    <main className="flex flex-1 flex-col bg-[linear-gradient(135deg,var(--white)_0%,var(--white)_72%,var(--moonlight)_100%)] py-12 sm:py-16 lg:py-24">
       <Container>
         <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Account" }]} />
-        <h1 className="mt-4 font-serif text-4xl text-charcoal sm:text-5xl">My Account</h1>
+        <div className="mt-4 flex items-end justify-between gap-4">
+          <h1 className="font-serif text-4xl text-charcoal sm:text-5xl">My Account</h1>
+          <p className="eyebrow hidden pb-1 text-[10px] text-muted sm:block">Member area</p>
+        </div>
 
         <RequireAuth>
-          <div className="mt-10 flex flex-col gap-10 lg:flex-row">
+          <div className="mt-8 flex flex-col gap-8 lg:mt-12 lg:flex-row lg:gap-12">
             <AccountSidebar />
             <div className="flex-1">{children}</div>
           </div>

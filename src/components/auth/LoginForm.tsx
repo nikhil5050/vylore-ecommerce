@@ -39,7 +39,7 @@ export function LoginForm() {
         Forgot password?
       </Link>
       {error && <p className="text-sm text-burgundy">{error}</p>}
-      <Button type="submit" variant="primary" size="md" disabled={submitting} className="mt-2 w-fit">
+      <Button type="submit" variant="primary" size="lg" disabled={submitting} className="mt-2 w-full">
         {submitting ? "Signing In…" : "Sign In"}
       </Button>
     </form>

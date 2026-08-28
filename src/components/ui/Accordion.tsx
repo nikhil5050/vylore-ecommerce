@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import { useId, useState, type ReactNode } from "react";
 import { ChevronDownIcon } from "@/components/icons/Icons";
 import { cn } from "@/utils/cn";
@@ -45,11 +46,22 @@ export function Accordion({ items, defaultOpenId, headingLevel = 3 }: AccordionP
                 />
               </button>
             </Heading>
-            {isOpen && (
-              <div id={panelId} role="region" aria-labelledby={buttonId} className="pb-5 text-sm leading-relaxed text-muted">
-                {item.content}
-              </div>
-            )}
+            <AnimatePresence initial={false}>
+              {isOpen && (
+                <motion.div
+                  id={panelId}
+                  role="region"
+                  aria-labelledby={buttonId}
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                  className="overflow-hidden"
+                >
+                  <div className="pb-5 text-sm leading-relaxed text-muted">{item.content}</div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         );
       })}
