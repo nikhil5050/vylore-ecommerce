@@ -186,9 +186,13 @@ function getPose(progress: number, isMobile: boolean): Pose {
   if (isMobile) {
     const t = easeInOutCubic(p);
     return {
-      xVw: 0,
-      yVh: lerp(13, 6, t),
-      scale: lerp(0.66, 0.48, t),
+      // The source frames draw the necklace slightly right-of-center within
+      // their own bounds (see NecklaceCanvas at desktop scale, where this is
+      // the intended right-side hero pose) — a small negative shift here
+      // just recenters the visible subject, it isn't an independent offset.
+      xVw: lerp(-9, -4, t),
+      yVh: lerp(15, 6, t),
+      scale: lerp(0.85, 0.6, t),
       rotateDeg: 0,
     };
   }
