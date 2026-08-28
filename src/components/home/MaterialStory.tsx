@@ -2,10 +2,8 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
-import { cn } from "@/utils/cn";
 
 interface Feature {
   id: string;
@@ -25,7 +23,7 @@ const materialDetails: Feature[] = [
     label: "Sterling Silver Base",
     detail: "Chosen for lasting brilliance & durability",
     side: "left",
-    textStyle: "top-[15%] left-[2%] lg:left-[4%]",
+    textStyle: "top-[15%] left-[3%] lg:left-[4%]",
     textPoint: { x: 25, y: 18 },
     targetPoint: { x: 44, y: 30 },
   },
@@ -34,7 +32,7 @@ const materialDetails: Feature[] = [
     label: "Thoughtful Design",
     detail: "Precision carved band for a comfortable fit",
     side: "left",
-    textStyle: "top-[46%] left-[2%] lg:left-[4%]",
+    textStyle: "top-[46%] left-[3%] lg:left-[4%]",
     textPoint: { x: 25, y: 49 },
     targetPoint: { x: 38, y: 50 },
   },
@@ -43,7 +41,7 @@ const materialDetails: Feature[] = [
     label: "Hand-Finished Polish",
     detail: "Refined finish crafted by master jewelers",
     side: "left",
-    textStyle: "top-[78%] left-[2%] lg:left-[4%]",
+    textStyle: "top-[78%] left-[3%] lg:left-[4%]",
     textPoint: { x: 25, y: 81 },
     targetPoint: { x: 40.5, y: 74 },
   },
@@ -53,7 +51,7 @@ const materialDetails: Feature[] = [
     label: "Brilliant Cubic Zirconia",
     detail: "Hand-set stones for an unmatched sparkle",
     side: "right",
-    textStyle: "top-[15%] right-[2%] lg:right-[4%]",
+    textStyle: "top-[15%] right-[3%] lg:right-[4%]",
     textPoint: { x: 75, y: 18 },
     targetPoint: { x: 54, y: 22.5 },
   },
@@ -62,7 +60,7 @@ const materialDetails: Feature[] = [
     label: "Polished Band",
     detail: "Seamless, high-shine finish for everyday wear",
     side: "right",
-    textStyle: "top-[46%] right-[2%] lg:right-[4%]",
+    textStyle: "top-[46%] right-[3%] lg:right-[4%]",
     textPoint: { x: 75, y: 49 },
     targetPoint: { x: 62, y: 37 },
   },
@@ -71,7 +69,7 @@ const materialDetails: Feature[] = [
     label: "Made to Last",
     detail: "Hypoallergenic coating built for every chapter",
     side: "right",
-    textStyle: "top-[78%] right-[2%] lg:right-[4%]",
+    textStyle: "top-[78%] right-[3%] lg:right-[4%]",
     textPoint: { x: 75, y: 81 },
     targetPoint: { x: 57, y: 57 },
   },
@@ -115,8 +113,8 @@ export function MaterialStory() {
           </h2>
         </FadeIn>
 
-        {/* Desktop Diagram */}
-        <div className="relative mx-auto mt-12 hidden max-w-5xl sm:mt-16 sm:block sm:h-[520px] lg:h-[580px]">
+        {/* Diagram — same left/right pointer layout at every breakpoint, scaled down for mobile */}
+        <div className="relative mx-auto mt-10 h-[380px] max-w-5xl sm:mt-16 sm:h-[520px] lg:h-[580px]">
           <svg
             className="absolute inset-0 h-full w-full pointer-events-none"
             viewBox="0 0 100 100"
@@ -184,25 +182,25 @@ export function MaterialStory() {
             ))}
           </svg>
 
-          <ProductPortrait className="absolute left-1/2 top-1/2 h-[340px] w-[340px] -translate-x-1/2 -translate-y-1/2 lg:h-[400px] lg:w-[400px]" />
+          <ProductPortrait className="absolute left-1/2 top-1/2 h-[150px] w-[150px] -translate-x-1/2 -translate-y-1/2 sm:h-[340px] sm:w-[340px] lg:h-[400px] lg:w-[400px]" />
 
           {/* Feature Text Labels */}
           {materialDetails.map((item, index) => (
             <FadeIn
               key={item.id}
               delay={0.1 + index * 0.1}
-              className={`absolute max-w-[190px] lg:max-w-[230px] ${item.textStyle} ${
+              className={`absolute max-w-[84px] sm:max-w-[190px] lg:max-w-[230px] ${item.textStyle} ${
                 item.side === "left" ? "text-right" : "text-left"
               }`}
             >
-              <p className="font-serif text-sm font-semibold text-charcoal lg:text-base">
+              <p className="font-serif text-[10px] font-semibold leading-snug text-charcoal sm:text-sm lg:text-base">
                 {item.label}
               </p>
-              <p className="mt-0.5 text-[11px] leading-tight text-muted">
+              <p className="mt-0.5 hidden text-[11px] leading-tight text-muted sm:block">
                 {item.detail}
               </p>
               <div
-                className={`mt-2 flex ${
+                className={`mt-1.5 hidden sm:mt-2 sm:flex ${
                   item.side === "left" ? "justify-end" : "justify-start"
                 }`}
               >
@@ -217,49 +215,6 @@ export function MaterialStory() {
               </div>
             </FadeIn>
           ))}
-        </div>
-
-        {/* Mobile Layout */}
-        <div className="mt-7 sm:hidden">
-          <ProductPortrait className="relative mx-auto h-[210px] w-[210px]" />
-
-          <div className="mt-5 grid gap-3 border-t border-charcoal/10 pt-5">
-            {materialDetails.map((item, index) => (
-              <FadeIn key={`mobile-${item.id}`} delay={0.05 * index} direction="scale">
-                <div className="rounded-xl border border-charcoal/10 bg-[#FAF9F6] p-3.5">
-                  <div className={cn(
-                    "flex items-center gap-3",
-                    item.side === "right" ? "flex-row-reverse text-right" : "text-left"
-                  )}>
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-burgundy/10 text-burgundy">
-                      <ArrowUpRight className="h-3.5 w-3.5" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="font-serif text-sm font-semibold leading-snug text-charcoal">
-                        {item.label}
-                      </p>
-                      <p className="mt-1 text-xs leading-snug text-muted">
-                        {item.detail}
-                      </p>
-                    </div>
-                  </div>
-                  <div className={cn(
-                    "mt-3 flex items-center gap-2",
-                    item.side === "right" ? "justify-start" : "justify-end"
-                  )}>
-                    <span
-                      aria-hidden="true"
-                      className={cn(
-                        "material-arrow w-24",
-                        item.side === "left" ? "material-arrow-right" : "material-arrow-left"
-                      )}
-                    />
-                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-burgundy" aria-hidden="true" />
-                  </div>
-                </div>
-              </FadeIn>
-            ))}
-          </div>
         </div>
       </Container>
     </section>
