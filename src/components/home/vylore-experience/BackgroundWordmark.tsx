@@ -1,4 +1,5 @@
 import { Playfair_Display } from "next/font/google";
+import Image from "next/image";
 
 // A dedicated display serif for this oversized background wordmark — richer
 // letterforms and more presence at huge sizes than the site's default
@@ -17,9 +18,9 @@ export function BackgroundWordmark({ innerRef }: BackgroundWordmarkProps) {
     <div
       ref={innerRef}
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 z-[15] flex select-none flex-col items-center justify-center gap-8 overflow-hidden px-8 py-12 sm:items-stretch sm:justify-between sm:gap-0 md:px-16 md:py-20"
+      className="pointer-events-none absolute inset-0 z-[15] flex select-none flex-col items-center justify-center overflow-hidden px-6 sm:items-start sm:px-10 md:px-16"
     >
-      {/* VYLORE — top-left on desktop, centered on mobile */}
+      {/* VYLORE sits close above JEWELLERS */}
       <div
         className={`
           relative
@@ -31,14 +32,14 @@ export function BackgroundWordmark({ innerRef }: BackgroundWordmarkProps) {
           leading-none
           tracking-tight
           text-burgundy
-          sm:self-start
+          self-center sm:self-start
         `}
         style={{
-          fontSize: "clamp(2.75rem, 13vw, 9rem)",
+          fontSize: "clamp(2.15rem, 7.5vw, 5.75rem)",
         }}
       >
         {/* VYL */}
-        <span className="relative z-10">VYL</span>
+        <span className="relative z-10 ">VYL</span>
 
         {/* Ring replacing O */}
         <span
@@ -49,24 +50,27 @@ export function BackgroundWordmark({ innerRef }: BackgroundWordmarkProps) {
             shrink-0
           "
           style={{
-            width: "1.28em",
-            height: "1em",
-            marginLeft: "-0.08em",
-            marginRight: "-0.55em",
+            width: "1.38em",
+            height: "1.08em",
+            marginLeft: "-0.09em",
+            marginRight: "-0.6em",
           }}
         >
-          <img
+          <Image
             src="/ring.png"
             alt=""
+            width={555}
+            height={348}
+            sizes="(max-width: 640px) 130px, 240px"
             className="
   absolute
   left-1/2
   top-1/2
   z-30
-  w-[1.45em]
+  w-[1.55em]
   max-w-none
   -translate-x-1/2
-  -translate-y-[38%]
+  -translate-y-[35%]
   object-contain
 "
           />
@@ -76,23 +80,30 @@ export function BackgroundWordmark({ innerRef }: BackgroundWordmarkProps) {
         <span className="relative z-10">RE</span>
       </div>
 
-      {/* JEWELLERS — bottom-left on desktop, centered on mobile */}
+      {/* JEWELLERS sits directly below VYLORE — same display face, deliberately smaller than the wordmark above it so VYLORE reads as the primary word */}
       <span
         className="
+          mt-1
           font-serif
           font-bold
           uppercase
           leading-none
           tracking-tight
           text-charcoal
-          sm:self-start
+          self-center sm:mt-0.5 sm:self-start
         "
         style={{
-          fontSize: "clamp(2.75rem, 15vw, 10rem)",
+          fontSize: "clamp(1.7rem, 6.25vw, 4.75rem)",
         }}
       >
         JEWELLERS
       </span>
+
+      {/* Quiet supporting line — clearly separated from the heading, not crowding it */}
+      <p className="mt-4 max-w-[290px] text-center text-xs leading-relaxed tracking-[0.05em] text-charcoal/60 sm:mt-5 sm:max-w-[360px] sm:self-start sm:text-left sm:text-sm">
+        Thoughtfully crafted jewellery for every story — timeless designs in
+        fine silver, made to be worn and loved for a lifetime.
+      </p>
     </div>
   );
 }

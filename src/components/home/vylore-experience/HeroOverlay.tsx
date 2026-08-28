@@ -11,12 +11,6 @@ export function HeroOverlay({ innerRef }: HeroOverlayProps) {
     <div ref={innerRef} className="absolute inset-0 z-20 pointer-events-none">
       {/* Top Eyebrow Tagline */}
       <div className="absolute left-0 right-0 top-8 flex justify-center px-6 sm:top-12">
-        <div className="pointer-events-auto flex items-center gap-2.5 rounded-full border border-charcoal/10 bg-ivory/60 px-4 py-1.5 shadow-sm backdrop-blur-md transition-all hover:bg-ivory/80">
-          <GemIcon className="h-3.5 w-3.5 text-champagne animate-pulse" />
-          <p className="eyebrow text-[11px] font-medium tracking-wide text-charcoal/80 sm:text-xs">
-            Jewellery that becomes part of your story
-          </p>
-        </div>
       </div>
 
       {/* Floating Detail Callout — Top Right (Tablet/Desktop) */}
