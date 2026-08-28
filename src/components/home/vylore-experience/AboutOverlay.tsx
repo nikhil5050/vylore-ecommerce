@@ -27,7 +27,7 @@ export function AboutOverlay({ innerRef }: AboutOverlayProps) {
             </div>
             <div className="flex items-center justify-between py-3">
               <span className="text-xs text-muted">Made for</span>
-              <span className="text-xs font-medium text-charcoal">Everyday wear</span>
+              <span className="text-xs font-medium text-charcoal">Special occasions</span>
             </div>
           </div>
         </div>

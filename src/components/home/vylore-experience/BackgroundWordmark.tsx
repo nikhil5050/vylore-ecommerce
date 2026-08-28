@@ -88,7 +88,8 @@ export function BackgroundWordmark({ innerRef }: BackgroundWordmarkProps) {
           font-bold
           uppercase
           leading-none
-          tracking-tight
+          opacity-50
+          tracking-[0.08em]
           text-charcoal
           self-center sm:mt-0.5 sm:self-start
         "
