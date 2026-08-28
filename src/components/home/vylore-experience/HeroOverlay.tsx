@@ -49,21 +49,24 @@ export function HeroOverlay({ innerRef }: HeroOverlayProps) {
         </div>
       </div> */}
 
-      {/* Bottom Group: Mobile Chip & Interactive Scroll Indicator */}
-      <div className="hero-callout absolute inset-x-6 bottom-6 flex flex-col items-center gap-6 sm:bottom-8">
+      {/* Bottom Group: Mobile Chip & Interactive Scroll Indicator.
+          bottom-24 clears the fixed mobile bottom nav bar (~4.75rem tall
+          plus safe-area inset) — that nav is lg:hidden, so this reverts to
+          its original offset at the same breakpoint. */}
+      <div className="hero-callout absolute inset-x-6 bottom-24 flex flex-col items-center gap-6 overflow-hidden lg:bottom-8 lg:overflow-visible">
         {/* Compact Detail Callout — Mobile Only */}
-        <div className="pointer-events-auto flex items-center gap-3 rounded-full border border-white/50 bg-ivory/75 px-3.5 py-1.5 shadow-md backdrop-blur-md sm:hidden">
+        <div className="pointer-events-auto flex w-full max-w-full items-center gap-2 overflow-hidden rounded-full border border-white/50 bg-ivory/75 px-3 py-1.5 shadow-md backdrop-blur-md sm:hidden sm:w-auto">
           <div className="relative h-6 w-6 shrink-0 overflow-hidden rounded-full bg-white shadow-inner">
             <Image
-              src="/animationimg.png"
-              alt="Velora diamond ring detail"
+              src="/necklace-frames/frame_0001.webp"
+              alt="Emerald & diamond necklace detail"
               fill
               sizes="24px"
               className="object-cover"
             />
           </div>
           <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-champagne" />
-          <p className="eyebrow text-[10px] font-medium text-charcoal/90">
+          <p className="eyebrow min-w-0 flex-1 truncate text-[10px] font-medium text-charcoal/90">
             Emerald & Diamond Necklace
           </p>
         </div>

@@ -18,7 +18,7 @@ export function BackgroundWordmark({ innerRef }: BackgroundWordmarkProps) {
     <div
       ref={innerRef}
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 z-[15] flex select-none flex-col items-center justify-center overflow-hidden px-6 sm:items-start sm:px-10 md:px-16"
+      className="pointer-events-none absolute inset-0 z-[15] flex select-none flex-col items-center justify-start overflow-hidden px-6 pt-[8%] sm:items-start sm:justify-center sm:px-10 sm:pt-0 md:px-16"
     >
       {/* VYLORE sits close above JEWELLERS */}
       <div

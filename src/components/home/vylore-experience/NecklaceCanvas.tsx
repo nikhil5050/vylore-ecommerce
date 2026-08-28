@@ -27,9 +27,15 @@ function lerp(a: number, b: number, t: number): number {
 
 interface Pose {
   xVw: number;
+  yVh: number;
   scale: number;
   rotateDeg: number;
 }
+
+// Matches Tailwind's `sm` breakpoint, which is also where BackgroundWordmark
+// switches from its stacked mobile layout (text pinned near the top) to the
+// side-by-side desktop one (text left, necklace right).
+const MOBILE_BREAKPOINT_PX = 640;
 
 interface ContainFit {
   dx: number;
@@ -164,14 +170,34 @@ function makeSparkleSlots(count: number): SparkleSlot[] {
  * As the user scrolls, the necklace smoothly rotates (frames 1 to 150)
  * while smoothly sliding from slightly right-of-center to the left to
  * sit alongside the About copy.
+ *
+ * Mobile gets a different pose, not just a scaled-down version of desktop's:
+ * BackgroundWordmark stacks its text at the top of the screen on narrow
+ * viewports (rather than pinning it to the left edge, as on desktop), so the
+ * necklace needs its own vertical band below the text instead of sharing the
+ * same centered space — sharing it is what caused the overlap this fixes.
+ * Where it ends up by progress=1 matters much less on mobile: AboutOverlay's
+ * mobile layout is an opaque panel that covers most of the screen, so the
+ * necklace is mostly hidden behind it there regardless of exact position.
  */
-function getPose(progress: number): Pose {
+function getPose(progress: number, isMobile: boolean): Pose {
   const p = Math.max(0, Math.min(1, progress));
+
+  if (isMobile) {
+    const t = easeInOutCubic(p);
+    return {
+      xVw: 0,
+      yVh: lerp(13, 6, t),
+      scale: lerp(0.66, 0.48, t),
+      rotateDeg: 0,
+    };
+  }
 
   // Linear slide from right-of-center to left for the About section.
   // No easing — keeps motion perfectly synced with frame rotation.
   return {
     xVw: lerp(0, -30, p),
+    yVh: 0,
     scale: 1,
     rotateDeg: 0,
   };
@@ -377,8 +403,9 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
 
       const wrapper = wrapperRef.current;
       if (wrapper) {
-        const { xVw, scale, rotateDeg } = getPose(clamped);
-        wrapper.style.transform = `translateX(${xVw}vw) scale(${scale}) rotate(${rotateDeg}deg)`;
+        const isMobile = window.innerWidth < MOBILE_BREAKPOINT_PX;
+        const { xVw, yVh, scale, rotateDeg } = getPose(clamped, isMobile);
+        wrapper.style.transform = `translate(${xVw}vw, ${yVh}vh) scale(${scale}) rotate(${rotateDeg}deg)`;
       }
 
       rafRef.current = requestAnimationFrame(tick);
