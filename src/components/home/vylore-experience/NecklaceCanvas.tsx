@@ -54,29 +54,47 @@ function computeContainFit(cw: number, ch: number, iw: number, ih: number): Cont
 /**
  * Finds candidate "glint" spots on a frame — near-white, low-saturation,
  * opaque pixels, which on these frames means a diamond facet catching
- * light rather than the gold setting or the emerald stones. Scans a small
- * downscaled copy of the frame (not the full 1280x720) since this only
- * needs to find plausible facet locations, not exact pixels, and runs
- * once per frame during preload rather than every render.
+ * light rather than the gold setting or the emerald stones. Also measures
+ * the frame's true horizontal center of mass (the necklace rotates, so this
+ * shifts frame to frame — a fixed centering offset drifts as soon as the
+ * user scrolls or drags to a different rotation angle). Both come from one
+ * scan of a small downscaled copy of the frame (not the full 1280x720),
+ * since this only needs plausible facet locations and an approximate
+ * center, not exact pixels — runs once per frame during preload, not
+ * every render.
  */
-function extractGlintPoints(img: HTMLImageElement, maxPoints: number): { x: number; y: number }[] {
+interface FrameAnalysis {
+  glintPoints: { x: number; y: number }[];
+  centerX: number;
+}
+
+function analyzeFrame(img: HTMLImageElement, maxGlintPoints: number): FrameAnalysis {
   const SAMPLE_W = 160;
   const SAMPLE_H = Math.max(1, Math.round(SAMPLE_W * (img.naturalHeight / img.naturalWidth)));
   const sampler = document.createElement("canvas");
   sampler.width = SAMPLE_W;
   sampler.height = SAMPLE_H;
   const sctx = sampler.getContext("2d", { willReadFrequently: true });
-  if (!sctx) return [];
+  const fallback: FrameAnalysis = { glintPoints: [], centerX: 0.5 };
+  if (!sctx) return fallback;
   sctx.drawImage(img, 0, 0, SAMPLE_W, SAMPLE_H);
 
   let data: Uint8ClampedArray;
   try {
     data = sctx.getImageData(0, 0, SAMPLE_W, SAMPLE_H).data;
   } catch {
-    return []; // canvas tainted (shouldn't happen for same-origin /public assets) — fail quietly
+    return fallback; // canvas tainted (shouldn't happen for same-origin /public assets) — fail quietly
   }
 
   const candidates: { x: number; y: number; brightness: number }[] = [];
+  // Mass-weighted, not bounding-box midpoint: a single thin chain link
+  // reaching further out than the rest of the necklace would otherwise pull
+  // a min/max-based center toward it, even though the dense, eye-catching
+  // cluster of stones sits elsewhere — this tracks where the pixels (and so
+  // the visual weight) actually are instead.
+  let sumX = 0;
+  let count = 0;
+
   for (let y = 0; y < SAMPLE_H; y++) {
     for (let x = 0; x < SAMPLE_W; x++) {
       const i = (y * SAMPLE_W + x) * 4;
@@ -85,6 +103,8 @@ function extractGlintPoints(img: HTMLImageElement, maxPoints: number): { x: numb
       const b = data[i + 2];
       const a = data[i + 3];
       if (a < 200) continue; // transparent background, not the necklace
+      sumX += x;
+      count++;
       const brightness = (r + g + b) / 3;
       const saturation = Math.max(r, g, b) - Math.min(r, g, b);
       if (brightness > 232 && saturation < 22) {
@@ -97,12 +117,14 @@ function extractGlintPoints(img: HTMLImageElement, maxPoints: number): { x: numb
   const picked: { x: number; y: number }[] = [];
   const MIN_SEPARATION = 0.06; // normalized fraction of image size — keeps points spread out
   for (const c of candidates) {
-    if (picked.length >= maxPoints) break;
+    if (picked.length >= maxGlintPoints) break;
     if (picked.every((p) => Math.hypot(p.x - c.x, p.y - c.y) > MIN_SEPARATION)) {
       picked.push({ x: c.x, y: c.y });
     }
   }
-  return picked;
+
+  const centerX = count > 0 ? sumX / count / SAMPLE_W : 0.5;
+  return { glintPoints: picked, centerX };
 }
 
 /** A small four-point lens-flare glint, additively blended so it reads as light rather than a painted shape. */
@@ -186,11 +208,12 @@ function getPose(progress: number, isMobile: boolean): Pose {
   if (isMobile) {
     const t = easeInOutCubic(p);
     return {
-      // The source frames draw the necklace slightly right-of-center within
-      // their own bounds (see NecklaceCanvas at desktop scale, where this is
-      // the intended right-side hero pose) — a small negative shift here
-      // just recenters the visible subject, it isn't an independent offset.
-      xVw: lerp(-10, -5, t),
+      // No horizontal offset here — the necklace rotates, so a fixed value
+      // tuned for one frame drifts off-center the moment scroll or a touch
+      // drag shows a different angle. The tick loop adds a per-frame
+      // correction computed from that frame's actual measured center
+      // (see analyzeFrame/centerXRef) on top of this baseline.
+      xVw: 0,
       yVh: lerp(4, 0, t),
       scale: lerp(1.6, 1.05, t),
       rotateDeg: 0,
@@ -226,6 +249,9 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
   const wrapperRef = useRef<HTMLDivElement>(null);
   const imagesRef = useRef<HTMLImageElement[]>([]);
   const glintPointsRef = useRef<Map<number, { x: number; y: number }[]>>(new Map());
+  // Per-frame horizontal center of mass (0-1) — see analyzeFrame. Used to
+  // dynamically recenter the mobile pose regardless of rotation angle.
+  const centerXRef = useRef<Map<number, number>>(new Map());
   const sparkleSlotsRef = useRef<SparkleSlot[]>([]);
   if (sparkleSlotsRef.current.length === 0) {
     sparkleSlotsRef.current = makeSparkleSlots(SPARKLE_COUNT);
@@ -293,7 +319,9 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
     firstImg.onload = () => {
       images[frameSequence.current[0]] = firstImg;
       imagesRef.current = images;
-      glintPointsRef.current.set(frameSequence.current[0], extractGlintPoints(firstImg, SPARKLE_COUNT));
+      const analysis = analyzeFrame(firstImg, SPARKLE_COUNT);
+      glintPointsRef.current.set(frameSequence.current[0], analysis.glintPoints);
+      centerXRef.current.set(frameSequence.current[0], analysis.centerX);
       // Draw right away once the canvas is sized.
       requestAnimationFrame(() => drawFrame(frameSequence.current[0]));
     };
@@ -312,7 +340,9 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
         img.src = getFramePath(fi);
         img.onload = () => {
           images[fi] = img;
-          glintPointsRef.current.set(fi, extractGlintPoints(img, SPARKLE_COUNT));
+          const analysis = analyzeFrame(img, SPARKLE_COUNT);
+          glintPointsRef.current.set(fi, analysis.glintPoints);
+          centerXRef.current.set(fi, analysis.centerX);
           loaded++;
           setLoadingProgress(Math.round((loaded / totalToLoad) * 100));
           resolve();
@@ -459,7 +489,19 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
       if (wrapper) {
         const isMobile = window.innerWidth < MOBILE_BREAKPOINT_PX;
         const { xVw, yVh, scale, rotateDeg } = getPose(clamped, isMobile);
-        wrapper.style.transform = `translate(${xVw}vw, ${yVh}vh) scale(${scale}) rotate(${rotateDeg}deg)`;
+
+        // Recenter using the currently-displayed frame's own measured
+        // center — see analyzeFrame. Desktop's xVw is a deliberate
+        // choreographed slide (right-of-center hero → left for About), so
+        // this correction only applies on mobile, where the goal is to
+        // just keep the necklace centered regardless of rotation angle.
+        let correction = 0;
+        if (isMobile && frameIdx !== undefined) {
+          const centerX = centerXRef.current.get(frameIdx) ?? 0.5;
+          correction = -(centerX - 0.5) * 100 * scale;
+        }
+
+        wrapper.style.transform = `translate(${xVw + correction}vw, ${yVh}vh) scale(${scale}) rotate(${rotateDeg}deg)`;
       }
 
       rafRef.current = requestAnimationFrame(tick);
@@ -500,7 +542,7 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
         }}
       />
 
-      {/* Twinkling glints over the diamond facets — see extractGlintPoints/drawSparkles */}
+      {/* Twinkling glints over the diamond facets — see analyzeFrame/drawSparkles */}
       <canvas ref={sparkleCanvasRef} className="pointer-events-none absolute inset-0 z-[8] h-full w-full" aria-hidden="true" />
 
       {/* Dynamic bottom shadow — sits beneath the necklace, follows its position */}
@@ -517,18 +559,22 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
         }}
       />
 
-      {/* Loading shimmer — visible until all frames are loaded */}
+      {/* Loading indicator — visible until all frames are loaded. A small
+          card, not a full-screen overlay, so it doesn't dominate the hero
+          while frames stream in. */}
       {!isReady && (
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 bg-white/80 backdrop-blur-sm transition-opacity duration-700">
-          <div className="h-1 w-48 overflow-hidden rounded-full bg-charcoal/10">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600 transition-all duration-300 ease-out"
-              style={{ width: `${loadingProgress}%` }}
-            />
+        <div className="absolute inset-0 z-20 flex items-center justify-center transition-opacity duration-700">
+          <div className="flex flex-col items-center gap-2 rounded-xl bg-white/85 px-4 py-3 shadow-md backdrop-blur-sm">
+            <div className="h-0.5 w-20 overflow-hidden rounded-full bg-charcoal/10">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600 transition-all duration-300 ease-out"
+                style={{ width: `${loadingProgress}%` }}
+              />
+            </div>
+            <p className="eyebrow text-[9px] tracking-widest text-charcoal/50">
+              Loading experience
+            </p>
           </div>
-          <p className="eyebrow text-[10px] tracking-widest text-charcoal/50">
-            Loading experience
-          </p>
         </div>
       )}
 
