@@ -6,6 +6,7 @@ export interface AuthUser {
   last_name: string;
   role: "customer" | "admin";
   is_active: boolean;
+  is_email_verified: boolean;
   created_at: string;
 }
 
