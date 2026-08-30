@@ -8,6 +8,10 @@ import { getCollectionBySlug, getFeaturedCollections } from "@/services/collecti
 import { getProductsByCollection } from "@/services/product.service";
 import { buildMetadata } from "@/utils/metadata";
 
+// Without this, each static collection page is cached forever after build
+// (Next's default for a page with no request-time APIs).
+export const revalidate = 60;
+
 export async function generateStaticParams() {
   const collections = await getFeaturedCollections();
   return collections.map((collection) => ({ slug: collection.slug }));

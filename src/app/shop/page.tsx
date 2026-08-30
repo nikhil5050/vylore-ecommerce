@@ -6,6 +6,11 @@ import { getCategories } from "@/services/category.service";
 import { getAllProducts } from "@/services/product.service";
 import { buildMetadata } from "@/utils/metadata";
 
+// Without this, the static shop page is cached forever after build (Next's
+// default for a page with no request-time APIs) — a new/updated product
+// added via the admin would never appear here until the next deploy.
+export const revalidate = 60;
+
 export const metadata: Metadata = buildMetadata({
   title: "Shop All",
   description: "Browse the complete Vylore silver jewellery collection.",

@@ -7,6 +7,11 @@ import { getCategories, getCategoryBySlug } from "@/services/category.service";
 import { getProductsByCategory } from "@/services/product.service";
 import { buildMetadata } from "@/utils/metadata";
 
+// Without this, each static category page is cached forever after build
+// (Next's default for a page with no request-time APIs) — a new/updated
+// product added via the admin would never appear here until the next deploy.
+export const revalidate = 60;
+
 export async function generateStaticParams() {
   const categories = await getCategories();
   return categories.map((category) => ({ slug: category.slug }));

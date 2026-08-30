@@ -10,6 +10,11 @@ import { HeroGrid } from "@/components/home/HeroGrid";
 import { Faq } from "@/components/home/Faq";
 import { VyloreExperienceLazy as VyloreExperience } from "@/components/home/vylore-experience/VyloreExperienceLazy";
 
+// Without this, the static home page is cached forever after build (Next's
+// default for a page with no request-time APIs) — a new/updated product
+// added via the admin would never appear here until the next deploy.
+export const revalidate = 60;
+
 export default function Home() {
   if (isComingSoon) return <ComingSoon />;
 
