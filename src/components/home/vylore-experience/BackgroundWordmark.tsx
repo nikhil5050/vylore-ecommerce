@@ -18,7 +18,7 @@ export function BackgroundWordmark({ innerRef }: BackgroundWordmarkProps) {
     <div
       ref={innerRef}
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 z-[15] flex select-none flex-col items-center justify-start overflow-hidden px-6 pt-[8%] sm:items-start sm:justify-center sm:px-10 sm:pt-0 md:px-16"
+      className="pointer-events-none absolute inset-0 z-[15] flex select-none flex-col items-center justify-start overflow-hidden px-6 pt-[15%] sm:items-start sm:justify-center sm:px-10 sm:pt-0 md:px-16"
     >
       {/* VYLORE sits close above JEWELLERS */}
       <div
@@ -105,6 +105,26 @@ export function BackgroundWordmark({ innerRef }: BackgroundWordmarkProps) {
         Thoughtfully crafted jewellery for every story — timeless designs in
         fine silver, made to be worn and loved for a lifetime.
       </p>
+
+      {/* Product label chip — mobile only. Placed in normal flow right after
+          the description (not absolutely positioned) so it always lands
+          directly beneath the text — right above the necklace, which starts
+          just below it — no matter how many lines the description wraps to. */}
+      <div className="pointer-events-auto mt-5 flex w-full max-w-[290px] items-center gap-2 overflow-hidden rounded-full border border-white/50 bg-ivory/75 px-3 py-1.5 shadow-md backdrop-blur-md sm:hidden">
+        <div className="relative h-6 w-6 shrink-0 overflow-hidden rounded-full bg-white shadow-inner">
+          <Image
+            src="/necklace-frames/frame_0001.webp"
+            alt="Emerald & diamond necklace detail"
+            fill
+            sizes="24px"
+            className="object-cover"
+          />
+        </div>
+        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-champagne" />
+        <p className="eyebrow min-w-0 flex-1 truncate text-[10px] font-medium text-charcoal/90">
+          Emerald & Diamond Necklace
+        </p>
+      </div>
     </div>
   );
 }

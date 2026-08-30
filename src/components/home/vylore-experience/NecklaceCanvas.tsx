@@ -17,10 +17,6 @@ function getFramePath(index: number): string {
   return `/necklace-frames/frame_${String(index).padStart(4, "0")}.webp`;
 }
 
-function easeInOutCubic(t: number): number {
-  return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
-}
-
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
 }
@@ -36,6 +32,42 @@ interface Pose {
 // switches from its stacked mobile layout (text pinned near the top) to the
 // side-by-side desktop one (text left, necklace right).
 const MOBILE_BREAKPOINT_PX = 640;
+
+// Where the necklace's own content (not the mostly-empty frame it was shot
+// in — see ContentBounds) should sit on mobile, as fractions of the sticky
+// viewport height. Two targets, blended by scroll progress (see
+// mobileTargetForProgress): at the very top of the scroll, BackgroundWordmark's
+// stacked "VYLORE JEWELLERS" heading + description paragraph occupy roughly
+// the top third of the screen (pt-[8%] plus the text block itself), so the
+// necklace needs to sit lower, leaving clear space below that text — not
+// pinned to the same spot it ends at. By the time the About panel has
+// scrolled in near the end, it should have risen to sit above that panel
+// (which is what MOBILE_ABOUT_* alone used to do for the *entire* scroll,
+// crowding the hero text at progress 0).
+const MOBILE_HERO_CENTER_Y = 0.6;
+const MOBILE_HERO_HEIGHT = 0.3;
+const MOBILE_ABOUT_CENTER_Y = 0.28;
+const MOBILE_ABOUT_HEIGHT = 0.3;
+// Blend completes by this fraction of the scroll — roughly matching when
+// BackgroundWordmark/HeroOverlay have finished fading (see VyloreExperience's
+// GSAP timeline), so the necklace has already risen out of the way by the
+// time the About panel's text starts appearing, rather than drifting for the
+// whole scroll.
+const MOBILE_TRANSITION_END = 0.55;
+const MOBILE_FIT_SCALE_MIN = 1.1;
+const MOBILE_FIT_SCALE_MAX = 2.4;
+
+function easeInOutCubic(t: number): number {
+  return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
+}
+
+function mobileTargetForProgress(progress: number): { centerY: number; height: number } {
+  const t = easeInOutCubic(Math.min(1, Math.max(0, progress) / MOBILE_TRANSITION_END));
+  return {
+    centerY: MOBILE_HERO_CENTER_Y + (MOBILE_ABOUT_CENTER_Y - MOBILE_HERO_CENTER_Y) * t,
+    height: MOBILE_HERO_HEIGHT + (MOBILE_ABOUT_HEIGHT - MOBILE_HERO_HEIGHT) * t,
+  };
+}
 
 interface ContainFit {
   dx: number;
@@ -63,9 +95,22 @@ function computeContainFit(cw: number, ch: number, iw: number, ih: number): Cont
  * center, not exact pixels — runs once per frame during preload, not
  * every render.
  */
+interface ContentBounds {
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+}
+
 interface FrameAnalysis {
   glintPoints: { x: number; y: number }[];
   centerX: number;
+  // Bounding box (normalized 0-1) of the necklace's actual pixels within the
+  // frame. The source frames are wide 16:9 product photos with a lot of dead
+  // space around the necklace itself (see getPose's mobile-fit comment) — this
+  // is what lets the mobile layout scale/position the necklace itself rather
+  // than the mostly-empty frame it was shot in.
+  bounds: ContentBounds;
 }
 
 function analyzeFrame(img: HTMLImageElement, maxGlintPoints: number): FrameAnalysis {
@@ -75,7 +120,11 @@ function analyzeFrame(img: HTMLImageElement, maxGlintPoints: number): FrameAnaly
   sampler.width = SAMPLE_W;
   sampler.height = SAMPLE_H;
   const sctx = sampler.getContext("2d", { willReadFrequently: true });
-  const fallback: FrameAnalysis = { glintPoints: [], centerX: 0.5 };
+  const fallback: FrameAnalysis = {
+    glintPoints: [],
+    centerX: 0.5,
+    bounds: { minX: 0, maxX: 1, minY: 0, maxY: 1 },
+  };
   if (!sctx) return fallback;
   sctx.drawImage(img, 0, 0, SAMPLE_W, SAMPLE_H);
 
@@ -94,6 +143,10 @@ function analyzeFrame(img: HTMLImageElement, maxGlintPoints: number): FrameAnaly
   // the visual weight) actually are instead.
   let sumX = 0;
   let count = 0;
+  let minX = SAMPLE_W;
+  let maxX = 0;
+  let minY = SAMPLE_H;
+  let maxY = 0;
 
   for (let y = 0; y < SAMPLE_H; y++) {
     for (let x = 0; x < SAMPLE_W; x++) {
@@ -105,6 +158,10 @@ function analyzeFrame(img: HTMLImageElement, maxGlintPoints: number): FrameAnaly
       if (a < 200) continue; // transparent background, not the necklace
       sumX += x;
       count++;
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
       const brightness = (r + g + b) / 3;
       const saturation = Math.max(r, g, b) - Math.min(r, g, b);
       if (brightness > 232 && saturation < 22) {
@@ -124,7 +181,11 @@ function analyzeFrame(img: HTMLImageElement, maxGlintPoints: number): FrameAnaly
   }
 
   const centerX = count > 0 ? sumX / count / SAMPLE_W : 0.5;
-  return { glintPoints: picked, centerX };
+  const bounds: ContentBounds =
+    count > 0
+      ? { minX: minX / SAMPLE_W, maxX: maxX / SAMPLE_W, minY: minY / SAMPLE_H, maxY: maxY / SAMPLE_H }
+      : fallback.bounds;
+  return { glintPoints: picked, centerX, bounds };
 }
 
 /** A small four-point lens-flare glint, additively blended so it reads as light rather than a painted shape. */
@@ -206,18 +267,11 @@ function getPose(progress: number, isMobile: boolean): Pose {
   const p = Math.max(0, Math.min(1, progress));
 
   if (isMobile) {
-    const t = easeInOutCubic(p);
-    return {
-      // No horizontal offset here — the necklace rotates, so a fixed value
-      // tuned for one frame drifts off-center the moment scroll or a touch
-      // drag shows a different angle. The tick loop adds a per-frame
-      // correction computed from that frame's actual measured center
-      // (see analyzeFrame/centerXRef) on top of this baseline.
-      xVw: 0,
-      yVh: lerp(4, 0, t),
-      scale: lerp(1.6, 1.05, t),
-      rotateDeg: 0,
-    };
+    // Fallback only, used for the handful of frames before the first
+    // frame's content bounds are measured — see computeMobileContentFit,
+    // which the tick loop uses instead (with the progress-blended target
+    // from mobileTargetForProgress) as soon as bounds are available.
+    return { xVw: 0, yVh: 4, scale: 1.6, rotateDeg: 0 };
   }
 
   // Linear slide from right-of-center to left for the About section.
@@ -228,6 +282,58 @@ function getPose(progress: number, isMobile: boolean): Pose {
     scale: 1,
     rotateDeg: 0,
   };
+}
+
+/**
+ * Fits the necklace's own content bounds (not the wide, mostly-empty 16:9
+ * frame it was shot in) into a target band of the mobile viewport.
+ *
+ * The canvas draws each frame with a `contain` fit against the full
+ * (portrait) canvas box, so a landscape photo only fills a slim horizontal
+ * strip of it — most of the canvas height is transparent padding above and
+ * below the necklace. Naively centering that whole canvas (the old
+ * lerp-based mobile pose) left the necklace small and roughly centered in
+ * the viewport, which is exactly the mid-screen gap with the necklace
+ * dropping in low that the mobile layout was showing: half hidden behind
+ * AboutOverlay's bottom panel, with a big empty band above it.
+ *
+ * This computes the scale/translate needed to place the necklace's actual
+ * pixels — not the frame's canvas box — at the given target center/height
+ * (fractions of viewport height; see mobileTargetForProgress).
+ */
+function computeMobileContentFit(
+  canvas: HTMLCanvasElement,
+  img: HTMLImageElement,
+  bounds: ContentBounds,
+  targetCenterY: number,
+  targetHeight: number
+): { scale: number; yVh: number } {
+  const cw = canvas.width;
+  const ch = canvas.height;
+  const iw = img.naturalWidth;
+  const ih = img.naturalHeight;
+  if (!cw || !ch || !iw || !ih) return { scale: 1.6, yVh: 4 };
+
+  // Same contain-fit math as drawFrame: how much of the canvas height the
+  // drawn (letterboxed) image actually occupies, and where its vertical
+  // center falls within the canvas.
+  const fitScale = Math.min(cw / iw, ch / ih);
+  const dh = ih * fitScale;
+  const dy = (ch - dh) / 2;
+
+  const boundsHeightFrac = Math.max(0.01, bounds.maxY - bounds.minY);
+  const contentHeightInCanvasFrac = (boundsHeightFrac * ih * fitScale) / ch;
+  const contentCenterYInCanvasFrac = (dy + ((bounds.minY + bounds.maxY) / 2) * ih * fitScale) / ch;
+
+  const rawScale = targetHeight / contentHeightInCanvasFrac;
+  const scale = Math.min(MOBILE_FIT_SCALE_MAX, Math.max(MOBILE_FIT_SCALE_MIN, rawScale));
+
+  // wrapper.style.transform applies `scale` around the wrapper's own center
+  // (50% of viewport) before `translate` — so the translate needed to move
+  // the (now-scaled) content center to the target has to account for scale.
+  const yVh = 100 * (targetCenterY - 0.5 - (contentCenterYInCanvasFrac - 0.5) * scale);
+
+  return { scale, yVh };
 }
 
 interface NecklaceCanvasProps {
@@ -252,6 +358,8 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
   // Per-frame horizontal center of mass (0-1) — see analyzeFrame. Used to
   // dynamically recenter the mobile pose regardless of rotation angle.
   const centerXRef = useRef<Map<number, number>>(new Map());
+  // Per-frame content bounding box (0-1) — see analyzeFrame/computeMobileContentFit.
+  const boundsRef = useRef<Map<number, ContentBounds>>(new Map());
   const sparkleSlotsRef = useRef<SparkleSlot[]>([]);
   if (sparkleSlotsRef.current.length === 0) {
     sparkleSlotsRef.current = makeSparkleSlots(SPARKLE_COUNT);
@@ -260,6 +368,13 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
   const rafRef = useRef<number>(0);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [isReady, setIsReady] = useState(false);
+  // Gates the "Loading experience" card, separately from `isReady` (which
+  // waits for all 150 frames). Waiting on all of them left the loader on
+  // screen far longer than needed — the canvas is drawable, scrollable, and
+  // spinnable the moment just the first frame has loaded; the rest stream in
+  // silently behind it (drawFrame just holds the last-loaded frame for any
+  // rotation angle that hasn't arrived yet, so there's nothing to block on).
+  const [firstFrameLoaded, setFirstFrameLoaded] = useState(false);
 
   // Touch-drag rotation (mobile): a horizontal swipe spins the necklace
   // independently of scroll, since touch users expect to be able to "spin"
@@ -312,50 +427,61 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
     let loaded = 0;
     const totalToLoad = totalSequenceFrames;
     const images: HTMLImageElement[] = new Array(TOTAL_FRAMES + 1);
+    const firstFrameIndex = frameSequence.current[0];
 
-    // Load the first frame immediately for instant display.
+    function recordAnalysis(fi: number, img: HTMLImageElement) {
+      images[fi] = img;
+      const analysis = analyzeFrame(img, SPARKLE_COUNT);
+      glintPointsRef.current.set(fi, analysis.glintPoints);
+      centerXRef.current.set(fi, analysis.centerX);
+      boundsRef.current.set(fi, analysis.bounds);
+    }
+
+    // Load the first frame immediately for instant display — the loader
+    // card comes down as soon as this one is in, not the whole sequence.
     const firstImg = new Image();
-    firstImg.src = getFramePath(frameSequence.current[0]);
-    firstImg.onload = () => {
-      images[frameSequence.current[0]] = firstImg;
-      imagesRef.current = images;
-      const analysis = analyzeFrame(firstImg, SPARKLE_COUNT);
-      glintPointsRef.current.set(frameSequence.current[0], analysis.glintPoints);
-      centerXRef.current.set(frameSequence.current[0], analysis.centerX);
-      // Draw right away once the canvas is sized.
-      requestAnimationFrame(() => drawFrame(frameSequence.current[0]));
-    };
-
-    // Load all frames in the sequence.
-    const promises = frameSequence.current.map((fi) => {
-      return new Promise<void>((resolve) => {
-        // Already loaded the first one above.
-        if (fi === frameSequence.current[0] && firstImg.complete) {
-          loaded++;
-          setLoadingProgress(Math.round((loaded / totalToLoad) * 100));
-          resolve();
-          return;
-        }
-        const img = new Image();
-        img.src = getFramePath(fi);
-        img.onload = () => {
-          images[fi] = img;
-          const analysis = analyzeFrame(img, SPARKLE_COUNT);
-          glintPointsRef.current.set(fi, analysis.glintPoints);
-          centerXRef.current.set(fi, analysis.centerX);
-          loaded++;
-          setLoadingProgress(Math.round((loaded / totalToLoad) * 100));
-          resolve();
-        };
-        img.onerror = () => {
-          loaded++;
-          setLoadingProgress(Math.round((loaded / totalToLoad) * 100));
-          resolve();
-        };
-      });
+    const firstPromise = new Promise<void>((resolve) => {
+      firstImg.onload = () => {
+        recordAnalysis(firstFrameIndex, firstImg);
+        imagesRef.current = images;
+        setFirstFrameLoaded(true);
+        // Draw right away once the canvas is sized.
+        requestAnimationFrame(() => drawFrame(firstFrameIndex));
+        loaded++;
+        setLoadingProgress(Math.round((loaded / totalToLoad) * 100));
+        resolve();
+      };
+      firstImg.onerror = () => {
+        setFirstFrameLoaded(true);
+        loaded++;
+        setLoadingProgress(Math.round((loaded / totalToLoad) * 100));
+        resolve();
+      };
     });
+    firstImg.src = getFramePath(firstFrameIndex);
 
-    Promise.all(promises).then(() => {
+    // Load the rest of the sequence (the first frame is already in flight above).
+    const restPromises = frameSequence.current
+      .filter((fi) => fi !== firstFrameIndex)
+      .map((fi) => {
+        return new Promise<void>((resolve) => {
+          const img = new Image();
+          img.src = getFramePath(fi);
+          img.onload = () => {
+            recordAnalysis(fi, img);
+            loaded++;
+            setLoadingProgress(Math.round((loaded / totalToLoad) * 100));
+            resolve();
+          };
+          img.onerror = () => {
+            loaded++;
+            setLoadingProgress(Math.round((loaded / totalToLoad) * 100));
+            resolve();
+          };
+        });
+      });
+
+    Promise.all([firstPromise, ...restPromises]).then(() => {
       imagesRef.current = images;
       setIsReady(true);
     });
@@ -488,7 +614,8 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
       const wrapper = wrapperRef.current;
       if (wrapper) {
         const isMobile = window.innerWidth < MOBILE_BREAKPOINT_PX;
-        const { xVw, yVh, scale, rotateDeg } = getPose(clamped, isMobile);
+        // eslint-disable-next-line prefer-const -- scale/yVh are reassigned below once bounds are known
+        let { xVw, yVh, scale, rotateDeg } = getPose(clamped, isMobile);
 
         // Recenter using the currently-displayed frame's own measured
         // center — see analyzeFrame. Desktop's xVw is a deliberate
@@ -497,6 +624,15 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
         // just keep the necklace centered regardless of rotation angle.
         let correction = 0;
         if (isMobile && frameIdx !== undefined) {
+          const canvas = canvasRef.current;
+          const img = imagesRef.current[frameIdx];
+          const bounds = boundsRef.current.get(frameIdx);
+          if (canvas && img && img.complete && img.naturalWidth && bounds) {
+            const target = mobileTargetForProgress(clamped);
+            const fit = computeMobileContentFit(canvas, img, bounds, target.centerY, target.height);
+            scale = fit.scale;
+            yVh = fit.yVh;
+          }
           const centerX = centerXRef.current.get(frameIdx) ?? 0.5;
           correction = -(centerX - 0.5) * 100 * scale;
         }
@@ -559,24 +695,28 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
         }}
       />
 
-      {/* Loading indicator — visible until all frames are loaded. A small
-          card, not a full-screen overlay, so it doesn't dominate the hero
-          while frames stream in. */}
-      {!isReady && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center transition-opacity duration-700">
-          <div className="flex flex-col items-center gap-2 rounded-xl bg-white/85 px-4 py-3 shadow-md backdrop-blur-sm">
-            <div className="h-0.5 w-20 overflow-hidden rounded-full bg-charcoal/10">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600 transition-all duration-300 ease-out"
-                style={{ width: `${loadingProgress}%` }}
-              />
-            </div>
-            <p className="eyebrow text-[9px] tracking-widest text-charcoal/50">
-              Loading experience
-            </p>
+      {/* Loading indicator — fades out as soon as the first frame is drawable
+          (the rest of the sequence streams in silently behind it), rather
+          than blocking on all 150 frames. Always mounted so the fade is a
+          smooth opacity transition instead of an abrupt pop. */}
+      <div
+        className={`absolute inset-0 z-20 flex items-center justify-center transition-opacity duration-500 ease-out ${
+          firstFrameLoaded ? "pointer-events-none opacity-0" : "opacity-100"
+        }`}
+        aria-hidden={firstFrameLoaded}
+      >
+        <div className="flex flex-col items-center gap-2 rounded-xl bg-white/85 px-4 py-3 shadow-md backdrop-blur-sm">
+          <div className="h-0.5 w-20 overflow-hidden rounded-full bg-charcoal/10">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600 transition-all duration-300 ease-out"
+              style={{ width: `${loadingProgress}%` }}
+            />
           </div>
+          <p className="eyebrow text-[9px] tracking-widest text-charcoal/50">
+            Loading experience
+          </p>
         </div>
-      )}
+      </div>
 
       {/* Subtle emerald glow overlay at full assembly */}
       <div
