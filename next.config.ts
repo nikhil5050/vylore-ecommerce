@@ -7,6 +7,13 @@ const nextConfig: NextConfig = {
   // on Vercel (not Hostinger — that plan has no Node.js runtime support),
   // so a real Next.js server handles this normally.
   trailingSlash: true,
+  // Tried enabling Next's built-in image optimizer here (removing this and
+  // allowlisting the two remote hosts via remotePatterns) as a "faster,
+  // no UI change" win, but in this environment the optimizer's server-side
+  // fetch to ik.imagekit.io timed out ("upstream image response timed out"),
+  // which would render as a broken image — a UI regression, not a perf
+  // win. Reverted; revisit only after confirming the optimizer can actually
+  // reach ik.imagekit.io/images.unsplash.com from wherever this deploys.
   images: {
     unoptimized: true,
   },
