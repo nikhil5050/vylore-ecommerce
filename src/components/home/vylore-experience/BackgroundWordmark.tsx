@@ -102,7 +102,7 @@ export function BackgroundWordmark({ innerRef }: BackgroundWordmarkProps) {
 
       {/* Quiet supporting line — clearly separated from the heading, not crowding it */}
       <p className="mt-4 max-w-[290px] text-center text-xs leading-relaxed tracking-[0.05em] text-charcoal/60 sm:mt-5 sm:max-w-[360px] sm:self-start sm:text-left sm:text-sm">
-        Thoughtfully crafted jewellery for every story — timeless designs in
+        Thoughtfully crafted jewellery for every story timeless designs in
         fine silver, made to be worn and loved for a lifetime.
       </p>
 

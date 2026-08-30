@@ -1,10 +1,19 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
+import { SearchIcon } from "@/components/icons/Icons";
 import { ProductThumbnail } from "@/components/ui/ProductThumbnail";
 import { PlaceholderImage } from "@/components/ui/PlaceholderImage";
 import type { ProductImage } from "@/types/product";
 import { cn } from "@/utils/cn";
+
+// Pan/pinch-zoom gesture handling is only needed once someone actually opens
+// it, so it stays out of the initial product-page bundle until then.
+const ProductImageZoom = dynamic(
+  () => import("./ProductImageZoom").then((mod) => mod.ProductImageZoom),
+  { ssr: false }
+);
 
 interface ProductGalleryProps {
   productName: string;
@@ -13,6 +22,7 @@ interface ProductGalleryProps {
 
 export function ProductGallery({ productName, images }: ProductGalleryProps) {
   const [active, setActive] = useState(0);
+  const [zoomIndex, setZoomIndex] = useState<number | null>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -49,16 +59,35 @@ export function ProductGallery({ productName, images }: ProductGalleryProps) {
             ref={(el) => {
               panelRefs.current[index] = el;
             }}
-            className="aspect-[4/5] w-full shrink-0 snap-center overflow-hidden"
+            className="relative aspect-[4/5] w-full shrink-0 snap-center overflow-hidden"
           >
             {image ? (
-              <ProductThumbnail src={image.url} alt={image.altText ?? productName} transform="w-1200" />
+              <button
+                type="button"
+                onClick={() => setZoomIndex(index)}
+                aria-label={`${productName} — zoom image ${index + 1}`}
+                className="group block h-full w-full cursor-zoom-in"
+              >
+                <ProductThumbnail src={image.url} alt={image.altText ?? productName} transform="w-1200" />
+                <span className="absolute bottom-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/85 text-charcoal shadow-md backdrop-blur-sm transition-transform group-hover:scale-110">
+                  <SearchIcon className="h-4 w-4" aria-hidden />
+                </span>
+              </button>
             ) : (
               <PlaceholderImage />
             )}
           </div>
         ))}
       </div>
+
+      {zoomIndex !== null && (
+        <ProductImageZoom
+          productName={productName}
+          images={images}
+          initialIndex={zoomIndex}
+          onClose={() => setZoomIndex(null)}
+        />
+      )}
 
       {views.length > 1 && (
         <div className="mt-4 grid grid-cols-4 gap-3">

@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 
@@ -12,7 +11,7 @@ export function AboutOverlay({ innerRef }: AboutOverlayProps) {
       ref={innerRef}
       className="pointer-events-none absolute inset-0 z-20 flex flex-col justify-end pb-10 opacity-0 sm:pb-14 lg:flex-row lg:items-center lg:pb-0"
     >
-      <Container className="w-full max-h-[56dvh] overflow-y-auto bg-white/95 py-6 backdrop-blur-sm lg:max-h-none lg:overflow-visible lg:bg-transparent lg:py-0 lg:backdrop-blur-none lg:grid lg:grid-cols-2 lg:gap-8">
+      <Container className="w-full max-h-[56dvh] overflow-y-auto bg-transparent py-6 lg:max-h-none lg:overflow-visible lg:py-0 lg:grid lg:grid-cols-2 lg:gap-8">
         {/* Compact specifications balance the open space beside the necklace */}
         <div className="hidden lg:flex lg:flex-col lg:justify-end lg:self-stretch lg:pb-2">
           <p className="about-stagger-item eyebrow text-[10px] text-muted">The Vylore Standard</p>
@@ -45,7 +44,7 @@ export function AboutOverlay({ innerRef }: AboutOverlayProps) {
           </p>
 
           <Button
-            href="/collections"
+            href="/shop"
             variant="primary"
             size="lg"
             className="about-stagger-item group mt-6 rounded-full px-8 shadow-md transition-all duration-300 hover:shadow-lg hover:shadow-burgundy/25 hover:-translate-y-0.5 active:translate-y-0 sm:mt-9"

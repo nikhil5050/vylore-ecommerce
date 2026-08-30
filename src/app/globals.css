@@ -176,31 +176,21 @@ body {
     display: none;
   }
 
+  /* Below 768px, CategoryAutoScroller drives this via scrollLeft (rAF loop,
+     paused on touch/pointer/wheel — see that component) rather than a CSS
+     transform animation, so it can be grabbed and manually scrolled — a
+     plain CSS keyframe animation can't be interrupted by a touch drag. */
   @media (max-width: 767px) {
     .category-slider-track {
-      width: max-content;
       flex-wrap: nowrap;
       justify-content: flex-start;
-      animation: category-slider 24s linear infinite;
+      overflow-x: auto;
+      scroll-behavior: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .category-slider-copy {
       display: flex;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .category-slider-track {
-      animation: none;
-    }
-  }
-
-  @keyframes category-slider {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(-50%);
     }
   }
 

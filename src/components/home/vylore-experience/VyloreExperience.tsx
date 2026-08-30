@@ -146,7 +146,7 @@ function StaticExperience() {
               fine jewellery designed for a new generation — distinctive, considered, and
               made without compromise.
             </p>
-            <Button href="/collections" variant="secondary" size="md" className="mt-8">
+            <Button href="/shop" variant="secondary" size="md" className="mt-8">
               Explore Collection
             </Button>
           </FadeIn>
