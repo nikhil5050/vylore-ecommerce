@@ -128,13 +128,7 @@ export function Header() {
             </Link>
 
             <div className="flex items-center gap-1">
-              <button
-                type="button"
-                aria-label="Search"
-                className="rounded-lg p-2 text-charcoal transition-colors hover:bg-burgundy/10 hover:text-burgundy"
-              >
-                <SearchIcon className="h-5 w-5" />
-              </button>
+              
               <button
                 type="button"
                 aria-label="Open cart"
