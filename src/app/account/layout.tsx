@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { AccountSidebar } from "@/components/account/AccountSidebar";
+import { EmailVerificationBanner } from "@/components/account/EmailVerificationBanner";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Container } from "@/components/ui/Container";
@@ -24,6 +25,7 @@ export default function AccountLayout({ children }: { children: ReactNode }) {
         </div>
 
         <RequireAuth>
+          <EmailVerificationBanner />
           <div className="mt-8 flex flex-col gap-8 lg:mt-12 lg:flex-row lg:gap-12">
             <AccountSidebar />
             <div className="flex-1">{children}</div>

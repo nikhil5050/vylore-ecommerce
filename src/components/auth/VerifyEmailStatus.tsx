@@ -6,6 +6,7 @@ import { GemIcon } from "@/components/icons/Icons";
 import { Button } from "@/components/ui/Button";
 import { ApiError } from "@/lib/api";
 import { verifyEmail } from "@/services/auth.service";
+import { useAuthStore } from "@/store/auth.store";
 
 type Status = "loading" | "success" | "error" | "missing-token";
 
@@ -21,7 +22,10 @@ export function VerifyEmailStatus() {
     attempted.current = true;
 
     verifyEmail(token)
-      .then(() => setStatus("success"))
+      .then(() => {
+        useAuthStore.getState().markEmailVerified();
+        setStatus("success");
+      })
       .catch((err) => {
         setMessage(err instanceof ApiError ? err.message : "Something went wrong. Please try again.");
         setStatus("error");

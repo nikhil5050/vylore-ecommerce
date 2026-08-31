@@ -12,6 +12,11 @@ import { siteConfig } from "@/config/site";
 import { getAllProducts, getProductBySlug, getRelatedProducts } from "@/services/product.service";
 import { buildMetadata } from "@/utils/metadata";
 
+// Without this, each static product page is cached forever after build
+// (Next's default for a page with no request-time APIs) — price/stock/image
+// edits made via the admin would never appear here until the next deploy.
+export const revalidate = 60;
+
 export async function generateStaticParams() {
   const products = await getAllProducts();
   return products.map((product) => ({ slug: product.slug }));

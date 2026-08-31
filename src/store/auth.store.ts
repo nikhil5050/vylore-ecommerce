@@ -15,6 +15,7 @@ interface AuthState {
   register: (input: RegisterInput) => Promise<void>;
   logout: () => void;
   clearError: () => void;
+  markEmailVerified: () => void;
 }
 
 // Persisted under localStorage key "vylore-auth" — src/lib/api.ts reads the
@@ -49,6 +50,11 @@ export const useAuthStore = create<AuthState>()(
       },
       logout: () => set({ token: null, user: null, error: null }),
       clearError: () => set({ error: null }),
+      // Called after a successful /auth/verify-email — a no-op if the tab
+      // completing verification isn't logged in as that user (e.g. the link
+      // was opened in a different browser than the one that registered).
+      markEmailVerified: () =>
+        set((state) => (state.user ? { user: { ...state.user, is_email_verified: true } } : {})),
     }),
     { name: "vylore-auth", partialize: (state) => ({ token: state.token, user: state.user }) },
   ),
