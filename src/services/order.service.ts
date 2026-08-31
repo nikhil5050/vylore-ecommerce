@@ -20,7 +20,7 @@ interface BackendOrder {
   tax: number;
   shipping_fee: number;
   total: number;
-  payment_status: "pending" | "paid" | "failed";
+  payment_status: "pending" | "paid" | "failed" | "cod_pending";
   order_status: OrderStatus;
   shipping_status: string;
   shipping_recipient_name: string;

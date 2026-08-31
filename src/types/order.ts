@@ -40,7 +40,7 @@ export interface Order {
   tax: number;
   shippingFee: number;
   total: number;
-  paymentStatus: "pending" | "paid" | "failed";
+  paymentStatus: "pending" | "paid" | "failed" | "cod_pending";
   orderStatus: OrderStatus;
   shippingStatus: string;
   shippingRecipientName: string;

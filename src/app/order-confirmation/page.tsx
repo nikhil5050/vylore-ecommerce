@@ -77,6 +77,12 @@ function OrderConfirmationContent() {
           <span className="text-charcoal">{formatPrice(order.total)}</span>
         </div>
 
+        {order.paymentStatus === "cod_pending" && (
+          <p className="mt-4 border border-burgundy/30 bg-moonlight px-4 py-3 text-sm text-charcoal">
+            Pay {formatPrice(order.total)} in cash when your order arrives.
+          </p>
+        )}
+
         <div className="mt-8">
           <p className="eyebrow text-xs text-muted">Shipping To</p>
           <p className="mt-2 text-sm text-charcoal">{order.shippingRecipientName}</p>

@@ -56,7 +56,9 @@ export function ReviewStep({
       </div>
 
       <p className="border-t border-silver/30 pt-4 text-xs text-muted">
-        You&apos;ll be redirected to PayU&apos;s secure checkout to complete payment.
+        {paymentMethod.id === "cod"
+          ? "Pay in cash when your order arrives — no online payment needed now."
+          : "You'll be redirected to PayU's secure checkout to complete payment."}
       </p>
 
       {error && <p className="text-sm text-burgundy">{error}</p>}

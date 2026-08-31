@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ApiError } from "@/lib/api";
-import type { PaymentMethod } from "@/services/payment.service";
+import { COD_MAX_ORDER_VALUE, type PaymentMethod } from "@/services/payment.service";
 import { placeOrder } from "@/services/checkout.service";
 import type { DeliveryOption } from "@/services/shipping.service";
 import { useCartStore } from "@/store/cart.store";
 import type { ShippingAddress } from "@/types/order";
+import { formatPrice } from "@/utils/formatPrice";
 import { AddressForm } from "./AddressForm";
 import { CheckoutStep } from "./CheckoutStep";
 import { ContactForm } from "./ContactForm";
@@ -58,9 +59,10 @@ function CheckoutFlowInner({ deliveryOptions, paymentMethods }: CheckoutFlowProp
     setVerificationRequired(false);
 
     try {
-      // On success this navigates the browser away to PayU — it never
-      // resolves normally, so there's nothing to do after awaiting it.
-      await placeOrder(lines, address);
+      // On success this navigates the browser away (to PayU, or straight to
+      // order-confirmation for COD) — it never resolves normally, so there's
+      // nothing to do after awaiting it.
+      await placeOrder(lines, address, paymentMethodId);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Something went wrong placing your order. Please try again.");
       setVerificationRequired(err instanceof ApiError && err.status === 403);
@@ -86,8 +88,15 @@ function CheckoutFlowInner({ deliveryOptions, paymentMethods }: CheckoutFlowProp
     );
   }
 
+  // COD has an order-value cap (mirrors the backend's cod_max_order_value) —
+  // filtered out here rather than left selectable and rejected at submit, but
+  // the backend remains the real authority (it also rejects unserviceable
+  // pincodes, which can't be checked client-side without another API call).
+  const codOverCap = total > COD_MAX_ORDER_VALUE;
+  const availablePaymentMethods = codOverCap ? paymentMethods.filter((m) => m.id !== "cod") : paymentMethods;
+
   const selectedDelivery = deliveryOptions.find((option) => option.id === deliveryOptionId);
-  const selectedPayment = paymentMethods.find((method) => method.id === paymentMethodId);
+  const selectedPayment = availablePaymentMethods.find((method) => method.id === paymentMethodId);
 
   return (
     <main className="flex flex-1 flex-col">
@@ -157,13 +166,18 @@ function CheckoutFlowInner({ deliveryOptions, paymentMethods }: CheckoutFlowProp
               summary={selectedPayment && <p>{selectedPayment.label}</p>}
             >
               <PaymentMethodForm
-                methods={paymentMethods}
+                methods={availablePaymentMethods}
                 defaultValue={paymentMethodId}
                 onSubmit={(id) => {
                   setPaymentMethodId(id);
                   setStep(5);
                 }}
               />
+              {codOverCap && (
+                <p className="mt-3 text-xs text-muted">
+                  Cash on delivery is available for orders up to {formatPrice(COD_MAX_ORDER_VALUE)}.
+                </p>
+              )}
             </CheckoutStep>
 
             <CheckoutStep index={5} title="Review Order" status={step === 5 ? "active" : "upcoming"}>

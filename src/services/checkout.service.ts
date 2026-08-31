@@ -57,8 +57,11 @@ interface CreatedOrder {
   order_number: string;
 }
 
-async function createOrder(addressId: number): Promise<CreatedOrder> {
-  return apiFetch<CreatedOrder>("/checkout/create", { method: "POST", body: { address_id: addressId } });
+async function createOrder(addressId: number, paymentMethod: string): Promise<CreatedOrder> {
+  return apiFetch<CreatedOrder>("/checkout/create", {
+    method: "POST",
+    body: { address_id: addressId, payment_method: paymentMethod === "cod" ? "cod" : "prepaid" },
+  });
 }
 
 async function initiatePayuPayment(orderId: number): Promise<PayUCheckoutParams> {
@@ -98,13 +101,23 @@ function redirectToPayU(params: PayUCheckoutParams): void {
   form.submit();
 }
 
-// Full checkout: sync cart -> create address -> create order -> initiate PayU
-// -> redirect to PayU's hosted checkout. Throws ApiError on failure (e.g.
-// insufficient stock) so the caller can show it and let the user retry.
-export async function placeOrder(lines: CartLine[], address: ShippingAddress): Promise<void> {
+// Full checkout: sync cart -> create address -> create order -> (prepaid only)
+// initiate PayU -> redirect to PayU's hosted checkout. A COD order is already
+// fully confirmed by /checkout/create — there's no payment step, so this just
+// sends the browser straight to the same order-confirmation page a PayU
+// success redirect lands on. Throws ApiError on failure (e.g. insufficient
+// stock, COD not available for this order/address) so the caller can show it
+// and let the user retry.
+export async function placeOrder(lines: CartLine[], address: ShippingAddress, paymentMethod: string): Promise<void> {
   await syncCartToBackend(lines);
   const createdAddress = await createShippingAddress(address);
-  const order = await createOrder(createdAddress.id);
+  const order = await createOrder(createdAddress.id, paymentMethod);
+
+  if (paymentMethod === "cod") {
+    window.location.href = `/order-confirmation?order_number=${encodeURIComponent(order.order_number)}`;
+    return;
+  }
+
   const paymentParams = await initiatePayuPayment(order.id);
   redirectToPayU(paymentParams);
 }
