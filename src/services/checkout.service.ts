@@ -19,10 +19,12 @@ interface PayUCheckoutParams {
 // The backend cart is the source of truth at checkout time; the local
 // zustand cart only drives pre-auth browsing UX. Sync by clearing and
 // re-adding rather than diffing, since it's simpler and this only runs once
-// per checkout. NOTE: variant-based products aren't supported yet — line.size
-// has no backend variant_id to map to, so only plain (non-variant) products
-// can be checked out correctly right now.
-async function syncCartToBackend(lines: CartLine[]): Promise<void> {
+// per checkout (and once per "Share Cart" click — see shared-cart.service.ts,
+// which needs the backend cart populated before it can snapshot it).
+// NOTE: variant-based products aren't supported yet — line.size has no
+// backend variant_id to map to, so only plain (non-variant) products sync
+// correctly right now.
+export async function syncCartToBackend(lines: CartLine[]): Promise<void> {
   await apiFetch("/cart", { method: "DELETE" });
   for (const line of lines) {
     await apiFetch("/cart/items", {

@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/Button";
 import { formatPrice } from "@/utils/formatPrice";
 import { CouponForm } from "./CouponForm";
+import { ShareCartButton } from "./ShareCartButton";
 
 export function CartSummary({ subtotal }: { subtotal: number }) {
   return (
@@ -28,6 +29,10 @@ export function CartSummary({ subtotal }: { subtotal: number }) {
       <Button href="/checkout" variant="primary" size="lg" className="mt-6 w-full">
         Proceed to Checkout
       </Button>
+
+      <div className="mt-3">
+        <ShareCartButton />
+      </div>
     </div>
   );
 }
