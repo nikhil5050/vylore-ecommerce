@@ -17,6 +17,12 @@ import type { SceneState } from "./types";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
+  // Mobile browsers fire resize events when the address bar shows/hides
+  // during scroll (timing varies by browser/OS) — without this,
+  // ScrollTrigger's default resize handling recalculates this section's
+  // start/end mid-scroll, which is what made the animation work on some
+  // phones but stall or jump on others.
+  ScrollTrigger.config({ ignoreMobileResize: true });
 }
 
 /**
@@ -98,6 +104,10 @@ export function VyloreExperience() {
   return (
     <section ref={containerRef} className="relative h-[250dvh] w-full bg-white lg:h-[280dvh]">
       <div className="sticky top-0 h-dvh w-full overflow-hidden">
+        {/* The visible "VYLORE JEWELLERS" wordmark below is a stylized
+            logotype, not real heading text — this is the page's actual,
+            crawlable H1 (see SEO content brief). */}
+        <h1 className="sr-only">Sterling Silver Jewellery With A Point Of View.</h1>
         <BackgroundWordmark innerRef={wordmarkRef} />
         <NecklaceCanvas sceneState={sceneState} reducedMotion={false} />
         <HeroOverlay innerRef={heroRef} />
@@ -112,6 +122,7 @@ function StaticExperience() {
   return (
     <>
       <section className="relative flex min-h-dvh w-full items-center justify-center overflow-hidden bg-white">
+        <h1 className="sr-only">Sterling Silver Jewellery With A Point Of View.</h1>
         <BackgroundWordmark />
         <div className="absolute inset-0 z-10 flex items-center justify-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -136,18 +147,18 @@ function StaticExperience() {
             </div>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <p className="eyebrow text-xs text-muted">Our Story</p>
+            <p className="eyebrow text-xs text-muted">The Vylore Philosophy</p>
             <h2 className="mt-4 font-serif text-4xl leading-tight text-charcoal sm:text-5xl">
-              Built on Legacy. Designed for What&apos;s Next.
+              More Than An Ornament.
             </h2>
             <p className="mt-6 max-w-lg text-base leading-relaxed text-muted">
-              Vylore is built on more than twenty-five years of family experience in the
-              jewellery business, carried forward with a modern point of view. The result is
-              fine jewellery designed for a new generation — distinctive, considered, and
-              made without compromise.
+              Jewellery is a way of expressing who you are. At Vylore, we create
+              contemporary silver jewellery that becomes part of your identity —
+              combining thoughtful design, refined craftsmanship and distinctive
+              details.
             </p>
-            <Button href="/shop" variant="secondary" size="md" className="mt-8">
-              Explore Collection
+            <Button href="/about" variant="secondary" size="md" className="mt-8">
+              Discover Our Story
             </Button>
           </FadeIn>
         </Container>

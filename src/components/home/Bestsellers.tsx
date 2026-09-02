@@ -14,11 +14,15 @@ export async function Bestsellers() {
           <div>
             <p className="eyebrow text-xs text-muted">Most Loved</p>
             <h2 className="mt-4 font-serif text-4xl text-charcoal sm:text-5xl">
-              Vylore Favourites.
+              Best-Selling Silver Jewellery.
             </h2>
+            <p className="mt-4 max-w-lg text-base text-muted">
+              Discover Vylore pieces customers love most, from distinctive silver
+              rings and necklaces to earrings, bracelets and more.
+            </p>
           </div>
           <Button href="/shop" variant="ghost" size="md">
-            View All
+            View All Jewellery
           </Button>
         </FadeIn>
 

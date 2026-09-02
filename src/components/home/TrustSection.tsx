@@ -3,11 +3,26 @@ import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
 
 const pillars = [
-  { title: "Purity", description: "We believe you should always know what your jewellery is made of." },
-  { title: "Craftsmanship", description: "Every piece is finished with care, start to finish." },
-  { title: "Transparent Billing", description: "Clear pricing with no hidden surprises at checkout." },
-  { title: "Quality", description: "Materials and finishing checked before a piece reaches you." },
-  { title: "Customer Commitment", description: "Punctual, honest service on every order." },
+  {
+    title: "Purity",
+    description: "The actual metal purity and material is clearly stated for every product.",
+  },
+  {
+    title: "Craftsmanship",
+    description: "Every piece is reviewed for proportion, detailing, finish and overall presentation before it reaches you.",
+  },
+  {
+    title: "Transparent Pricing",
+    description: "Clear product pricing and straightforward information, with no unnecessary surprises at checkout.",
+  },
+  {
+    title: "Product Details",
+    description: "Material, dimensions, weight, stone details, finish and care instructions shown where applicable.",
+  },
+  {
+    title: "Customer Commitment",
+    description: "Thoughtful service, clear communication and support throughout your Vylore experience.",
+  },
 ];
 
 export function TrustSection() {
@@ -18,8 +33,9 @@ export function TrustSection() {
           <p className="eyebrow text-xs text-muted">Transparency</p>
           <h2 className="mt-4 font-serif text-4xl text-charcoal sm:text-5xl">Know What You Wear.</h2>
           <p className="mt-6 text-base text-muted">
-            Vylore believes every customer should be able to understand the quality and
-            purity of what they purchase — before and after the sale.
+            Beautiful jewellery should come with clear information. From materials and
+            product details to pricing, care and policies, Vylore is committed to
+            helping you make an informed choice.
           </p>
         </FadeIn>
 

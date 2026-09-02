@@ -6,9 +6,10 @@ interface BuildMetadataOptions {
   description: string;
   path: string;
   noIndex?: boolean;
+  keywords?: string[];
 }
 
-export function buildMetadata({ title, description, path, noIndex }: BuildMetadataOptions): Metadata {
+export function buildMetadata({ title, description, path, noIndex, keywords }: BuildMetadataOptions): Metadata {
   const url = `${siteConfig.url}${path}`;
   // The root layout applies a "%s | Vylore" title template to `title`, but that
   // template doesn't cascade into nested openGraph/twitter fields, so build the
@@ -18,6 +19,7 @@ export function buildMetadata({ title, description, path, noIndex }: BuildMetada
   return {
     title,
     description,
+    ...(keywords ? { keywords } : {}),
     alternates: { canonical: url },
     openGraph: {
       title: fullTitle,

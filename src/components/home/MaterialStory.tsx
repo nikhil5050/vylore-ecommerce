@@ -23,8 +23,8 @@ const materialDetails: Feature[] = [
   // Left Side Features -> Connecting to Ring parts
   {
     id: "silver-base",
-    label: "Sterling Silver Base",
-    detail: "Chosen for lasting brilliance & durability",
+    label: "Sterling Silver",
+    detail: "Selected for its durability, shine and timeless character",
     side: "left",
     textStyle: "top-[15%] left-[3%] lg:left-[4%]",
     textPoint: { x: 25, y: 18 },
@@ -35,7 +35,7 @@ const materialDetails: Feature[] = [
   {
     id: "thoughtful-design",
     label: "Thoughtful Design",
-    detail: "Precision carved band for a comfortable fit",
+    detail: "Balanced proportions and considered silhouettes, contemporary not disposable",
     side: "left",
     textStyle: "top-[46%] left-[3%] lg:left-[4%]",
     textPoint: { x: 25, y: 49 },
@@ -45,8 +45,8 @@ const materialDetails: Feature[] = [
   },
   {
     id: "hand-finished",
-    label: "Hand-Finished Polish",
-    detail: "Refined finish crafted by master jewelers",
+    label: "Hand-Finished",
+    detail: "Carefully finished surfaces give each design its distinctive character",
     side: "left",
     textStyle: "top-[78%] left-[3%] lg:left-[4%]",
     textPoint: { x: 25, y: 81 },
@@ -68,8 +68,8 @@ const materialDetails: Feature[] = [
   },
   {
     id: "micro-pave",
-    label: "Polished Band",
-    detail: "Seamless, high-shine finish for everyday wear",
+    label: "Refined Finish",
+    detail: "Polished surfaces and precise detailing for a quietly refined character",
     side: "right",
     textStyle: "top-[52%] right-[3%] sm:top-[46%] lg:right-[4%]",
     textPoint: { x: 75, y: 49 },
@@ -79,8 +79,8 @@ const materialDetails: Feature[] = [
   },
   {
     id: "made-to-last",
-    label: "Made to Last",
-    detail: "Hypoallergenic coating built for every chapter",
+    label: "Made For Everyday",
+    detail: "Designed to be worn and styled season after season",
     side: "right",
     textStyle: "top-[78%] right-[3%] lg:right-[4%]",
     textPoint: { x: 75, y: 81 },
@@ -133,11 +133,16 @@ export function MaterialStory() {
         <FadeIn className="text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-burgundy/20 bg-burgundy/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-burgundy">
             <span className="h-1.5 w-1.5 rounded-full bg-burgundy animate-pulse" />
-            Basic And Exquisite
+            The Details Matter
           </span>
           <h2 className="mt-5 font-serif text-4xl leading-tight text-charcoal sm:text-5xl lg:text-6xl">
-            Best Material
+            Made With Intention.
           </h2>
+          <p className="mt-4 max-w-xl mx-auto text-base leading-relaxed text-muted">
+            We believe the beauty of jewellery lies in both what you see and what you
+            discover up close. Every detail is considered to create pieces that feel
+            refined, distinctive and made for everyday wear.
+          </p>
         </FadeIn>
 
         {/* Diagram — same left/right pointer layout at every breakpoint, scaled down for mobile.

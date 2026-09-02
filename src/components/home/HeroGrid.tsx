@@ -83,15 +83,19 @@ export function HeroGrid() {
                     Signature Edition
                   </p>
                   <h3 className="mt-2 font-serif text-2xl sm:text-3xl leading-snug text-white">
-                    Timeless brilliance, crafted to shine.
+                    Signature Silver Jewellery, Designed to Be Remembered.
                   </h3>
-                  
+                  <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/80">
+                    Explore refined silhouettes, considered details and distinctive
+                    designs created to bring character to every look.
+                  </p>
+
                   <div className="mt-6">
                     <Link
                       href="/shop"
                       className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-xs font-semibold uppercase tracking-wider text-charcoal transition-colors hover:bg-charcoal hover:text-white"
                     >
-                      <span>Shop Now</span>
+                      <span>Explore Signature</span>
                       <ArrowUpRight className="h-4 w-4" />
                     </Link>
                   </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import type { Category } from "@/types/category";
 
 export interface FilterState {
@@ -28,6 +29,12 @@ interface FiltersPanelProps {
 }
 
 export function FiltersPanel({ categories, filters, onChange }: FiltersPanelProps) {
+  // Unique per mounted instance: ProductListing renders FiltersPanel twice
+  // (desktop aside + mobile drawer), and native <input type="radio"> groups
+  // by `name` across the whole document, not per-component — a shared
+  // literal name here made the two panels' price radios fight each other.
+  const priceBandName = useId();
+
   function toggleCategory(slug: string) {
     const next = filters.categorySlugs.includes(slug)
       ? filters.categorySlugs.filter((s) => s !== slug)
@@ -72,7 +79,7 @@ export function FiltersPanel({ categories, filters, onChange }: FiltersPanelProp
             <label key={band.label} className="flex items-center gap-3 py-1 text-sm text-charcoal">
               <input
                 type="radio"
-                name="price-band"
+                name={priceBandName}
                 checked={filters.minPrice === band.min && filters.maxPrice === band.max}
                 onChange={() => selectPriceBand(band)}
                 className="h-4 w-4 accent-burgundy"

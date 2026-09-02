@@ -15,7 +15,10 @@ export function Testimonials() {
       <Container>
         <FadeIn className="text-center">
           <p className="eyebrow text-xs text-muted">In Their Words</p>
-          <h2 className="mt-4 font-serif text-4xl text-charcoal sm:text-5xl">Customer Voices</h2>
+          <h2 className="mt-4 font-serif text-4xl text-charcoal sm:text-5xl">The Vylore Experience.</h2>
+          <p className="mt-4 text-base text-muted">
+            Jewellery is personal. So is the experience of finding the right piece.
+          </p>
         </FadeIn>
 
         <div className="mt-12 grid gap-10 lg:grid-cols-3">

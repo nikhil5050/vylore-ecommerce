@@ -376,14 +376,6 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
   // rotation angle that hasn't arrived yet, so there's nothing to block on).
   const [firstFrameLoaded, setFirstFrameLoaded] = useState(false);
 
-  // Touch-drag rotation (mobile): a horizontal swipe spins the necklace
-  // independently of scroll, since touch users expect to be able to "spin"
-  // a product photo directly rather than only via the page scroll. Additive
-  // to the scroll-driven frame index (see tick(), below) and wraps around
-  // continuously rather than clamping, so it feels like a real 360° spin.
-  const touchStartXRef = useRef<number | null>(null);
-  const touchRotationOffsetRef = useRef(0);
-
   // Build the ordered list of frame indices for the scroll sequence.
   // Goes from START_FRAME up to END_FRAME.
   const frameSequence = useRef<number[]>([]);
@@ -513,44 +505,6 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
     return () => observer.disconnect();
   }, [drawFrame]);
 
-  // Touch drag → rotation. Passive listeners throughout: this only ever
-  // reads touch position, it never needs to block the browser's own
-  // handling, and touchAction: "pan-y" on the wrapper (below) is what keeps
-  // vertical page scroll working smoothly alongside this.
-  useEffect(() => {
-    const el = wrapperRef.current;
-    if (!el) return;
-
-    const PIXELS_PER_FRAME = 4;
-
-    function handleTouchStart(e: TouchEvent) {
-      touchStartXRef.current = e.touches[0].clientX;
-    }
-
-    function handleTouchMove(e: TouchEvent) {
-      if (touchStartXRef.current === null) return;
-      const currentX = e.touches[0].clientX;
-      const deltaX = currentX - touchStartXRef.current;
-      touchStartXRef.current = currentX;
-      touchRotationOffsetRef.current += deltaX / PIXELS_PER_FRAME;
-    }
-
-    function handleTouchEnd() {
-      touchStartXRef.current = null;
-    }
-
-    el.addEventListener("touchstart", handleTouchStart, { passive: true });
-    el.addEventListener("touchmove", handleTouchMove, { passive: true });
-    el.addEventListener("touchend", handleTouchEnd, { passive: true });
-    el.addEventListener("touchcancel", handleTouchEnd, { passive: true });
-    return () => {
-      el.removeEventListener("touchstart", handleTouchStart);
-      el.removeEventListener("touchmove", handleTouchMove);
-      el.removeEventListener("touchend", handleTouchEnd);
-      el.removeEventListener("touchcancel", handleTouchEnd);
-    };
-  }, []);
-
   // Draws the twinkling glints on the sparkle canvas. Runs every tick
   // (unlike drawFrame, which only redraws when the rotation frame changes)
   // since sparkles animate on real elapsed time, independent of scroll.
@@ -594,12 +548,9 @@ export function NecklaceCanvas({ sceneState, reducedMotion }: NecklaceCanvasProp
       const progress = sceneState.current.progress;
       const clamped = Math.max(0, Math.min(1, progress));
 
-      // Continuous rotation through all 150 frames across the entire scroll,
-      // plus whatever a touch drag has added on top — wrapped, not clamped,
-      // so dragging keeps spinning smoothly past either end of the sequence.
+      // Continuous rotation through all 150 frames across the entire scroll.
       const scrollIdx = clamped * (totalSequenceFrames - 1);
-      const rawIdx = Math.round(scrollIdx + touchRotationOffsetRef.current);
-      const seqIdx = ((rawIdx % totalSequenceFrames) + totalSequenceFrames) % totalSequenceFrames;
+      const seqIdx = Math.round(scrollIdx);
       const frameIdx = frameSequence.current[seqIdx];
 
       if (frameIdx !== lastFrameRef.current && frameIdx !== undefined) {

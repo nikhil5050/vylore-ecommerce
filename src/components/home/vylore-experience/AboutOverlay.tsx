@@ -32,24 +32,24 @@ export function AboutOverlay({ innerRef }: AboutOverlayProps) {
         </div>
         {/* Text on the RIGHT so it doesn't obstruct the necklace (left-of-center) */}
         <div className="pointer-events-auto flex max-w-md flex-col items-start px-6 lg:px-0 lg:justify-self-end">
-          <p className="about-stagger-item eyebrow text-xs text-muted">Our Story</p>
+          <p className="about-stagger-item eyebrow text-xs text-muted">The Vylore Philosophy</p>
           <h2 className="about-stagger-item mt-3 max-w-md font-serif text-2xl leading-tight text-charcoal sm:mt-4 sm:text-4xl lg:text-5xl">
-            Built on Legacy. Designed for What&apos;s Next.
+            More Than An Ornament.
           </h2>
           <p className="about-stagger-item mt-4 max-w-md text-sm leading-relaxed text-muted sm:mt-6 sm:text-base">
-            Vylore is built on more than twenty-five years of family experience in the
-            jewellery business, carried forward with a modern point of view. The result is
-            fine jewellery designed for a new generation — distinctive, considered, and
-            made without compromise.
+            Jewellery is a way of expressing who you are. At Vylore, we create
+            contemporary silver jewellery that becomes part of your identity —
+            combining thoughtful design, refined craftsmanship and distinctive
+            details.
           </p>
 
           <Button
-            href="/shop"
+            href="/about"
             variant="primary"
             size="lg"
             className="about-stagger-item group mt-6 rounded-full px-8 shadow-md transition-all duration-300 hover:shadow-lg hover:shadow-burgundy/25 hover:-translate-y-0.5 active:translate-y-0 sm:mt-9"
           >
-            Explore Collection
+            Discover Our Story
             <svg
               className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
               fill="none"
