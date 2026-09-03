@@ -62,19 +62,32 @@ export function VyloreExperience() {
       timeline
         .to(
           heroRef.current,
-          { autoAlpha: 0, y: -50, filter: "blur(8px)", ease: "power1.in", duration: 0.4 },
-          0
+          {
+            autoAlpha: 0,
+            y: -50,
+            filter: "blur(8px)",
+            ease: "power1.in",
+            duration: 0.4,
+          },
+          0,
         )
         .to(
           wordmarkRef.current,
-          { autoAlpha: 0, x: "-5vw", y: -30, filter: "blur(6px)", ease: "power1.in", duration: 0.45 },
-          0
+          {
+            autoAlpha: 0,
+            x: "-5vw",
+            y: -30,
+            filter: "blur(6px)",
+            ease: "power1.in",
+            duration: 0.45,
+          },
+          0,
         )
         .fromTo(
           aboutRef.current,
           { autoAlpha: 0 },
           { autoAlpha: 1, ease: "power1.out", duration: 0.3 },
-          0.55
+          0.55,
         );
 
       if (aboutRef.current) {
@@ -89,7 +102,7 @@ export function VyloreExperience() {
             duration: 1,
             stagger: 0.12,
           },
-          0.58
+          0.58,
         );
       }
     }, containerRef);
@@ -102,12 +115,17 @@ export function VyloreExperience() {
   }
 
   return (
-    <section ref={containerRef} className="relative h-[250dvh] w-full bg-white lg:h-[280dvh]">
+    <section
+      ref={containerRef}
+      className="relative h-[250dvh] w-full bg-white lg:h-[280dvh]"
+    >
       <div className="sticky top-0 h-dvh w-full overflow-hidden">
         {/* The visible "VYLORE JEWELLERS" wordmark below is a stylized
             logotype, not real heading text — this is the page's actual,
             crawlable H1 (see SEO content brief). */}
-        <h1 className="sr-only">Sterling Silver Jewellery With A Point Of View.</h1>
+        <h1 className="sr-only">
+          Sterling Silver Jewellery With A Point Of View.
+        </h1>
         <BackgroundWordmark innerRef={wordmarkRef} />
         <NecklaceCanvas sceneState={sceneState} reducedMotion={false} />
         <HeroOverlay innerRef={heroRef} />
@@ -122,7 +140,9 @@ function StaticExperience() {
   return (
     <>
       <section className="relative flex min-h-dvh w-full items-center justify-center overflow-hidden bg-white">
-        <h1 className="sr-only">Sterling Silver Jewellery With A Point Of View.</h1>
+        <h1 className="sr-only">
+          Sterling Silver Jewellery With A Point Of View.
+        </h1>
         <BackgroundWordmark />
         <div className="absolute inset-0 z-10 flex items-center justify-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -148,16 +168,30 @@ function StaticExperience() {
           </FadeIn>
           <FadeIn delay={0.1}>
             <p className="eyebrow text-xs text-muted">The Vylore Philosophy</p>
-            <h2 className="mt-4 font-serif text-4xl leading-tight text-charcoal sm:text-5xl">
-              More Than An Ornament.
-            </h2>
+            <h5 className="mt-4 font-serif text-4xl leading-tight text-charcoal sm:text-5xl">
+              More Than an Ornament. Jewellery That Defines You.
+            </h5>
             <p className="mt-6 max-w-lg text-base leading-relaxed text-muted">
-              Jewellery is a way of expressing who you are. At Vylore, we create
-              contemporary silver jewellery that becomes part of your identity —
-              combining thoughtful design, refined craftsmanship and distinctive
-              details.
+              At Vylore, we create contemporary silver jewellery that reflects
+              your individuality. Every piece combines modern design, refined
+              craftsmanship and distinctive details to create jewellery made for
+              everyday expression.
             </p>
-            <Button href="/about" variant="secondary" size="md" className="mt-8">
+            <p className="mt-4 max-w-lg text-base leading-relaxed text-muted">
+              From elegant silver rings and earrings to necklaces and
+              statement pieces, Vylore jewellery is designed to complement
+              your style and become a meaningful part of who you are.
+            </p>
+            <p className="mt-4 max-w-lg text-base font-medium leading-relaxed text-charcoal">
+              Vylore — More Than an Ornament. It&rsquo;s Part of Your Identity.
+            </p>
+
+            <Button
+              href="/about"
+              variant="secondary"
+              size="md"
+              className="mt-8"
+            >
               Discover Our Story
             </Button>
           </FadeIn>

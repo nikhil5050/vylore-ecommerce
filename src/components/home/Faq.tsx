@@ -21,7 +21,7 @@ export function Faq() {
         <div className="grid gap-10 lg:grid-cols-[minmax(220px,0.7fr)_minmax(0,1.3fr)] lg:gap-24">
           <FadeIn direction="left" className="lg:self-start">
             <p className="eyebrow text-xs text-maroon">FAQ</p>
-            <h2 className="mt-4 max-w-sm font-serif text-4xl leading-none text-charcoal sm:text-5xl">
+            <h2 className="mt-4 max-w-sm font-serif text-4xl leading-none text-[#680307] sm:text-5xl">
               Questions, Considered.
             </h2>
             <p className="mt-5 max-w-xs text-sm leading-6 text-muted">

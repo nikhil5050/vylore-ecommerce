@@ -32,15 +32,21 @@ export function AboutOverlay({ innerRef }: AboutOverlayProps) {
         </div>
         {/* Text on the RIGHT so it doesn't obstruct the necklace (left-of-center) */}
         <div className="pointer-events-auto flex max-w-md flex-col items-start px-6 lg:px-0 lg:justify-self-end">
-          <p className="about-stagger-item eyebrow text-xs text-muted">The Vylore Philosophy</p>
-          <h2 className="about-stagger-item mt-3 max-w-md font-serif text-2xl leading-tight text-charcoal sm:mt-4 sm:text-4xl lg:text-5xl">
-            More Than An Ornament.
-          </h2>
+          <p className="about-stagger-item eyebrow text-xs  text-[#810201]">The Vylore Philosophy</p>
+          <h5 className="about-stagger-item mt-3 max-w-md font-serif text-2xl leading-tight text-charcoal sm:mt-4 sm:text-2xl lg:text-3xl">
+            More Than an Ornament. Jewellery That Defines You.
+          </h5>
           <p className="about-stagger-item mt-4 max-w-md text-sm leading-relaxed text-muted sm:mt-6 sm:text-base">
-            Jewellery is a way of expressing who you are. At Vylore, we create
-            contemporary silver jewellery that becomes part of your identity —
-            combining thoughtful design, refined craftsmanship and distinctive
-            details.
+            At Vylore, we create contemporary silver jewellery that reflects
+            your individuality. Every piece combines modern design, refined
+            craftsmanship and distinctive details to create jewellery made for
+            everyday expression.
+            From elegant silver rings and earrings to necklaces and statement
+            pieces, Vylore jewellery is designed to complement your style and
+            become a meaningful part of who you are.
+          </p>
+          <p className="about-stagger-item mt-4 max-w-md text-sm font-medium leading-relaxed text-charcoal sm:mt-6 sm:text-base">
+            Vylore — More Than an Ornament. It&rsquo;s Part of Your Identity.
           </p>
 
           <Button
@@ -49,7 +55,7 @@ export function AboutOverlay({ innerRef }: AboutOverlayProps) {
             size="lg"
             className="about-stagger-item group mt-6 rounded-full px-8 shadow-md transition-all duration-300 hover:shadow-lg hover:shadow-burgundy/25 hover:-translate-y-0.5 active:translate-y-0 sm:mt-9"
           >
-            Discover Our Story
+            Discover Vylore
             <svg
               className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
               fill="none"

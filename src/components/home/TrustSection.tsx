@@ -31,7 +31,7 @@ export function TrustSection() {
       <Container>
         <FadeIn className="max-w-xl">
           <p className="eyebrow text-xs text-muted">Transparency</p>
-          <h2 className="mt-4 font-serif text-4xl text-charcoal sm:text-5xl">Know What You Wear.</h2>
+          <h2 className="mt-4 font-serif text-4xl text-[#680307] sm:text-5xl">Know What You Wear.</h2>
           <p className="mt-6 text-base text-muted">
             Beautiful jewellery should come with clear information. From materials and
             product details to pricing, care and policies, Vylore is committed to
