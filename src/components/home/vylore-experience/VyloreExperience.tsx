@@ -163,7 +163,7 @@ function StaticExperience() {
         </div>
       </section>
 
-      <section className="py-16 lg:py-[120px]">
+      <section className="py-10 lg:py-[120px]">
         <Container className="grid items-center gap-10 lg:grid-cols-2 lg:gap-20">
           <FadeIn>
             <div className="relative aspect-[4/3] overflow-hidden bg-white">
