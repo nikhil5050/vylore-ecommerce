@@ -13,8 +13,11 @@ export function AboutOverlay({ innerRef }: AboutOverlayProps) {
       // "About" pose band (see NecklaceCanvas's MOBILE_ABOUT_CENTER_Y/HEIGHT,
       // roughly the 13%-43% band) so the two never overlap, however tall the
       // text content gets. lg:inset-0 restores full coverage for desktop's
-      // row layout, where the necklace sits to the left instead.
-      className="pointer-events-none absolute inset-x-0 top-[44%] bottom-0 z-20 flex flex-col justify-end pb-10 opacity-0 sm:pb-14 lg:inset-0 lg:flex-row lg:items-center lg:pb-0"
+      // row layout, where the necklace sits to the left instead. pb-24
+      // matches the fixed mobile bottom nav's real footprint (~4.75rem plus
+      // safe-area-inset-bottom — see HeroOverlay's identical bottom-24), so
+      // the CTA button below never renders behind it.
+      className="pointer-events-none absolute inset-x-0 top-[44%] bottom-0 z-20 flex flex-col justify-end pb-24 opacity-0 lg:inset-0 lg:flex-row lg:items-center lg:pb-0"
     >
       {/* max-h-full resolves against the wrapper's now-definite height
           (top-[45%] to bottom-0 above) — the safety-valve scroll only
@@ -49,9 +52,7 @@ export function AboutOverlay({ innerRef }: AboutOverlayProps) {
             your individuality. Every piece combines modern design, refined
             craftsmanship and distinctive details to create jewellery made for
             everyday expression.
-            From elegant silver rings and earrings to necklaces and statement
-            pieces, Vylore jewellery is designed to complement your style and
-            become a meaningful part of who you are.
+            
           </p>
           {/* Hidden below sm — on the shortest phones, the panel's available
               height (below the necklace's reserved top clearance) isn't tall

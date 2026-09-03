@@ -9,7 +9,12 @@ import { NewsletterForm } from "./NewsletterForm";
 
 export function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-burgundy-dark text-ivory">
+    // pb-24 (mobile/tablet only) clears the fixed mobile bottom nav's real
+    // footprint (~4.75rem plus safe-area-inset-bottom — see Header.tsx and
+    // HeroOverlay's identical bottom-24), so the page's true last content
+    // (copyright/policy links below) isn't left rendering behind it with no
+    // further room to scroll into view. That nav is lg:hidden, hence lg:pb-0.
+    <footer className="relative overflow-hidden bg-burgundy-dark text-ivory pb-24 lg:pb-0">
       <Image
         src="/logo/logo1.png"
         alt=""
