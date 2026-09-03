@@ -46,13 +46,22 @@ export function VyloreExperience() {
   useEffect(() => {
     if (reducedMotion) return;
 
+    // Touch scroll arrives in momentum bursts rather than a mouse wheel's
+    // steady stream — scrub's default 1s smoothing lag reads as stutter/glitch
+    // against that. Tracking scroll position immediately (scrub: true) fixes
+    // it on touch devices only; this only affects local timeline playback,
+    // not scroll/touch handling itself, so nothing else on the page is
+    // affected (unlike ScrollTrigger.normalizeScroll, which was tried and
+    // reverted — it broke CategoryAutoScroller's manual swipe).
+    const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
+
     const ctx = gsap.context(() => {
       const timeline = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top top",
           end: "bottom bottom",
-          scrub: 1,
+          scrub: isCoarsePointer ? true : 1,
           onUpdate: (self) => {
             sceneState.current.progress = self.progress;
           },
