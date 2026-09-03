@@ -29,8 +29,12 @@ if (typeof window !== "undefined") {
   // section once the touch-driven scroll fully catches up. normalizeScroll
   // smooths touch input into consistent scroll deltas, fixing that stutter.
   // Scoped to coarse pointers only, so desktop wheel/trackpad is untouched.
+  // allowNestedScroll keeps it from taking over horizontally-scrollable
+  // elements below (e.g. CategoryAutoScroller's manual swipe row) — without
+  // it, normalizeScroll captures all touch input page-wide and that row
+  // stops responding to drag.
   if (window.matchMedia("(pointer: coarse)").matches) {
-    ScrollTrigger.normalizeScroll(true);
+    ScrollTrigger.normalizeScroll({ allowNestedScroll: true });
   }
 }
 
