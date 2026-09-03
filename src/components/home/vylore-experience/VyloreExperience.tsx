@@ -23,6 +23,15 @@ if (typeof window !== "undefined") {
   // start/end mid-scroll, which is what made the animation work on some
   // phones but stall or jump on others.
   ScrollTrigger.config({ ignoreMobileResize: true });
+  // Touch scroll delivers input in discrete, sometimes-paused chunks (vs.
+  // a mouse wheel's steady stream), which this pinned/scrubbed section reads
+  // as scroll "stalling" mid-animation — the pin only releases into the next
+  // section once the touch-driven scroll fully catches up. normalizeScroll
+  // smooths touch input into consistent scroll deltas, fixing that stutter.
+  // Scoped to coarse pointers only, so desktop wheel/trackpad is untouched.
+  if (window.matchMedia("(pointer: coarse)").matches) {
+    ScrollTrigger.normalizeScroll(true);
+  }
 }
 
 /**

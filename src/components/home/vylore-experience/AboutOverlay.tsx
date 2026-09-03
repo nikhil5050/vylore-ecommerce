@@ -11,7 +11,7 @@ export function AboutOverlay({ innerRef }: AboutOverlayProps) {
       ref={innerRef}
       className="pointer-events-none absolute inset-0 z-20 flex flex-col justify-end pb-10 opacity-0 sm:pb-14 lg:flex-row lg:items-center lg:pb-0"
     >
-      <Container className="w-full max-h-[56dvh] touch-pan-y overscroll-contain overflow-y-auto bg-transparent py-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:max-h-none lg:overflow-visible lg:py-0 lg:grid lg:grid-cols-2 lg:gap-8">
+      <Container className="w-full max-h-[calc(100dvh-4rem)] touch-pan-y overflow-y-auto bg-transparent py-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:max-h-none lg:overflow-visible lg:py-0 lg:grid lg:grid-cols-2 lg:gap-8">
         {/* Compact specifications balance the open space beside the necklace */}
         <div className="hidden lg:flex lg:flex-col lg:justify-end lg:self-stretch lg:pb-2">
           <p className="about-stagger-item eyebrow text-[10px] text-muted">The Vylore Standard</p>
