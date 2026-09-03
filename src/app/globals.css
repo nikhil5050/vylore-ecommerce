@@ -170,6 +170,7 @@ body {
 
   .category-slider-viewport {
     overflow: hidden;
+    padding-block: 0.5rem;
   }
 
   .category-slider-copy {
@@ -185,7 +186,10 @@ body {
       flex-wrap: nowrap;
       justify-content: flex-start;
       overflow-x: auto;
+      padding-block: 0.5rem;
       scroll-behavior: auto;
+      scroll-padding-inline: 1rem;
+      touch-action: pan-x;
       -webkit-overflow-scrolling: touch;
     }
 
