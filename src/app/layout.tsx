@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   verification: {
-    google: "o4wQ1_4F_ZgphLDOuVZtcYhL2JghJ1_REdI6KuOMDJ8",
+    google: "HDoMvASliIEmrj9PQbnyGlXlen6EWtRkyfG6L40SJCc",
   },
   // Replaces the old placeholder gem-shaped app/icon.svg — this points
   // straight at the real logo instead, so there's only one favicon source.
