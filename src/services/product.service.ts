@@ -48,6 +48,18 @@ async function mapProduct(product: BackendProduct): Promise<Product> {
   const hasVariants = product.variants.length > 0;
   const inStock = hasVariants ? product.variants.some((v) => v.is_active && v.stock > 0) : (product.stock ?? 0) > 0;
 
+  // Size comes from the variant's `attributes.size` (admin's Variants tab writes
+  // this key) — dedupe in insertion order since attribute values aren't
+  // uniqueness-constrained the way SKUs are.
+  const sizes = Array.from(
+    new Set(
+      product.variants
+        .filter((v) => v.is_active)
+        .map((v) => v.attributes.size)
+        .filter((size): size is string => typeof size === "string" && size.trim().length > 0),
+    ),
+  );
+
   return {
     id: String(product.id),
     slug: product.slug,
@@ -60,11 +72,12 @@ async function mapProduct(product: BackendProduct): Promise<Product> {
     images: [...product.images]
       .sort((a, b) => a.position - b.position)
       .map((image) => ({ url: image.url, altText: image.alt_text ?? undefined })),
+    sizes: sizes.length > 0 ? sizes : undefined,
     inStock,
     // No backend field yet for these — real product content (story, metal,
-    // purity, weight, size options, marketing badges, collection curation)
-    // doesn't exist in the catalog model, so these stay unset rather than
-    // fabricated. The PDP already renders each conditionally.
+    // purity, weight, marketing badges, collection curation) doesn't exist in
+    // the catalog model, so these stay unset rather than fabricated. The PDP
+    // already renders each conditionally.
   };
 }
 

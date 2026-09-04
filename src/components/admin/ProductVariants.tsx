@@ -5,6 +5,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/admin/ui/button";
 import { Input } from "@/components/admin/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/admin/ui/select";
 import { Switch } from "@/components/admin/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/admin/ui/table";
 import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
@@ -18,6 +19,29 @@ interface ProductVariantsProps {
   // "create with variants" endpoint, so this panel is disabled until the
   // product has been saved once.
   productId?: string;
+}
+
+// Rings only come in these 4 sizes — kept as a fixed list rather than free
+// text so admin and shoppers can never drift out of sync.
+const RING_SIZES = ["9", "10", "12", "13"];
+const NO_SIZE = "__none__";
+
+function SizeSelect({ value, onChange }: { value: string; onChange: (size: string) => void }) {
+  return (
+    <Select value={value || NO_SIZE} onValueChange={(next) => onChange(!next || next === NO_SIZE ? "" : next)}>
+      <SelectTrigger className="w-20" size="sm">
+        <SelectValue placeholder="Size" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value={NO_SIZE}>No size</SelectItem>
+        {RING_SIZES.map((size) => (
+          <SelectItem key={size} value={size}>
+            {size}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
 }
 
 const emptyDraft = { sku: "", size: "", material: "", weight: "", price: "", initialStock: "" };
@@ -103,11 +127,9 @@ export function ProductVariants({ variants, onChange, productId }: ProductVarian
               {variants.map((variant) => (
                 <TableRow key={variant.id}>
                   <TableCell>
-                    <Input
-                      defaultValue={variant.size ?? ""}
-                      onBlur={(e) => e.target.value !== (variant.size ?? "") && updateVariant(variant, { size: e.target.value })}
-                      placeholder="e.g. 18"
-                      className="w-20"
+                    <SizeSelect
+                      value={variant.size ?? ""}
+                      onChange={(size) => size !== (variant.size ?? "") && updateVariant(variant, { size })}
                     />
                   </TableCell>
                   <TableCell>
@@ -170,7 +192,7 @@ export function ProductVariants({ variants, onChange, productId }: ProductVarian
       <div className="flex flex-wrap items-end gap-2 rounded-lg border border-dashed border-border p-3">
         <div className="space-y-1">
           <span className="text-xs text-muted-foreground">Size</span>
-          <Input value={draft.size} onChange={(e) => setDraft((d) => ({ ...d, size: e.target.value }))} className="w-20" />
+          <SizeSelect value={draft.size} onChange={(size) => setDraft((d) => ({ ...d, size }))} />
         </div>
         <div className="space-y-1">
           <span className="text-xs text-muted-foreground">Material</span>
