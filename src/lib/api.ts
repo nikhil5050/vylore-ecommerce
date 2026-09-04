@@ -6,6 +6,11 @@
 const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL ?? "https://api.vylore.in/api/v1").replace(/\/$/, "");
 const AUTH_STORAGE_KEY = "vylore-auth";
 
+// The backend sleeps between requests, so a cold start legitimately costs a few
+// seconds — but without a ceiling a hung connection would block a server render
+// indefinitely. Generous enough to survive a cold start, short enough to fail.
+const REQUEST_TIMEOUT_MS = 20_000;
+
 // FastAPI's `detail` field is either a plain string (most HTTPExceptions raised
 // by our own code) or an array of Pydantic validation-error objects (422s) —
 // e.g. {"detail":[{"msg":"String should have at least 8 characters", ...}]}.
@@ -85,7 +90,22 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
     if (token) headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, { method, headers, body: requestBody });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      method,
+      headers,
+      body: requestBody,
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    });
+  } catch (error) {
+    // The request never got an HTTP response at all: DNS failure, connection
+    // refused, TLS error, or the timeout above firing on a cold backend. Raised
+    // as an ApiError with status 0 so callers can fail closed on "backend
+    // unreachable" the same way they do on a 5xx, instead of having to
+    // recognise a bare `TypeError: fetch failed`.
+    throw new ApiError(0, "Could not reach the Vylore backend. Please try again.", error);
+  }
 
   // A previously-valid stored token expired or was revoked server-side. This is
   // distinct from an `auth: false` endpoint (e.g. /auth/login) returning 401 for

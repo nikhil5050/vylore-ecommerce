@@ -1,18 +1,9 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { RegisterForm } from "@/components/auth/RegisterForm";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
-import { buildMetadata } from "@/utils/metadata";
-
-export const metadata: Metadata = buildMetadata({
-  title: "Create Account",
-  description: "Create a Vylore account.",
-  path: "/register",
-  noIndex: true,
-});
 
 export default function RegisterPage() {
   return (

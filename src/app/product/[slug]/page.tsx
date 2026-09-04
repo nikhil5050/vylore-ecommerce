@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductGallery } from "@/components/product/ProductGallery";
@@ -8,9 +7,9 @@ import { RelatedProducts } from "@/components/product/RelatedProducts";
 import { StickyMobileCta } from "@/components/product/StickyMobileCta";
 import { Accordion, type AccordionItem } from "@/components/ui/Accordion";
 import { Container } from "@/components/ui/Container";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { siteConfig } from "@/config/site";
 import { getAllProducts, getProductBySlug, getRelatedProducts } from "@/services/product.service";
-import { buildMetadata } from "@/utils/metadata";
 
 // Without this, each static product page is cached forever after build
 // (Next's default for a page with no request-time APIs) — price/stock/image
@@ -22,24 +21,33 @@ export async function generateStaticParams() {
   return products.map((product) => ({ slug: product.slug }));
 }
 
-export async function generateMetadata({ params }: PageProps<"/product/[slug]">): Promise<Metadata> {
-  const { slug } = await params;
-  const product = await getProductBySlug(slug);
-  if (!product) return {};
-
-  return buildMetadata({
-    title: product.name,
-    description: product.description,
-    path: `/product/${product.slug}`,
-  });
-}
-
 export default async function ProductPage({ params }: PageProps<"/product/[slug]">) {
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
+
+  // getProductBySlug only resolves to undefined on a genuine 404; anything
+  // else (backend unreachable, 5xx) rethrows, so it's caught here and shown
+  // as a distinct "unavailable" state instead of a false notFound() or a 500.
+  let product;
+  try {
+    product = await getProductBySlug(slug);
+  } catch {
+    return (
+      <main className="flex flex-1 flex-col pb-24 pt-16 lg:pb-0 lg:pt-24">
+        <Container>
+          <EmptyState
+            title="This product is temporarily unavailable"
+            description="We're having trouble reaching the catalog. Please try again shortly."
+          />
+        </Container>
+      </main>
+    );
+  }
   if (!product) notFound();
 
-  const related = await getRelatedProducts(product);
+  // The product itself is known-good above; only the related-products lookup
+  // can still fail (a separate request), so it fails closed into
+  // RelatedProducts' own empty render rather than taking the page down.
+  const related = await getRelatedProducts(product).catch(() => []);
 
   // No real reviews exist yet, so aggregateRating is intentionally omitted
   // rather than fabricated.

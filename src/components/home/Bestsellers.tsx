@@ -4,11 +4,17 @@ import { FadeIn } from "@/components/ui/FadeIn";
 import { ProductCard } from "@/components/product/ProductCard";
 import { getBestsellers } from "@/services/product.service";
 
+// Fails closed like OfferBanner: an unreachable backend (DNS blip, Railway
+// cold start, outage) hides this one section instead of throwing and taking
+// the whole homepage down with a 500. An empty rail under a "Most Loved"
+// heading reads as broken, so drop the section entirely rather than render
+// the header over nothing.
 export async function Bestsellers() {
-  const products = await getBestsellers();
+  const products = await getBestsellers().catch(() => []);
+  if (products.length === 0) return null;
 
   return (
-    <section className="bg-moonlight py-16 lg:py-[120px]">
+    <section className="bg-white py-16 lg:py-[120px]">
       <Container>
         <FadeIn className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
           <div>

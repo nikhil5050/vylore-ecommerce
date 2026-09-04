@@ -1,4 +1,4 @@
-import { apiFetch } from "@/lib/api";
+import { ApiError, apiFetch } from "@/lib/api";
 import { getCategories, getCategoryById } from "@/services/category.service";
 import type { Product } from "@/types/product";
 
@@ -98,8 +98,14 @@ export async function getProductBySlug(slug: string): Promise<Product | undefine
       auth: false,
     });
     return await mapProduct(product);
-  } catch {
-    return undefined;
+  } catch (error) {
+    // Only a genuine "no such product" (404) should read as undefined —
+    // callers use that to trigger notFound(). Anything else (network down,
+    // 5xx) gets rethrown so callers can tell "definitely doesn't exist" apart
+    // from "couldn't check right now" instead of 404ing a real product during
+    // a transient outage.
+    if (error instanceof ApiError && error.status === 404) return undefined;
+    throw error;
   }
 }
 

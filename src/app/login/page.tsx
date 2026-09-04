@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -6,14 +5,6 @@ import { LoginForm } from "@/components/auth/LoginForm";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
-import { buildMetadata } from "@/utils/metadata";
-
-export const metadata: Metadata = buildMetadata({
-  title: "Sign In",
-  description: "Sign in to your Vylore account.",
-  path: "/login",
-  noIndex: true,
-});
 
 export default function LoginPage() {
   return (

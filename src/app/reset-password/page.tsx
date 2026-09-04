@@ -1,16 +1,7 @@
-import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Container } from "@/components/ui/Container";
-import { buildMetadata } from "@/utils/metadata";
-
-export const metadata: Metadata = buildMetadata({
-  title: "Reset Password",
-  description: "Set a new password for your Vylore account.",
-  path: "/reset-password",
-  noIndex: true,
-});
 
 export default function ResetPasswordPage() {
   return (

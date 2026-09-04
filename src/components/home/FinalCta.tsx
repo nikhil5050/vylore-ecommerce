@@ -30,13 +30,13 @@ const categoryListJsonLd = {
     "@type": "ListItem",
     position: index + 1,
     name: category.label,
-    url: `https://vylore.in${category.href}`,
+    url: `https://www.vylore.in${category.href}`,
   })),
 };
 
 export function FinalCta() {
   return (
-    <section className="border-t border-silver/30 bg-moonlight py-16 sm:py-20 lg:py-[120px]">
+    <section className="border-t border-silver/30 bg-white py-16 sm:py-20 lg:py-[120px]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(categoryListJsonLd) }}

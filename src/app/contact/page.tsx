@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import {
   ArrowUpRight,
   Clock,
@@ -15,14 +14,6 @@ import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { contactInfo } from "@/config/contact";
-import { buildMetadata } from "@/utils/metadata";
-
-export const metadata: Metadata = buildMetadata({
-  title: "Contact",
-  description:
-    "Get in touch with Vylore for enquiries, support, or custom jewellery requests.",
-  path: "/contact",
-});
 
 const quickContacts = [
   {

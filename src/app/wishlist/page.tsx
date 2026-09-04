@@ -1,15 +1,6 @@
-import type { Metadata } from "next";
 import { WishlistGrid } from "@/components/wishlist/WishlistGrid";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Container } from "@/components/ui/Container";
-import { buildMetadata } from "@/utils/metadata";
-
-export const metadata: Metadata = buildMetadata({
-  title: "Wishlist",
-  description: "Pieces you've saved for later.",
-  path: "/wishlist",
-  noIndex: true,
-});
 
 export default function WishlistPage() {
   return (

@@ -19,9 +19,9 @@ import { buildMetadata } from "@/utils/metadata";
 export const revalidate = 60;
 
 export const metadata: Metadata = buildMetadata({
-  title: "Sterling Silver Jewellery Online | Rings, Necklaces & More",
+  title: "Sterling Silver Jewellery Online | Rings, Necklaces & More | Vylore",
   description:
-    "Discover Vylore's contemporary sterling silver jewellery, including rings, necklaces, earrings, bracelets, anklets and ear cuffs, designed for everyday expression and individuality.",
+    "Explore modern silver rings, necklaces, earrings, bracelets, anklets and more, designed with intention and crafted  with attention to detail. ",
   path: "/",
   keywords: [
     "silver jewellery",
@@ -40,6 +40,12 @@ export const metadata: Metadata = buildMetadata({
     "minimalist silver jewellery",
     "everyday silver jewellery",
     "designer silver jewellery",
+    "silver jewellery online",
+    "silver jewellery India",
+    "custom silver jewellery",
+    " modern silver jewellery",
+    "pune best silver jewellery",
+
   ],
 });
 

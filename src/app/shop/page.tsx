@@ -1,24 +1,22 @@
-import type { Metadata } from "next";
 import { ProductListing } from "@/components/shop/ProductListing";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Container } from "@/components/ui/Container";
 import { getCategories } from "@/services/category.service";
 import { getAllProducts } from "@/services/product.service";
-import { buildMetadata } from "@/utils/metadata";
 
 // Without this, the static shop page is cached forever after build (Next's
 // default for a page with no request-time APIs) — a new/updated product
 // added via the admin would never appear here until the next deploy.
 export const revalidate = 60;
 
-export const metadata: Metadata = buildMetadata({
-  title: "Shop All",
-  description: "Browse the complete Vylore silver jewellery collection.",
-  path: "/shop",
-});
-
 export default async function ShopPage() {
-  const [products, categories] = await Promise.all([getAllProducts(), getCategories()]);
+  // Fails closed, same as the homepage sections: an unreachable backend
+  // (DNS blip, cold start, outage) renders the page shell with an empty
+  // listing — ProductListing's own empty state — instead of a 500.
+  const [products, categories] = await Promise.all([
+    getAllProducts().catch(() => []),
+    getCategories().catch(() => []),
+  ]);
 
   return (
     <main className="flex flex-1 flex-col py-16 lg:py-24">

@@ -1,22 +1,8 @@
-import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SharedCartView } from "@/components/cart/SharedCartView";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Container } from "@/components/ui/Container";
 import { getSharedCart } from "@/services/shared-cart.service";
-import { buildMetadata } from "@/utils/metadata";
-
-export async function generateMetadata({
-  params,
-}: PageProps<"/cart/shared/[token]">): Promise<Metadata> {
-  const { token } = await params;
-  return buildMetadata({
-    title: "Shared Bag",
-    description: "Someone shared their Vylore shopping bag with you.",
-    path: `/cart/shared/${token}`,
-    noIndex: true,
-  });
-}
 
 export default async function SharedCartPage({ params }: PageProps<"/cart/shared/[token]">) {
   const { token } = await params;

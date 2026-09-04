@@ -1,16 +1,7 @@
-import type { Metadata } from "next";
 import { Suspense } from "react";
 import { VerifyEmailStatus } from "@/components/auth/VerifyEmailStatus";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Container } from "@/components/ui/Container";
-import { buildMetadata } from "@/utils/metadata";
-
-export const metadata: Metadata = buildMetadata({
-  title: "Verify Email",
-  description: "Verify your Vylore account email address.",
-  path: "/verify-email",
-  noIndex: true,
-});
 
 export default function VerifyEmailPage() {
   return (

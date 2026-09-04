@@ -1,15 +1,7 @@
-import type { Metadata } from "next";
 import { Accordion } from "@/components/ui/Accordion";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Container } from "@/components/ui/Container";
 import { faqCategories } from "@/config/faq";
-import { buildMetadata } from "@/utils/metadata";
-
-export const metadata: Metadata = buildMetadata({
-  title: "FAQ",
-  description: "Answers to common questions about orders, shipping, returns, purity, and more.",
-  path: "/faq",
-});
 
 const faqJsonLd = {
   "@context": "https://schema.org",

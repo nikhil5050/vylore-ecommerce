@@ -1,14 +1,6 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Container } from "@/components/ui/Container";
-import { buildMetadata } from "@/utils/metadata";
-
-export const metadata: Metadata = buildMetadata({
-  title: "Terms of Service",
-  description: "The terms governing your use of the Vylore website.",
-  path: "/terms",
-});
 
 export default function TermsPage() {
   return (
