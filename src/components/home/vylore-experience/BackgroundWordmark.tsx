@@ -56,18 +56,15 @@ export function BackgroundWordmark({ innerRef }: BackgroundWordmarkProps) {
           and ear cuffs created for everyday .
         </p>
 
-        <div className="no-scrollbar mt-5 flex w-full max-w-[560px] items-center justify-start gap-4 overflow-x-auto whitespace-nowrap sm:mt-6 sm:gap-5">
-          <span className="inline-flex shrink-0 items-center gap-2 border-l-2 border-burgundy/70 pl-3 text-[9px] font-semibold uppercase tracking-[0.1em] text-charcoal/75 sm:text-[10px]">
-            <span className="h-1.5 w-1.5 rounded-full bg-burgundy" aria-hidden="true" />
+        <div className="mt-5 flex w-full max-w-[560px] items-center whitespace-nowrap sm:mt-6">
+          <span className="flex min-w-0 flex-1 items-center justify-center border-r border-burgundy/30 px-1 text-center text-[8px] font-semibold uppercase tracking-[0.04em] text-charcoal/75 sm:px-3 sm:text-[10px] sm:tracking-[0.08em]">
             925 Sterling Silver
           </span>
-          <span className="inline-flex shrink-0 items-center gap-2 border-l-2 border-burgundy/70 pl-3 text-[9px] font-semibold uppercase tracking-[0.1em] text-charcoal/75 sm:text-[10px]">
-            <span className="h-1.5 w-1.5 rounded-full bg-burgundy" aria-hidden="true" />
-            Korean-Inspired Finish
+          <span className="flex min-w-0 flex-1 items-center justify-center border-r border-burgundy/30 px-1 text-center text-[8px] font-semibold uppercase tracking-[0.04em] text-charcoal/75 sm:px-3 sm:text-[10px] sm:tracking-[0.08em]">
+            Korean Polish
           </span>
-          <span className="inline-flex shrink-0 items-center gap-2 border-l-2 border-burgundy/70 pl-3 text-[9px] font-semibold uppercase tracking-[0.1em] text-charcoal/75 sm:text-[10px]">
-            <span className="h-1.5 w-1.5 rounded-full bg-burgundy" aria-hidden="true" />
-            Contemporary Heirloom Design
+          <span className="flex min-w-0 flex-1 items-center justify-center px-1 text-center text-[8px] font-semibold uppercase tracking-[0.04em] text-charcoal/75 sm:px-3 sm:text-[10px] sm:tracking-[0.08em]">
+            Modern Heirlooms
           </span>
         </div>
       </div>
