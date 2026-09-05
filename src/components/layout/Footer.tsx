@@ -5,7 +5,7 @@ import { Container } from "@/components/ui/Container";
 import { footerNav, type NavItem } from "@/config/navigation";
 import { siteConfig } from "@/config/site";
 import { Logo1 } from "./logo1";
-import { NewsletterForm } from "./NewsletterForm";
+
 
 export function Footer() {
   return (
@@ -44,18 +44,23 @@ export function Footer() {
         <FooterColumn title="Shop" links={footerNav.shop} />
         <FooterColumn title="About" links={footerNav.about} />
         <FooterColumn title="Help" links={footerNav.help} />
-
-        <div className="col-span-2 flex flex-col gap-4 lg:col-span-1">
-          <p className="eyebrow text-xs text-ivory font-semibold">Newsletter</p>
-          <p className="text-sm text-ivory/70">Stay close to what&apos;s next.</p>
-          <NewsletterForm />
-        </div>
       </Container>
 
       <div className="relative z-10 border-t border-ivory/10">
-        <Container className="flex flex-col items-center justify-between gap-3 py-6 text-xs text-ivory/70 sm:flex-row">
-          <p>© {new Date().getFullYear()} Vylore. All rights reserved.</p>
-          <div className="flex gap-6">
+        <Container className="grid gap-3 py-6 text-xs text-ivory/70 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+          <p className="text-center sm:text-left">© {new Date().getFullYear()} Vylore. All rights reserved.</p>
+          <p className="text-center font-bold">
+            Powered By{" "}
+            <a
+              href="http://adswisemarketing.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-ivory"
+            >
+              Adswise Marketing
+            </a>
+          </p>
+          <div className="flex justify-center gap-6 sm:justify-end">
             <Link href="/privacy-policy" className="transition-colors hover:text-ivory">
               Privacy Policy
             </Link>

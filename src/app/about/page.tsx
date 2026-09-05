@@ -371,17 +371,17 @@ export default function AboutPage() {
         />
         <Container className="relative max-w-3xl text-center px-4">
           <FadeIn direction="scale">
-            <span className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-champagne font-medium">
+            <span className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-white font-medium">
               Family Legacy
             </span>
             <h2 className="mt-3 font-serif text-2xl sm:text-4xl lg:text-5xl tracking-tight text-white leading-tight">
               More Than Twenty-Five Years in the Making
             </h2>
             <p className="mt-4 sm:mt-6 text-sm sm:text-base lg:text-lg leading-relaxed text-ivory/80 font-light">
-              Vylore comes from a family with more than twenty-five years of
-              experience in the jewellery and gold business. That deep-rooted
-              expertise in raw materials, intricate craftsmanship, and
-              structural integrity sits behind every single piece we dispatch.
+              A Quarter-Century of Getting It Right
+Twenty-five years of working metal teaches you things no manual can: how silver behaves under heat, where a setting holds and where it fails. That knowledge isn't written down — it's inherited.
+<br/><br/>
+Vylore builds on it instead of starting from zero. Every piece carries that same discipline in structural integrity and material selection, because heirloom jewelry isn't a description we put on a page — it's a decision made before the piece ever reaches you.
             </p>
           </FadeIn>
         </Container>
@@ -550,12 +550,12 @@ He founded Vylore to close that gap building custom jewelry design around indivi
       <section className="py-12 sm:py-20 lg:py-28">
         <Container className="grid items-center gap-8 sm:gap-12 lg:grid-cols-2 lg:gap-20">
           <FadeIn direction="left">
-            <div className="relative group aspect-[4/3] sm:aspect-[16/10] lg:aspect-[3/4] w-full overflow-hidden rounded-2xl sm:rounded-3xl shadow-lg sm:shadow-xl border border-charcoal/10">
+            <div className="relative group aspect-[4/3] sm:aspect-[16/10] lg:aspect-[3/4] w-full overflow-hidden shadow-lg sm:shadow-xl border border-charcoal/10">
               <Image
                 src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=1000&auto=format&fit=crop"
                 alt="Minimalist Fine Silver Design"
                 fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                sizes="(max-width: 768px) 500vw, (max-width: 1200px) 50vw, 600px"
                 className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
               />
             </div>
@@ -570,75 +570,124 @@ He founded Vylore to close that gap building custom jewelry design around indivi
               Design Philosophy
             </span>
             <h2 className="mt-3 sm:mt-5 font-serif text-2xl sm:text-4xl lg:text-5xl tracking-tight text-charcoal">
-              Distinctive, Not Traditional
+               Restraint by Design
             </h2>
             <p className="mt-3 sm:mt-5 text-sm sm:text-base lg:text-lg leading-relaxed text-muted font-light">
-              Vylore is designed to feel modern, considered, and quietly
-              confident — never ornate purely for its own sake.
-            </p>
-            <p className="mt-3 sm:mt-4 text-sm sm:text-base leading-relaxed text-muted font-light">
-              Every piece is meant to look intentional: a small number of strong
-              design ideas resolved carefully, rather than a large number of
-              ideas resolved quickly.
-            </p>
-          </FadeIn>
-        </Container>
-      </section>
+  Every Vylore piece begins with a decision about what not to include. A small number of strong design ideas, resolved carefully rather than a large number of ideas resolved quickly is the discipline behind minimalist jewelry design done properly, not minimalism used as an excuse for doing less work.
 
-      {/* Statement Banner (No Compromise) */}
-      <section className="relative overflow-hidden bg-burgundy py-14 sm:py-20 lg:py-32 text-ivory shadow-2xl">
-        <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:14px_14px] sm:[background-size:18px_18px]" />
-        <Container className="relative max-w-3xl text-center px-4">
-          <FadeIn direction="scale">
-            <span className="text-[10px] sm:text-xs uppercase tracking-[0.25em] sm:tracking-[0.3em] text-champagne font-medium">
-              Our Philosophy
-            </span>
-            <h2 className="mt-3 font-serif text-3xl sm:text-5xl lg:text-6xl tracking-tight text-white">
-              No Compromise.
-            </h2>
-            <p className="mt-4 sm:mt-6 text-sm sm:text-base lg:text-lg leading-relaxed text-ivory/90 font-light">
-              No compromise on materials. No compromise on design. No compromise
-              on how a piece is finished, billed, or delivered. It is a simple
-              standard, and it shapes every decision behind Vylore.
-            </p>
-          </FadeIn>
-        </Container>
-      </section>
 
-      {/* Future Vision */}
-      <section className="py-12 sm:py-20 lg:py-32">
-        <Container className="grid items-center gap-8 sm:gap-12 lg:grid-cols-2 lg:gap-20">
-          <FadeIn className="lg:order-2" direction="right">
-            <div className="relative group aspect-[4/3] sm:aspect-[16/10] lg:aspect-[3/4] w-full overflow-hidden rounded-2xl sm:rounded-3xl shadow-lg sm:shadow-xl border border-charcoal/10">
-              <Image
-                src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=1000&auto=format&fit=crop"
-                alt="Silver Ring Craftsmanship"
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-                className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
-              />
+            </p>
+            <p className="mt-3 sm:mt-5 text-sm sm:text-base lg:text-lg leading-relaxed text-muted font-light">
+              
+
+A minimalist necklace from Vylore isn't undecorated because decoration was skipped, it's undecorated because everything unnecessary was already tested and removed. The result feels modern, considered, and quietly confident never ornate for its own sake, and never decorated to look busy. The same discipline carries across every contemporary piece in the range: restraint isn't an absence of design effort, it's effort spent making the piece simpler, not more complicated.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm font-medium">
+              <Link
+                href="/shop"
+                className="inline-flex items-center justify-center bg-burgundy px-5 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-burgundy-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-burgundy"
+              >
+                Shop the collection
+              </Link>
+              <Link
+                href="/contact"
+                className="text-burgundy underline decoration-burgundy/40 underline-offset-4 transition-colors hover:text-burgundy-dark"
+              >
+                Talk to our team
+              </Link>
             </div>
           </FadeIn>
-
-          <FadeIn
-            delay={0.1}
-            className="lg:order-1 flex flex-col items-start"
-            direction="left"
-          >
-            <span className="inline-block rounded-full bg-charcoal/5 px-3 py-1 text-[11px] sm:text-xs font-semibold uppercase tracking-widest text-muted border border-charcoal/5">
-              Future Vision
-            </span>
-            <h2 className="mt-3 sm:mt-5 font-serif text-2xl sm:text-4xl lg:text-5xl tracking-tight text-charcoal">
-              Building for the Long Term
-            </h2>
-            <p className="mt-3 sm:mt-5 text-sm sm:text-base lg:text-lg leading-relaxed text-muted font-light">
-              Vylore is being built with a long-term view — starting with silver
-              jewellery for today&apos;s customer, with the ambition to grow
-              into a brand recognized globally.
-            </p>
-          </FadeIn>
         </Container>
       </section>
+
+      <section className="border-t border-charcoal/10 bg-[#FAF9F6] py-12 sm:py-20 lg:py-28">
+        <Container>
+          <FadeIn className="mx-auto max-w-2xl text-center">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-burgundy sm:text-xs">
+              What Guides Us
+            </span>
+            <h2 className="mt-3 font-serif text-2xl tracking-tight text-charcoal sm:text-4xl">
+              History inspires the idea. Design decides what stays..
+            </h2>
+          </FadeIn>
+
+          <div className="mt-10 grid gap-5 sm:mt-14 lg:grid-cols-2 lg:gap-8">
+            <FadeIn
+              direction="left"
+              className="relative overflow-hidden bg-burgundy p-6 text-ivory sm:p-10 lg:p-12"
+            >
+              <span className="text-xs font-semibold uppercase tracking-[0.25em] text-white">
+               Our Mission
+              </span>
+              <h3 className="mt-5 max-w-md font-serif text-3xl leading-tight text-white sm:text-4xl">
+                Silver jewellery deserves its own identity.
+              </h3>
+              <div className="mt-6 space-y-4 text-sm leading-relaxed text-ivory/85 sm:text-base">
+                <p>
+                  At Vylore, we believe silver is more than an alternative to
+                  gold — it is a statement of individuality, design, and modern
+                  craftsmanship. Our mission is to create contemporary silver
+                  jewellery in 925 sterling silver for those who appreciate
+                  distinctive design, verified silver purity, and thoughtful
+                  craftsmanship.
+                </p>
+                <p>
+                  Every piece brings together modern aesthetics, lasting
+                  quality, and timeless appeal, guided by a promise we never
+                  compromise on.
+                </p>
+                <p>
+                  Vylore is built for people who want jewellery that feels
+                  personal, designed to stand apart and made to be remembered.
+                </p>
+              </div>
+              <div className="absolute -bottom-14 -right-10 h-40 w-40 rounded-full border border-champagne/20" />
+            </FadeIn>
+
+            <FadeIn
+              delay={0.1}
+              direction="right"
+              className="relative overflow-hidden border border-charcoal/10 bg-white p-6 text-charcoal sm:p-10 lg:p-12"
+            >
+              <Image
+                src="/logo/logo.png"
+                alt=""
+                aria-hidden="true"
+                width={480}
+                height={480}
+                className="pointer-events-none absolute -right-16 top-1/2 z-0 h-auto w-64 -translate-y-1/2 select-none opacity-[0.06] sm:w-72 lg:w-80"
+              />
+              <span className="relative z-10 text-xs font-semibold uppercase tracking-[0.25em] text-burgundy">
+                Our Vision
+              </span>
+              <h3 className="relative z-10 mt-5 max-w-md font-serif text-3xl leading-tight text-charcoal sm:text-4xl">
+                To shape the future of contemporary silver jewellery.
+              </h3>
+              <div className="relative z-10 mt-6 space-y-4 text-sm leading-relaxed text-muted sm:text-base">
+                <p>
+                  Vylore envisions becoming a recognised name in the silver and
+                  metal jewellery industry, while staying rooted in the values
+                  that define our craft: design, purity, quality, and attention
+                  to detail.
+                </p>
+                <p>
+                  Our vision goes beyond following trends. Built on more than
+                  25 years of family expertise in jewellery and gold, we want
+                  to create a distinctive design language for silver, bringing
+                  craftsmanship and modern design sensibility together for
+                  customers in India and, eventually, around the world.
+                </p>
+                <p className="font-medium text-charcoal">
+                  Vylore is not here to follow where jewellery design goes next.
+                  We are here to help shape it.
+                </p>
+              </div>
+              <div className="absolute -right-12 -top-12 h-36 w-36 rounded-full border border-burgundy/10" />
+            </FadeIn>
+          </div>
+        </Container>
+      </section>
+
     </main>
   );
 }
