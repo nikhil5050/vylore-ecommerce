@@ -16,6 +16,9 @@ const nextConfig: NextConfig = {
   // reach ik.imagekit.io/images.unsplash.com from wherever this deploys.
   images: {
     unoptimized: true,
+    remotePatterns: [
+      { protocol: "https", hostname: "ik.imagekit.io" },
+    ],
   },
   // Everything under public/ (necklace frames, logos, icons) is a static file
   // that only changes when we replace it in a deploy — Vercel's default for

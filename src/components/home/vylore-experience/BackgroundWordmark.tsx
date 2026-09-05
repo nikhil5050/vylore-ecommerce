@@ -1,4 +1,5 @@
 import { HeroCategorySearch } from "./HeroCategorySearch";
+import Image from "next/image";
 
 interface BackgroundWordmarkProps {
   innerRef?: React.RefObject<HTMLDivElement | null>;
@@ -17,24 +18,16 @@ export function BackgroundWordmark({ innerRef }: BackgroundWordmarkProps) {
           to stay reachable. */}
       <div aria-hidden="true" className="contents">
         {/* VYLORE sits close above JEWELLERS. */}
-        <div
-          className="
-          relative
-          flex
-          items-center
-          uppercase
-          leading-none
-          tracking-tight
-          text-burgundy
-          self-center sm:self-start
-        "
+        <Image
+          src="https://ik.imagekit.io/vyloreimgs/vylore/branding/Secondary%20Logo-04%20(1).png"
+          alt=""
+          width={600}
+          height={200}
+          className="relative block h-auto self-center sm:self-start"
           style={{
-            fontFamily: '"Fleur De Leah", Times, serif',
-            fontSize: "clamp(2.15rem, 7.5vw, 5.75rem)",
+            width: "clamp(11rem, 33vw, 26rem)",
           }}
-        >
-          VYLORE
-        </div>
+        />
 
         {/* JEWELLERS sits directly below VYLORE — same display face, deliberately smaller than the wordmark above it so VYLORE reads as the primary word */}
         <span
@@ -42,7 +35,7 @@ export function BackgroundWordmark({ innerRef }: BackgroundWordmarkProps) {
           mt-1
           font-serif
           font-bold
-          uppercase
+          
           leading-none
           opacity-50
           tracking-[0.08em]
@@ -50,18 +43,33 @@ export function BackgroundWordmark({ innerRef }: BackgroundWordmarkProps) {
           self-center sm:mt-0.5 sm:self-start
         "
           style={{
-            fontSize: "clamp(1.7rem, 6.25vw, 4.75rem)",
+            fontSize: "clamp(1rem, 2.2vw, 1.5rem)",
           }}
         >
-          JEWELLERS
+          Jewellery That Speaks Your Style.
         </span>
 
         {/* Quiet supporting line — clearly separated from the heading, not crowding it */}
-        <p className="mt-4 max-w-[290px] text-center text-xs leading-relaxed tracking-[0.05em] text-charcoal/60 sm:mt-5 sm:max-w-[360px] sm:self-start sm:text-left sm:text-sm">
+        <p className="mt-4 max-w-[290px] text-center text-xs leading-relaxed tracking-[0.05em] text-charcoal/60 sm:mt-5 sm:max-w-[560px] sm:self-start sm:text-left sm:text-sm">
           Discover contemporary silver jewellery designed with intention.
           Explore distinctive rings, necklaces, earrings, bracelets, anklets
-          and ear cuffs created for everyday expression and individuality.
+          and ear cuffs created for everyday .
         </p>
+
+        <div className="no-scrollbar mt-5 flex w-full max-w-[560px] items-center justify-start gap-4 overflow-x-auto whitespace-nowrap sm:mt-6 sm:gap-5">
+          <span className="inline-flex shrink-0 items-center gap-2 border-l-2 border-burgundy/70 pl-3 text-[9px] font-semibold uppercase tracking-[0.1em] text-charcoal/75 sm:text-[10px]">
+            <span className="h-1.5 w-1.5 rounded-full bg-burgundy" aria-hidden="true" />
+            925 Sterling Silver
+          </span>
+          <span className="inline-flex shrink-0 items-center gap-2 border-l-2 border-burgundy/70 pl-3 text-[9px] font-semibold uppercase tracking-[0.1em] text-charcoal/75 sm:text-[10px]">
+            <span className="h-1.5 w-1.5 rounded-full bg-burgundy" aria-hidden="true" />
+            Korean-Inspired Finish
+          </span>
+          <span className="inline-flex shrink-0 items-center gap-2 border-l-2 border-burgundy/70 pl-3 text-[9px] font-semibold uppercase tracking-[0.1em] text-charcoal/75 sm:text-[10px]">
+            <span className="h-1.5 w-1.5 rounded-full bg-burgundy" aria-hidden="true" />
+            Contemporary Heirloom Design
+          </span>
+        </div>
       </div>
 
       {/* Category search — mobile only. Placed in normal flow right after the
