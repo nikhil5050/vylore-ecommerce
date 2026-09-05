@@ -261,8 +261,10 @@ export function AboutHero() {
         <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "About" }]} />
 
         <div className="mt-8 text-center sm:mt-10">
-          <p className="eyebrow text-xs tracking-widest text-muted">About Vylore</p>
-          <h1 className="mt-4 font-serif text-3xl text-charcoal sm:text-4xl lg:text-5xl">Crafted to celebrate your story.</h1>
+          <p className="eyebrow text-xs tracking-widest text-[#8B7A6A]">About Vylore</p>
+          <h1 className="mt-4 font-serif text-3xl text-charcoal sm:text-4xl lg:text-5xl">Celestial silver, crafted for your story.</h1>
+           <p className="eyebrow text-xs   text-muted mt-8">Vylore crafts modern silver jewelry backed by 25+ years of family expertise in gold and jewellery-making distinctive pieces for the modern wearer.</p>
+        
         </div>
       </Container>
 

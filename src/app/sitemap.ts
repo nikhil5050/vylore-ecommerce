@@ -1,18 +1,16 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/config/site";
 import { getCategories } from "@/services/category.service";
-import { getFeaturedCollections } from "@/services/collection.service";
 import { getAllProducts } from "@/services/product.service";
 
 export const dynamic = "force-static";
 
-const staticPaths = ["", "/shop", "/collections", "/about", "/contact", "/faq", "/track-order"];
+const staticPaths = ["", "/shop", "/about", "/contact", "/faq", "/track-order"];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [products, categories, collections] = await Promise.all([
+  const [products, categories] = await Promise.all([
     getAllProducts(),
     getCategories(),
-    getFeaturedCollections(),
   ]);
 
   const lastModified = new Date();
@@ -32,10 +30,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified,
   }));
 
-  const collectionRoutes = collections.map((collection) => ({
-    url: `${siteConfig.url}/collections/${collection.slug}`,
-    lastModified,
-  }));
-
-  return [...staticRoutes, ...productRoutes, ...categoryRoutes, ...collectionRoutes];
+  return [...staticRoutes, ...productRoutes, ...categoryRoutes];
 }

@@ -1,14 +1,4 @@
-import { Playfair_Display } from "next/font/google";
-import Image from "next/image";
 import { HeroCategorySearch } from "./HeroCategorySearch";
-
-// A dedicated display serif for this oversized background wordmark — richer
-// letterforms and more presence at huge sizes than the site's default
-// --font-display (currently a sans-serif placeholder, see layout.tsx).
-const wordmarkFont = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["700", "800", "900"],
-});
 
 interface BackgroundWordmarkProps {
   innerRef?: React.RefObject<HTMLDivElement | null>;
@@ -26,65 +16,24 @@ export function BackgroundWordmark({ innerRef }: BackgroundWordmarkProps) {
           aria-hidden without swallowing the search bar below, which needs
           to stay reachable. */}
       <div aria-hidden="true" className="contents">
-        {/* VYLORE sits close above JEWELLERS */}
+        {/* VYLORE sits close above JEWELLERS. */}
         <div
-          className={`
+          className="
           relative
           flex
           items-center
-          ${wordmarkFont.className}
-          font-bold
           uppercase
           leading-none
           tracking-tight
           text-burgundy
           self-center sm:self-start
-        `}
+        "
           style={{
+            fontFamily: '"Fleur De Leah", Times, serif',
             fontSize: "clamp(2.15rem, 7.5vw, 5.75rem)",
           }}
         >
-          {/* VYL */}
-          <span className="relative z-10 ">VYL</span>
-
-          {/* Ring replacing O */}
-          <span
-            className="
-            relative
-            z-30
-            inline-block
-            shrink-0
-          "
-            style={{
-              width: "1.38em",
-              height: "1.08em",
-              marginLeft: "-0.09em",
-              marginRight: "-0.6em",
-            }}
-          >
-            <Image
-              src="/ring.png"
-              alt="hero ring "
-             
-              width={555}
-              height={348}
-              sizes="(max-width: 640px) 130px, 240px"
-              className="
-  absolute
-  left-1/2
-  top-1/2
-  z-30
-  w-[1.55em]
-  max-w-none
-  -translate-x-1/2
-  -translate-y-[35%]
-  object-contain
-"
-            />
-          </span>
-
-          {/* RE */}
-          <span className="relative z-10">RE</span>
+          VYLORE
         </div>
 
         {/* JEWELLERS sits directly below VYLORE — same display face, deliberately smaller than the wordmark above it so VYLORE reads as the primary word */}
